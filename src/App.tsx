@@ -1,12 +1,7 @@
 import './index.css';
 import { AuthProvider } from './hooks/use-auth.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import {
-  Route,
-  RouterProvider,
-  createBrowserRouter,
-  createRoutesFromElements,
-} from 'react-router-dom';
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from './components/ui/tooltip';
 import AdminHomePage from './pages/admin/home.tsx';

@@ -13,8 +13,7 @@ import { useState } from 'react';
 import type { components } from '@/types/api-schema';
 
 type RootPathDto = components['schemas']['AdminRootPathDto'];
-type ErrorCodes =
-  components['schemas']['AdminDeleteRootPathNotFoundErrorMessage'];
+type ErrorCodes = components['schemas']['AdminDeleteRootPathNotFoundErrorMessage'];
 
 export function RootPathDeleteForm({ rootPath }: { rootPath: RootPathDto }) {
   const [open, setOpen] = useState(false);
@@ -42,11 +41,7 @@ export function RootPathDeleteForm({ rootPath }: { rootPath: RootPathDto }) {
 
   return (
     <>
-      <Button
-        className="px-2 py-1 rounded mr-4 text-xs uppercase"
-        onClick={() => setOpen(true)}
-        variant="destructive"
-      >
+      <Button className="px-2 py-1 rounded mr-4 text-xs uppercase" onClick={() => setOpen(true)} variant="destructive">
         Delete path
       </Button>
 
@@ -55,19 +50,14 @@ export function RootPathDeleteForm({ rootPath }: { rootPath: RootPathDto }) {
           <DialogHeader>
             <DialogTitle>Delete root path</DialogTitle>
             <DialogDescription>
-              Deleting the path will not delete the files from your disk, but it
-              will remove all references to the files in the database. These
-              files can be reindexed any time by adding the path again, but
-              custom metadata will be permanently lost by this action.
+              Deleting the path will not delete the files from your disk, but it will remove all references to the files
+              in the database. These files can be reindexed any time by adding the path again, but custom metadata will
+              be permanently lost by this action.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="destructive">

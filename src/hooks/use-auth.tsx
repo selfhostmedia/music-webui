@@ -1,10 +1,4 @@
-import {
-  type ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { type ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import api from '@/lib/api';
 
 interface User {
@@ -47,8 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token =
-      sessionStorage.getItem('jwt-token') || localStorage.getItem('jwt-token');
+    const token = sessionStorage.getItem('jwt-token') || localStorage.getItem('jwt-token');
     if (token) {
       const userData = decodeToken(token);
       if (userData) {
@@ -81,11 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  return (
-    <AuthContext.Provider value={{ user, loading, logout, login }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, loading, logout, login }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

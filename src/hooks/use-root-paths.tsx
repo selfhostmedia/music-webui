@@ -26,13 +26,7 @@ export function useRootPaths() {
   });
 
   const createRootPathMutation = useMutation({
-    mutationFn: async ({
-      accountId,
-      body,
-    }: {
-      accountId: number;
-      body: CreateBodyDto;
-    }) => {
+    mutationFn: async ({ accountId, body }: { accountId: number; body: CreateBodyDto }) => {
       const { data, error } = await api.post('/api/admin/create-root-path', {
         params: { header: api.authHeader(), query: { accountId } },
         body,
@@ -57,13 +51,7 @@ export function useRootPaths() {
   });
 
   const updateRootPathMutation = useMutation({
-    mutationFn: async ({
-      rootPathId,
-      body,
-    }: {
-      rootPathId: number;
-      body: UpdateBodyDto;
-    }) => {
+    mutationFn: async ({ rootPathId, body }: { rootPathId: number; body: UpdateBodyDto }) => {
       const { data, error } = await api.patch(`/api/admin/update-root-path`, {
         params: {
           header: api.authHeader(),

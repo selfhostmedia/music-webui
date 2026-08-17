@@ -1,10 +1,4 @@
-import {
-  type ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { type ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import api from '@/lib/api';
 import type { components } from '@/types/api-schema';
 
@@ -16,11 +10,7 @@ interface IndexerContextType {
   isLoadingLogs: boolean;
   isLoadingStatus: boolean;
   isUpdatingStatus: boolean;
-  listIndexerLogs: (
-    accountId?: number,
-    rootPathId?: number,
-    search?: string,
-  ) => Promise<void>;
+  listIndexerLogs: (accountId?: number, rootPathId?: number, search?: string) => Promise<void>;
   toggleStatus: () => Promise<void>;
 }
 
@@ -87,11 +77,7 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const listIndexerLogs = async (
-    accountId?: number,
-    rootPathId?: number,
-    search?: string,
-  ) => {
+  const listIndexerLogs = async (accountId?: number, rootPathId?: number, search?: string) => {
     try {
       setLoadingLogs(true);
       const response = await api.get('/api/admin/list-indexer-logs', {

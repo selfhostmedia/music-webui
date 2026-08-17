@@ -17,11 +17,7 @@ export function IndexerToggle({
     <div className={`flex flex-row space-x-2 ${className ?? ''}`} {...rest}>
       <Switch
         checked={isEnabled}
-        onCheckedChange={() =>
-          handleSubmit(
-            new Event('submit') as unknown as React.FormEvent<HTMLFormElement>,
-          )
-        }
+        onCheckedChange={() => handleSubmit(new Event('submit') as unknown as React.FormEvent<HTMLFormElement>)}
       />
       <Label>Indexer is {isEnabled ? 'active' : 'disabled'}</Label>
     </div>

@@ -11,10 +11,7 @@ export default function SignOut() {
         await logout();
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error(
-          'Error signing out:',
-          error instanceof Error ? error.message : error,
-        );
+        console.error('Error signing out:', error instanceof Error ? error.message : error);
       }
       navigate('/signin');
     };

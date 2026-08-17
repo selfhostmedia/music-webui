@@ -48,12 +48,8 @@ export function IndexerLogsTable() {
         <AdminTable>
           <AdminTableHeader>
             <AdminTableHeaderCell className="w-20">Date</AdminTableHeaderCell>
-            <AdminTableHeaderCell className="w-50">
-              Username
-            </AdminTableHeaderCell>
-            <AdminTableHeaderCell className="w-100">
-              Root path
-            </AdminTableHeaderCell>
+            <AdminTableHeaderCell className="w-50">Username</AdminTableHeaderCell>
+            <AdminTableHeaderCell className="w-100">Root path</AdminTableHeaderCell>
             <AdminTableHeaderCell>Message</AdminTableHeaderCell>
           </AdminTableHeader>
           <AdminTableBody>
@@ -62,24 +58,16 @@ export function IndexerLogsTable() {
               return (
                 <AdminTableRow key={`dummy-log-${index}`}>
                   <AdminTableCell>
-                    <span
-                      className={`bg-foreground/${opacity} h-8 w-full block`}
-                    />
+                    <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                   </AdminTableCell>
                   <AdminTableCell>
-                    <span
-                      className={`bg-foreground/${opacity} h-8 w-full block`}
-                    />
+                    <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                   </AdminTableCell>
                   <AdminTableCell>
-                    <span
-                      className={`bg-foreground/${opacity} h-8 w-full block`}
-                    />
+                    <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                   </AdminTableCell>
                   <AdminTableCell>
-                    <span
-                      className={`bg-foreground/${opacity} h-8 w-full block`}
-                    />
+                    <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                   </AdminTableCell>
                 </AdminTableRow>
               );
@@ -184,12 +172,7 @@ export function IndexerLogsTable() {
     const headings = [`Date`, `User`, `Path`, `Message`];
     const csv = `${headings.join('\t')}\n${indexerLogs
       .map((item) => {
-        const values = [
-          item.date.toString(),
-          item.username || '-',
-          item.rootPath || '-',
-          item.message,
-        ];
+        const values = [item.date.toString(), item.username || '-', item.rootPath || '-', item.message];
         return values.join('\t');
       })
       .join('\n')}`;
@@ -235,24 +218,16 @@ export function IndexerLogsTable() {
         <AdminTableHeader>
           <AdminTableHeaderCell className="w-50">Date</AdminTableHeaderCell>
           <AdminTableHeaderCell className="w-50">Username</AdminTableHeaderCell>
-          <AdminTableHeaderCell className="w-100">
-            Root path
-          </AdminTableHeaderCell>
+          <AdminTableHeaderCell className="w-100">Root path</AdminTableHeaderCell>
           <AdminTableHeaderCell>Message</AdminTableHeaderCell>
         </AdminTableHeader>
         <AdminTableBody>
           {indexerLogs.slice(0, 100).map((log, index) => {
             return (
               <AdminTableRow key={`real-log-${index}`}>
-                <AdminTableCell className="text-foreground/50 text-xs">
-                  {formatDate(log.date)}
-                </AdminTableCell>
-                <AdminTableCell className="text-foreground/70 text-xs">
-                  {log.username || '-'}
-                </AdminTableCell>
-                <AdminTableCell className="text-foreground/70 text-xs">
-                  {log.rootPath || '-'}
-                </AdminTableCell>
+                <AdminTableCell className="text-foreground/50 text-xs">{formatDate(log.date)}</AdminTableCell>
+                <AdminTableCell className="text-foreground/70 text-xs">{log.username || '-'}</AdminTableCell>
+                <AdminTableCell className="text-foreground/70 text-xs">{log.rootPath || '-'}</AdminTableCell>
                 <AdminTableCell className="text-foreground/70 text-xs">
                   {log.message.replace(log.rootPath, '')}
                 </AdminTableCell>

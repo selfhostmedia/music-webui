@@ -38,29 +38,19 @@ export function RootPathTable() {
             return (
               <AdminTableRow key={index}>
                 <AdminTableCell>
-                  <span
-                    className={`bg-foreground/${opacity} h-8 w-full block`}
-                  />
+                  <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                 </AdminTableCell>
                 <AdminTableCell>
-                  <span
-                    className={`bg-foreground/${opacity} h-8 w-full block`}
-                  />
+                  <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                 </AdminTableCell>
                 <AdminTableCell>
-                  <span
-                    className={`bg-foreground/${opacity} h-8 w-full block`}
-                  />
+                  <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                 </AdminTableCell>
                 <AdminTableCell>
-                  <span
-                    className={`bg-foreground/${opacity} h-8 w-full block`}
-                  />
+                  <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                 </AdminTableCell>
                 <AdminTableCell>
-                  <span
-                    className={`bg-foreground/${opacity} h-8 w-full block`}
-                  />
+                  <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                 </AdminTableCell>
               </AdminTableRow>
             );
@@ -105,9 +95,7 @@ export function RootPathTable() {
             <AdminTableRow key={rootPath.id}>
               <AdminTableCell>{rootPath.username}</AdminTableCell>
               <AdminTableCell>{rootPath.rootPath}</AdminTableCell>
-              <AdminTableCell>
-                {formatNumber(rootPath.fileCount)}
-              </AdminTableCell>
+              <AdminTableCell>{formatNumber(rootPath.fileCount)}</AdminTableCell>
               <AdminTableCell>{formatSize(rootPath.totalSize)}</AdminTableCell>
               <AdminTableCell>
                 <div className="flex gap-2 whitespace-nowrap">

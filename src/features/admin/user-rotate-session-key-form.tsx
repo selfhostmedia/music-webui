@@ -13,16 +13,9 @@ import { useState } from 'react';
 import type { components } from '@/types/api-schema';
 
 type UserDto = components['schemas']['AdminAccountDto'];
-type ErrorCodes =
-  components['schemas']['AdminRegenerateUserSessionKeyNotFoundErrorMessage'];
+type ErrorCodes = components['schemas']['AdminRegenerateUserSessionKeyNotFoundErrorMessage'];
 
-export function UserRotateSessionKeyForm({
-  user,
-  className,
-}: {
-  user: UserDto;
-  className?: string;
-}) {
+export function UserRotateSessionKeyForm({ user, className }: { user: UserDto; className?: string }) {
   const [open, setOpen] = useState(false);
   const { regenerateSessionKey } = useAccounts();
 
@@ -61,17 +54,12 @@ export function UserRotateSessionKeyForm({
           <DialogHeader>
             <DialogTitle>Terminate sessions</DialogTitle>
             <DialogDescription>
-              Terminating sessions will invalidate all existing sessions for the
-              user.
+              Terminating sessions will invalidate all existing sessions for the user.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="default">

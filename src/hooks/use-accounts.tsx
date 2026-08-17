@@ -53,15 +53,12 @@ export function useAccounts() {
 
   const regenerateSessionKey = useMutation({
     mutationFn: async (accountId: number) => {
-      const { data, error } = await api.patch(
-        '/api/admin/regenerate-user-sessionkey',
-        {
-          params: {
-            header: api.authHeader(),
-            query: { accountId },
-          },
+      const { data, error } = await api.patch('/api/admin/regenerate-user-sessionkey', {
+        params: {
+          header: api.authHeader(),
+          query: { accountId },
         },
-      );
+      });
       if (error) {
         if (Array.isArray(error.message)) {
           throw new Error(error.message.join(', '));
@@ -74,8 +71,7 @@ export function useAccounts() {
       return true;
     },
     onSuccess: invalidateAccounts,
-    onError: (error) =>
-      console.error('Failed to regenerate session key:', error),
+    onError: (error) => console.error('Failed to regenerate session key:', error),
   });
 
   const updateRoles = useMutation({

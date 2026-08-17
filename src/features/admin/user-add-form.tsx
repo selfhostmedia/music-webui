@@ -1,11 +1,5 @@
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
@@ -16,8 +10,7 @@ import { useAccounts } from '@/hooks/use-accounts';
 import { useState } from 'react';
 import type { components } from '@/types/api-schema';
 
-type ErrorCodes =
-  components['schemas']['AdminCreateAccountBadRequestErrorMessage'];
+type ErrorCodes = components['schemas']['AdminCreateAccountBadRequestErrorMessage'];
 
 export function UserAddForm({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
@@ -73,9 +66,7 @@ export function UserAddForm({ className }: { className?: string }) {
 
   const toggleStatus = (role: UserRole) => {
     setFormData((prev) => {
-      const newRoles = prev.roles.includes(role)
-        ? prev.roles.filter((r) => r !== role)
-        : [...prev.roles, role];
+      const newRoles = prev.roles.includes(role) ? prev.roles.filter((r) => r !== role) : [...prev.roles, role];
       return { ...prev, roles: newRoles };
     });
   };
@@ -152,11 +143,7 @@ export function UserAddForm({ className }: { className?: string }) {
               />
             </div>
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="default">

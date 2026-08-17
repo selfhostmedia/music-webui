@@ -20,13 +20,7 @@ type ErrorCodes =
   | components['schemas']['AdminUpdateUserRolesBadRequestErrorMessage']
   | components['schemas']['AdminUpdateUserRolesNotFoundErrorMessage'];
 
-export function UserUpdateRolesForm({
-  user,
-  className,
-}: {
-  user: UserDto;
-  className?: string;
-}) {
+export function UserUpdateRolesForm({ user, className }: { user: UserDto; className?: string }) {
   const [open, setOpen] = useState(false);
   const { updateRoles } = useAccounts();
   const [formData, setFormData] = useState({ roles: user.roles });
@@ -46,9 +40,7 @@ export function UserUpdateRolesForm({
           const message: ErrorCodes = error.message as ErrorCodes;
           switch (message) {
             case 'account-only-admin-error':
-              toast.error(
-                'You must create another administrator before removing this permission.',
-              );
+              toast.error('You must create another administrator before removing this permission.');
               break;
             case 'account-not-found-error':
               toast.error('The specified account does not exist.');
@@ -68,9 +60,7 @@ export function UserUpdateRolesForm({
 
   const toggleStatus = (role: UserRole) => {
     setFormData((prev) => {
-      const newRoles = prev.roles.includes(role)
-        ? prev.roles.filter((r) => r !== role)
-        : [...prev.roles, role];
+      const newRoles = prev.roles.includes(role) ? prev.roles.filter((r) => r !== role) : [...prev.roles, role];
       return { ...prev, roles: newRoles };
     });
   };
@@ -89,9 +79,7 @@ export function UserUpdateRolesForm({
         <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
             <DialogTitle>Update user roles</DialogTitle>
-            <DialogDescription>
-              Grant or revoke permissions for the user account.
-            </DialogDescription>
+            <DialogDescription>Grant or revoke permissions for the user account.</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className={`flex flex-row space-x-2`}>
@@ -112,11 +100,7 @@ export function UserUpdateRolesForm({
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="default">

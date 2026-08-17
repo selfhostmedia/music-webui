@@ -35,19 +35,13 @@ export function UserTable() {
             return (
               <AdminTableRow key={index}>
                 <AdminTableCell>
-                  <span
-                    className={`bg-foreground/${opacity} h-8 w-full block`}
-                  />
+                  <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                 </AdminTableCell>
                 <AdminTableCell>
-                  <span
-                    className={`bg-foreground/${opacity} h-8 w-full block`}
-                  />
+                  <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                 </AdminTableCell>
                 <AdminTableCell>
-                  <span
-                    className={`bg-foreground/${opacity} h-8 w-full block`}
-                  />
+                  <span className={`bg-foreground/${opacity} h-8 w-full block`} />
                 </AdminTableCell>
               </AdminTableRow>
             );

@@ -45,9 +45,7 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
               toast.error('The specified root path does not exist.');
               break;
             case 'duplicate-root-path-error':
-              toast.error(
-                'The specified root path has already been added to this account.',
-              );
+              toast.error('The specified root path has already been added to this account.');
               break;
             default:
               toast.error(error.message);
@@ -66,11 +64,7 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
 
   return (
     <>
-      <Button
-        className="px-2 py-1 rounded mr-4 text-xs uppercase"
-        onClick={() => setOpen(true)}
-        variant="outline"
-      >
+      <Button className="px-2 py-1 rounded mr-4 text-xs uppercase" onClick={() => setOpen(true)} variant="outline">
         Change path
       </Button>
 
@@ -80,20 +74,15 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
             <DialogTitle>Update root path</DialogTitle>
             <div className="space-y-4">
               <DialogDescription>
-                When the path changes the indexer will automatically purge old
-                file references from the database because the files no longer
-                exist, then it will find them in their new location and add them
-                to the database.
+                When the path changes the indexer will automatically purge old file references from the database because
+                the files no longer exist, then it will find them in their new location and add them to the database.
               </DialogDescription>
               <p className="block mb-4 text-muted-foreground">
-                If you wish to preserve custom metadata or avoid fully scanning
-                the path again:
+                If you wish to preserve custom metadata or avoid fully scanning the path again:
               </p>
               <ol className="list-decimal list-inside text-muted-foreground">
                 <li className="mb-2">Disable the indexer</li>
-                <li className="mb-2">
-                  Make the changes to your filesystem or docker volume mapping
-                </li>
+                <li className="mb-2">Make the changes to your filesystem or docker volume mapping</li>
                 <li className="mb-2">Save the new root path below</li>
                 <li>Re-enable indexer</li>
               </ol>
@@ -115,11 +104,7 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
               />
             </div>
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit">Update root path</Button>
