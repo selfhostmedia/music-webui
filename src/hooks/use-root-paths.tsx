@@ -46,6 +46,7 @@ export function useRootPaths() {
       await queryClient.invalidateQueries({ queryKey: ROOT_PATHS_QUERY_KEY });
     },
     onError: (error) => {
+      // eslint-disable-next-line no-console
       console.error('Failed to add root path:', error);
     },
   });
@@ -74,6 +75,7 @@ export function useRootPaths() {
       await queryClient.invalidateQueries({ queryKey: ROOT_PATHS_QUERY_KEY });
     },
     onError: (error) => {
+      // eslint-disable-next-line no-console
       console.error('Failed to update root path:', error);
     },
   });
@@ -101,6 +103,7 @@ export function useRootPaths() {
       await queryClient.invalidateQueries({ queryKey: ROOT_PATHS_QUERY_KEY });
     },
     onError: (error) => {
+      // eslint-disable-next-line no-console
       console.error('Failed to delete root path:', error);
     },
   });

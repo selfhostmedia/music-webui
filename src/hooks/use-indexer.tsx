@@ -45,6 +45,7 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
         setEnabled(response.data.configuration.isEnabled);
         setLoadingStatus(false);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Failed to fetch indexer configuration:', error);
       } finally {
         setLoadingStatus(false);
@@ -71,6 +72,7 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
       }
       setEnabled(newStatus);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to toggle indexer configuration:', error);
     } finally {
       setUpdatingStatus(false);
@@ -95,6 +97,7 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
       }
       setIndexerLogs(response.data.logs);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to retrieve indexer logs:', error);
     } finally {
       setLoadingLogs(false);

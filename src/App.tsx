@@ -34,7 +34,7 @@ function App() {
 
   return (
     <div
-      className="w-full min-h-screen overflow-auto"
+      className="w-full min-w-32 min-h-screen overflow-auto"
       style={{
         backgroundColor: 'var(--background)',
         backgroundImage: 'var(--background-image)',

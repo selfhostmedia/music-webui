@@ -28,11 +28,13 @@ export function SystemRotateSessionMasterKeyForm({ className }: { className?: st
       },
     });
     if (error) {
+      // eslint-disable-next-line no-console
       console.error('Error regenerating session master key', error);
       toast.error('An error occurred generating a new master session key');
       return;
     }
     if (!data.success) {
+      // eslint-disable-next-line no-console
       console.error('Failed to generate new session key', data);
       toast.error('An error occurred generating a new master session key');
       return;

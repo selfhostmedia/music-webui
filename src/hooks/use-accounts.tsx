@@ -48,6 +48,7 @@ export function useAccounts() {
       return true;
     },
     onSuccess: invalidateAccounts,
+    // eslint-disable-next-line no-console
     onError: (error) => console.error('Failed to create account:', error),
   });
 
@@ -71,6 +72,7 @@ export function useAccounts() {
       return true;
     },
     onSuccess: invalidateAccounts,
+    // eslint-disable-next-line no-console
     onError: (error) => console.error('Failed to regenerate session key:', error),
   });
 
@@ -96,6 +98,7 @@ export function useAccounts() {
     },
     onSuccess: invalidateAccounts,
     onError: (error) => {
+      // eslint-disable-next-line no-console
       console.error('[use-accounts] Failed to update roles:', error);
     },
   });
@@ -122,6 +125,7 @@ export function useAccounts() {
       return true;
     },
     onSuccess: invalidateAccounts,
+    // eslint-disable-next-line no-console
     onError: (error) => console.error('Failed to reset password:', error),
   });
 
@@ -145,6 +149,7 @@ export function useAccounts() {
       return true;
     },
     onSuccess: invalidateAccounts,
+    // eslint-disable-next-line no-console
     onError: (error) => console.error('Failed to delete account:', error),
   });
 
