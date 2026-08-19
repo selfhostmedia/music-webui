@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
-import type { UserRole, components } from '@/types/api-schema';
+import type { UserRoleEnum, components } from '@/types/api-schema';
 
 type AccountDto = components['schemas']['AdminAccountDto'];
 type CreateAccountBodyDto = components['schemas']['AdminCreateAccountBodyDto'];
@@ -54,7 +54,7 @@ export function useAccounts() {
 
   const regenerateSessionKey = useMutation({
     mutationFn: async (accountId: number) => {
-      const { data, error } = await api.patch('/api/admin/regenerate-user-sessionkey', {
+      const { data, error } = await api.post('/api/admin/regenerate-user-session-key', {
         params: {
           header: api.authHeader(),
           query: { accountId },
@@ -77,7 +77,7 @@ export function useAccounts() {
   });
 
   const updateRoles = useMutation({
-    mutationFn: async (vars: { accountId: number; roles: UserRole[] }) => {
+    mutationFn: async (vars: { accountId: number; roles: UserRoleEnum[] }) => {
       const { data, error } = await api.patch('/api/admin/update-user-roles', {
         params: {
           header: api.authHeader(),
@@ -105,10 +105,10 @@ export function useAccounts() {
 
   const resetPassword = useMutation({
     mutationFn: async (vars: { accountId: number; newPassword: string }) => {
-      const response = await api.patch('/api/admin/reset-user-password', {
+      const response = await api.post('/api/admin/reset-user-password', {
         params: {
           header: api.authHeader(),
-          query: { accountId: vars.accountId },
+          query: { id: vars.accountId },
         },
         body: { newPassword: vars.newPassword },
       });

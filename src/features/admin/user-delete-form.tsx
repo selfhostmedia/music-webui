@@ -14,8 +14,8 @@ import type { components } from '@/types/api-schema';
 
 type UserDto = components['schemas']['AdminAccountDto'];
 type ErrorCodes =
-  | components['schemas']['AdminDeleteAccountBadRequestErrorMessage']
-  | components['schemas']['AdminDeleteAccountNotFoundErrorMessage'];
+  | components['schemas']['AdminDeleteAccountBadRequestErrorMessageEnum']
+  | components['schemas']['AdminDeleteAccountNotFoundErrorMessageEnum'];
 
 export function UserDeleteForm({ user, className }: { user: UserDto; className?: string }) {
   const [open, setOpen] = useState(false);

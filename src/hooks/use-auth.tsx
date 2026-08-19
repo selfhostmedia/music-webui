@@ -9,14 +9,14 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  logout: () => void;
+  clearSessionToken: () => void;
   login: (token: string, remember?: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  logout: () => {},
+  clearSessionToken: () => {},
   login: () => {},
 });
 
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
-  const logout = async () => {
+  const clearSessionToken = async () => {
     await api.delete('/api/user/end-session', {
       params: {
         header: api.authHeader(),
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  return <AuthContext.Provider value={{ user, loading, logout, login }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, loading, clearSessionToken, login }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

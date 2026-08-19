@@ -18,8 +18,8 @@ import { useState } from 'react';
 import type { components } from '@/types/api-schema';
 
 type ErrorCodes =
-  | components['schemas']['AdminCreateRootPathBadRequestErrorMessage']
-  | components['schemas']['AdminCreateRootPathNotFoundErrorMessage'];
+  | components['schemas']['AdminCreateRootPathBadRequestErrorMessageEnum']
+  | components['schemas']['AdminCreateRootPathNotFoundErrorMessageEnum'];
 
 export function RootPathAddForm() {
   const [open, setOpen] = useState(false);

@@ -16,7 +16,7 @@ import api from '@/lib/api';
 export function SystemRotateSessionMasterKeyForm({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { clearSessionToken } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -41,7 +41,7 @@ export function SystemRotateSessionMasterKeyForm({ className }: { className?: st
     }
     setOpen(false);
     try {
-      await logout();
+      await clearSessionToken();
     } catch {
       // expect an error here because the session is now invalid
     } finally {

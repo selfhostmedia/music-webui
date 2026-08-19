@@ -13,7 +13,7 @@ import { useState } from 'react';
 import type { components } from '@/types/api-schema';
 
 type UserDto = components['schemas']['AdminAccountDto'];
-type ErrorCodes = components['schemas']['AdminRegenerateUserSessionKeyNotFoundErrorMessage'];
+type ErrorCodes = components['schemas']['AdminRegenerateUserSessionKeyNotFoundErrorMessageEnum'];
 
 export function UserRotateSessionKeyForm({ user, className }: { user: UserDto; className?: string }) {
   const [open, setOpen] = useState(false);

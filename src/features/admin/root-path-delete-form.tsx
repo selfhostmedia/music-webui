@@ -13,7 +13,7 @@ import { useState } from 'react';
 import type { components } from '@/types/api-schema';
 
 type RootPathDto = components['schemas']['AdminRootPathDto'];
-type ErrorCodes = components['schemas']['AdminDeleteRootPathNotFoundErrorMessage'];
+type ErrorCodes = components['schemas']['AdminDeleteRootPathNotFoundErrorMessageEnum'];
 
 export function RootPathDeleteForm({ rootPath }: { rootPath: RootPathDto }) {
   const [open, setOpen] = useState(false);

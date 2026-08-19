@@ -16,8 +16,8 @@ import { useState } from 'react';
 import type { components } from '@/types/api-schema';
 
 type ErrorCodes =
-  | components['schemas']['AdminUpdateRootPathBadRequestErrorMessage']
-  | components['schemas']['AdminUpdateRootPathNotFoundErrorMessage'];
+  | components['schemas']['AdminUpdateRootPathBadRequestErrorMessageEnum']
+  | components['schemas']['AdminUpdateRootPathNotFoundErrorMessageEnum'];
 
 type RootPathDto = components['schemas']['AdminRootPathDto'];
 

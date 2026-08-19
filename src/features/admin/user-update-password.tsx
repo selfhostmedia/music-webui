@@ -16,8 +16,8 @@ import type { components } from '@/types/api-schema';
 
 type UserDto = components['schemas']['AdminAccountDto'];
 type ErrorCodes =
-  | components['schemas']['AdminResetUserPasswordBadRequestErrorMessage']
-  | components['schemas']['AdminResetUserPasswordNotFoundErrorMessage'];
+  | components['schemas']['AdminResetUserPasswordBadRequestErrorMessageEnum']
+  | components['schemas']['AdminResetUserPasswordNotFoundErrorMessageEnum'];
 
 export function UserUpdatePasswordForm({ user, className }: { user: UserDto; className?: string }) {
   const [open, setOpen] = useState(false);
