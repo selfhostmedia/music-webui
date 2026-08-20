@@ -2,8 +2,7 @@ import createClient, { type Middleware } from 'openapi-fetch';
 import type { paths } from 'src/types/api-schema';
 
 const authHeader = () => {
-  const token =
-    sessionStorage.getItem('jwt-token') || localStorage.getItem('jwt-token');
+  const token = sessionStorage.getItem('jwt-token') || localStorage.getItem('jwt-token');
   return token ? { Authorization: `Bearer ${token}` } : { Authorization: '' };
 };
 

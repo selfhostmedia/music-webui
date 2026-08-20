@@ -1,10 +1,4 @@
-import {
-  existsSync,
-  readFileSync,
-  statSync,
-  unlinkSync,
-  writeFileSync,
-} from 'node:fs';
+import { existsSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import type { Page } from '@playwright/test';
 import type { paths } from 'src/types/api-schema';
 
@@ -41,20 +35,14 @@ export class Pom {
    * @param {String} id The ID of the recording session
    * @returns {Promise<void>}
    */
-  static async cancelRecordingSession(
-    id: string,
-    token?: string,
-  ): Promise<void> {
+  static async cancelRecordingSession(id: string, token?: string): Promise<void> {
     try {
-      await fetch(
-        `http://localhost:9100/v1/api/recorder/terminate-recording-session?id=${id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            authorization: `Bearer ${token || this.SHARED_TOKEN}`,
-          },
+      await fetch(`http://localhost:9100/v1/api/recorder/terminate-recording-session?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          authorization: `Bearer ${token || this.SHARED_TOKEN}`,
         },
-      );
+      });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error);
@@ -121,27 +109,19 @@ export class Pom {
         return true;
       }, Pom.SHARED_TOKEN);
       await this.page.goto('http://localhost:8000/dashboard');
-      await this.page.waitForFunction(() =>
-        document.location.toString().includes('/dashboard'),
-      );
+      await this.page.waitForFunction(() => document.location.toString().includes('/dashboard'));
       return;
     }
     await this.page.goto('http://localhost:8000/guest/signin');
     await this.page.getByText('Sign inEnter your username').click();
-    await this.page
-      .getByPlaceholder('Enter your email address')
-      .fill(params?.email || 'test@testing.localhost');
+    await this.page.getByPlaceholder('Enter your email address').fill(params?.email || 'test@testing.localhost');
     await this.page.getByPlaceholder('Enter your email address').press('Tab');
     await this.page.getByPlaceholder('Enter your password').press('Control+a');
-    await this.page
-      .getByPlaceholder('Enter your password')
-      .fill(params?.password || 'password');
+    await this.page.getByPlaceholder('Enter your password').fill(params?.password || 'password');
     let tokenRequestPromise;
     if (params?.reuseSession) {
       tokenRequestPromise = this.page.waitForRequest(
-        (request) =>
-          request.method() === 'POST' &&
-          request.url().includes('create-session'),
+        (request) => request.method() === 'POST' && request.url().includes('create-session'),
       );
     }
     await this.page.getByPlaceholder('Enter your password').press('Enter');
@@ -153,8 +133,6 @@ export class Pom {
       Pom.SHARED_TOKEN = tokenData.jwtToken;
       writeFileSync(tokenPath, Pom.SHARED_TOKEN);
     }
-    await this.page.waitForFunction(() =>
-      document.location.toString().includes('/dashboard'),
-    );
+    await this.page.waitForFunction(() => document.location.toString().includes('/dashboard'));
   }
 }

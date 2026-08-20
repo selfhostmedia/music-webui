@@ -9,10 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from '@/components/ui/native-select';
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAccounts } from '@/hooks/use-accounts';
@@ -21,8 +18,8 @@ import { useState } from 'react';
 import type { components } from '@/types/api-schema';
 
 type ErrorCodes =
-  | components['schemas']['AdminCreateRootPathBadRequestErrorMessage']
-  | components['schemas']['AdminCreateRootPathNotFoundErrorMessage'];
+  | components['schemas']['AdminCreateRootPathBadRequestErrorMessageEnum']
+  | components['schemas']['AdminCreateRootPathNotFoundErrorMessageEnum'];
 
 export function RootPathAddForm() {
   const [open, setOpen] = useState(false);
@@ -57,9 +54,7 @@ export function RootPathAddForm() {
               toast.error('The specified root path does not exist.');
               break;
             case 'duplicate-root-path-error':
-              toast.error(
-                'The specified root path has already been added to this account.',
-              );
+              toast.error('The specified root path has already been added to this account.');
               break;
             case 'account-not-found-error':
               toast.error('The specified account does not exist.');
@@ -85,11 +80,7 @@ export function RootPathAddForm() {
 
   return (
     <>
-      <Button
-        className="px-2 mb-4 py-1 rounded text-xs uppercase"
-        onClick={() => setOpen(true)}
-        variant="outline"
-      >
+      <Button className="px-2 mb-4 py-1 rounded text-xs uppercase" onClick={() => setOpen(true)} variant="outline">
         <Plus /> Add root path
       </Button>
 
@@ -99,23 +90,15 @@ export function RootPathAddForm() {
             <DialogTitle>Add root path</DialogTitle>
             <DialogDescription>
               <span className="block mb-4">
-                Users can configure their own root paths or you can do it on
-                their behalf.
+                Users can configure their own root paths or you can do it on their behalf.
               </span>
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="accountId">Account</Label>
-              <NativeSelect
-                id="accountId"
-                name="accountId"
-                onChange={handleSelect}
-                className="w-full"
-              >
-                <NativeSelectOption value={0}>
-                  Select an account
-                </NativeSelectOption>
+              <NativeSelect id="accountId" name="accountId" onChange={handleSelect} className="w-full">
+                <NativeSelectOption value={0}>Select an account</NativeSelectOption>
                 {accounts?.map((account) => (
                   <NativeSelectOption key={account.id} value={account.id}>
                     {account.username}
@@ -134,11 +117,7 @@ export function RootPathAddForm() {
               />
             </div>
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit">Add root path</Button>

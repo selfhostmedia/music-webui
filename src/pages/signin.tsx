@@ -9,13 +9,13 @@ import {
   EntryFormLabel,
   EntryFormVerticalGroup,
 } from '@/components';
+import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import api from '@/lib/api';
 import z from 'zod/v3';
-import { toast } from 'sonner';
 
 type FormData = {
   username: string;
@@ -24,14 +24,8 @@ type FormData = {
 };
 
 const schema = z.object({
-  username: z
-    .string()
-    .min(1, { message: 'Username is too short' })
-    .max(255, { message: 'Username is too long' }),
-  password: z
-    .string()
-    .min(1, { message: 'Password is too short' })
-    .max(255, { message: 'Password is too long' }),
+  username: z.string().min(1, { message: 'Username is too short' }).max(255, { message: 'Username is too long' }),
+  password: z.string().min(1, { message: 'Password is too short' }).max(255, { message: 'Password is too long' }),
   remember: z.boolean().optional(),
 });
 
@@ -48,20 +42,15 @@ export default function SignInPage() {
 
   const onSubmit = handleSubmit(async (data: FormData) => {
     try {
-      const { error, data: response } = await api.post(
-        '/api/guest/create-session',
-        {
-          body: {
-            username: data.username,
-            password: data.password,
-            expiresDays: data.remember ? 3650 : 1,
-          },
+      const { error, data: response } = await api.post('/api/guest/create-session', {
+        body: {
+          username: data.username,
+          password: data.password,
+          expiresDays: data.remember ? 3650 : 1,
         },
-      );
+      });
       if (error) {
-        throw error instanceof Error
-          ? error
-          : new Error('An unknown error occurred');
+        throw error instanceof Error ? error : new Error('An unknown error occurred');
       }
       if (!response.success || !response.jwtToken) {
         throw new Error('An unknown error occurred');
@@ -70,10 +59,7 @@ export default function SignInPage() {
       await navigate('/');
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error(
-        'Error signing in:',
-        error instanceof Error ? error.message : error,
-      );
+      console.error('Error signing in:', error instanceof Error ? error.message : error);
       switch (error) {
         case 'invalid-username-error':
           errors.username = {
@@ -97,8 +83,7 @@ export default function SignInPage() {
     <EntryForm onSubmit={onSubmit}>
       <EntryFormHeading text="Sign in" />
       <EntryFormDescription>
-        Administrators can reset passwords through the web interface or via
-        command line.
+        Administrators can reset passwords through the web interface or via command line.
       </EntryFormDescription>
       <EntryFormVerticalGroup>
         <EntryFormLabel text="Username" htmlFor="username" />

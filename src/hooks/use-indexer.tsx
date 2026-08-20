@@ -1,10 +1,4 @@
-import {
-  type ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { type ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import api from '@/lib/api';
 import type { components } from '@/types/api-schema';
 
@@ -16,11 +10,7 @@ interface IndexerContextType {
   isLoadingLogs: boolean;
   isLoadingStatus: boolean;
   isUpdatingStatus: boolean;
-  listIndexerLogs: (
-    accountId?: number,
-    rootPathId?: number,
-    search?: string,
-  ) => Promise<void>;
+  listIndexerLogs: (accountId?: number, rootPathId?: number, search?: string) => Promise<void>;
   toggleStatus: () => Promise<void>;
 }
 
@@ -55,6 +45,7 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
         setEnabled(response.data.configuration.isEnabled);
         setLoadingStatus(false);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Failed to fetch indexer configuration:', error);
       } finally {
         setLoadingStatus(false);
@@ -81,17 +72,14 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
       }
       setEnabled(newStatus);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to toggle indexer configuration:', error);
     } finally {
       setUpdatingStatus(false);
     }
   };
 
-  const listIndexerLogs = async (
-    accountId?: number,
-    rootPathId?: number,
-    search?: string,
-  ) => {
+  const listIndexerLogs = async (accountId?: number, rootPathId?: number, search?: string) => {
     try {
       setLoadingLogs(true);
       const response = await api.get('/api/admin/list-indexer-logs', {
@@ -109,6 +97,7 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
       }
       setIndexerLogs(response.data.logs);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to retrieve indexer logs:', error);
     } finally {
       setLoadingLogs(false);

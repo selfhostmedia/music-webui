@@ -1,3 +1,4 @@
+import { AdminCard, AdminCardContent, AdminCardSubtitle, AdminCardTitle } from '@/components/admin-card';
 import {
   AdminTable,
   AdminTableBody,
@@ -8,7 +9,9 @@ import {
 } from '@/components';
 import { Button } from '@/components/ui/button';
 import { DownloadIcon, LogsIcon, RefreshCcwIcon } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 import { useIndexer } from '@/hooks/use-indexer';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 
 function formatDate(dateString: string) {
   const date = new Date(Date.parse(dateString));
@@ -16,79 +19,40 @@ function formatDate(dateString: string) {
   const diff = now.getTime() - date.getTime();
   if (diff < 60_000) {
     const quantity = Math.floor(diff / 1000);
-    return quantity > 1 ? `${quantity} seconds ago` : `${quantity} second ago`;
+    return quantity > 1 ? (
+      <span title={date.toLocaleString()}>{quantity} seconds ago</span>
+    ) : (
+      <span>{quantity} second ago</span>
+    );
   }
   if (diff < 60 * 60_000) {
     const quantity = Math.floor(diff / 1000 / 60);
-    return quantity > 1 ? `${quantity} minutes ago` : `${quantity} minute ago`;
+    return quantity > 1 ? (
+      <span title={date.toLocaleString()}>{quantity} minutes ago</span>
+    ) : (
+      <span>{quantity} minute ago</span>
+    );
   }
   if (diff < 24 * 60 * 60_000) {
-    const quantity = Math.floor(diff / 1000 / 60 / 24);
-    return quantity > 1 ? `${quantity} hours ago` : `${quantity} hour ago`;
+    const quantity = Math.floor(diff / 1000 / 60 / 60);
+    return quantity > 1 ? (
+      <span title={date.toLocaleString()}>{quantity} hours ago</span>
+    ) : (
+      <span title={date.toLocaleString()}>{quantity} hour ago</span>
+    );
   }
-  const quantity = Math.floor(diff / 1000 / 60);
-  return quantity > 1 ? `${quantity} days ago` : 'yesterday';
+  const quantity = Math.floor(diff / 1000 / 60 / 60 / 24);
+  return quantity > 1 ? (
+    <span title={date.toLocaleString()}>{quantity} days ago</span>
+  ) : (
+    <span title={date.toLocaleString()}>yesterday</span>
+  );
 }
 
 export function IndexerLogsTable() {
   const { isLoadingLogs, indexerLogs, listIndexerLogs } = useIndexer();
-  if (isLoadingLogs && !indexerLogs.length) {
-    const dummyData = {
-      username: '',
-      rootPath: '',
-      message: '',
-    };
-    const dummyRows = [dummyData, dummyData, dummyData];
-    return (
-      <>
-        <Button variant="outline" className="mb-4">
-          <RefreshCcwIcon />
-          Refresh
-        </Button>
-        <AdminTable>
-          <AdminTableHeader>
-            <AdminTableHeaderCell className="w-20">Date</AdminTableHeaderCell>
-            <AdminTableHeaderCell className="w-50">
-              Username
-            </AdminTableHeaderCell>
-            <AdminTableHeaderCell className="w-100">
-              Root path
-            </AdminTableHeaderCell>
-            <AdminTableHeaderCell>Message</AdminTableHeaderCell>
-          </AdminTableHeader>
-          <AdminTableBody>
-            {dummyRows.map((_, index) => {
-              const opacity = index % 2 ? 20 : 10;
-              return (
-                <AdminTableRow key={`dummy-log-${index}`}>
-                  <AdminTableCell>
-                    <span
-                      className={`bg-foreground/${opacity} h-8 w-full block`}
-                    />
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <span
-                      className={`bg-foreground/${opacity} h-8 w-full block`}
-                    />
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <span
-                      className={`bg-foreground/${opacity} h-8 w-full block`}
-                    />
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <span
-                      className={`bg-foreground/${opacity} h-8 w-full block`}
-                    />
-                  </AdminTableCell>
-                </AdminTableRow>
-              );
-            })}
-          </AdminTableBody>
-        </AdminTable>
-      </>
-    );
-  }
+  const isMobile = useIsMobile();
+
   const handleRefresh = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     await listIndexerLogs();
@@ -141,28 +105,6 @@ export function IndexerLogsTable() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    // const win = window.open('about:blank', '_blank');
-    // if (win) {
-    //   win.document.documentElement.innerHTML = `<html>
-    //     <head>
-    //       <title>Indexer logs ${new Date()}</title>
-    //       <style>
-    //         :root {
-    //           color-scheme: light dark;
-    //         }
-    //         body {
-    //             background-color: light-dark(white, black);
-    //             color: light-dark(black, white);
-    //         }
-    //         pre { font-family: mono; font-size: 0.875rem; line-height: 1.25rem }
-    //       </style>
-    //     </head>
-    //       <body>
-    //         <pre>${csv}</pre>
-    //       </body>
-    //   </html>`;
-    //   win.focus();
-    // }
   };
 
   const handleDownloadJson = () => {
@@ -184,12 +126,7 @@ export function IndexerLogsTable() {
     const headings = [`Date`, `User`, `Path`, `Message`];
     const csv = `${headings.join('\t')}\n${indexerLogs
       .map((item) => {
-        const values = [
-          item.date.toString(),
-          item.username || '-',
-          item.rootPath || '-',
-          item.message,
-        ];
+        const values = [item.date.toString(), item.username || '-', item.rootPath || '-', item.message];
         return values.join('\t');
       })
       .join('\n')}`;
@@ -206,61 +143,116 @@ export function IndexerLogsTable() {
     URL.revokeObjectURL(url);
   };
 
+  const cellFiller = (opacity: number) => <span className={`bg-foreground/${opacity} h-8 w-full block`} />;
+  const dummyRows = [
+    {
+      accountId: -1,
+      date: '',
+      username: '',
+      rootPath: '',
+      message: '',
+    },
+    {
+      accountId: -2,
+      date: '',
+      username: '',
+      rootPath: '',
+      message: '',
+    },
+    {
+      accountId: -3,
+      date: '',
+      username: '',
+      rootPath: '',
+      message: '',
+    },
+  ];
+
   return (
     <>
       {isLoadingLogs ? (
-        <Button variant="outline" className="mb-4" disabled>
+        <Button className="mr-2 mb-4" variant="outline" disabled>
           <RefreshCcwIcon className="animate-spin" />
           Loading
         </Button>
       ) : (
-        <Button variant="outline" className="mb-4" onClick={handleRefresh}>
+        <Button className="mr-2 mb-4" variant="outline" onClick={handleRefresh}>
           <RefreshCcwIcon />
           Refresh
         </Button>
       )}
-      <Button variant="outline" onClick={handleViewRaw}>
+      <Button className="mr-2 mb-4" variant="outline" onClick={handleViewRaw}>
         <LogsIcon />
-        View full
+        View
       </Button>
-      <Button variant="outline" onClick={handleDownloadJson}>
+      <Button className="mr-2 mb-4" variant="outline" onClick={handleDownloadJson}>
         <DownloadIcon />
-        Download JSON
+        JSON
       </Button>
-      <Button variant="outline" onClick={handleDownloadCsv}>
+      <Button className="mb-2" variant="outline" onClick={handleDownloadCsv}>
         <DownloadIcon />
-        Download CSV
+        CSV
       </Button>
-      <AdminTable>
-        <AdminTableHeader>
-          <AdminTableHeaderCell className="w-50">Date</AdminTableHeaderCell>
-          <AdminTableHeaderCell className="w-50">Username</AdminTableHeaderCell>
-          <AdminTableHeaderCell className="w-100">
-            Root path
-          </AdminTableHeaderCell>
-          <AdminTableHeaderCell>Message</AdminTableHeaderCell>
-        </AdminTableHeader>
-        <AdminTableBody>
-          {indexerLogs.slice(0, 100).map((log, index) => {
+      {/* Mobile card view */}
+      {isMobile && (
+        <>
+          {(isLoadingLogs ? dummyRows : indexerLogs).map((log, index) => {
+            const opacity = index % 2 === 0 ? 20 : 10;
             return (
-              <AdminTableRow key={`real-log-${index}`}>
-                <AdminTableCell className="text-foreground/50 text-xs">
-                  {formatDate(log.date)}
-                </AdminTableCell>
-                <AdminTableCell className="text-foreground/70 text-xs">
-                  {log.username || '-'}
-                </AdminTableCell>
-                <AdminTableCell className="text-foreground/70 text-xs">
-                  {log.rootPath || '-'}
-                </AdminTableCell>
-                <AdminTableCell className="text-foreground/70 text-xs">
-                  {log.message.replace(log.rootPath, '')}
-                </AdminTableCell>
-              </AdminTableRow>
+              <AdminCard key={`card-${log.accountId}-${index}`}>
+                <AdminCardTitle>{log.date ? formatDate(log.date) : cellFiller(opacity)}</AdminCardTitle>
+                <AdminCardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <AdminCardSubtitle>Username</AdminCardSubtitle>
+                      <p className="text-sm">{log.username || (log.accountId < 0 ? cellFiller(opacity) : '-')}</p>
+                    </div>
+                    <div>
+                      <AdminCardSubtitle>Root path</AdminCardSubtitle>
+                      <p className="text-sm">{log.rootPath || (log.accountId < 0 ? cellFiller(opacity) : '-')}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm">{log.message.replace(log.rootPath, '') || cellFiller(opacity)}</p>
+                </AdminCardContent>
+                <Separator />
+              </AdminCard>
             );
           })}
-        </AdminTableBody>
-      </AdminTable>
+        </>
+      )}
+
+      {/* Desktop table view */}
+      {!isMobile && (
+        <AdminTable>
+          <AdminTableHeader>
+            <AdminTableHeaderCell className="w-50">Date</AdminTableHeaderCell>
+            <AdminTableHeaderCell className="w-50">Username</AdminTableHeaderCell>
+            <AdminTableHeaderCell className="w-100">Root path</AdminTableHeaderCell>
+            <AdminTableHeaderCell>Message</AdminTableHeaderCell>
+          </AdminTableHeader>
+          <AdminTableBody>
+            {(isLoadingLogs ? dummyRows : indexerLogs).map((log, index) => {
+              const opacity = index % 2 === 0 ? 20 : 10;
+              return (
+                <AdminTableRow key={`row-${log.accountId}-${index}`}>
+                  <AdminTableCell className="text-foreground/50 text-xs">
+                    {log.date ? formatDate(log.date) : cellFiller(opacity)}
+                  </AdminTableCell>
+                  <AdminTableCell className="text-foreground/70 text-xs">
+                    {log.username || (log.accountId < 0 ? cellFiller(opacity) : '-')}
+                  </AdminTableCell>
+                  <AdminTableCell className="text-foreground/70 text-xs">
+                    {log.rootPath || (log.accountId < 0 ? cellFiller(opacity) : '-')}
+                  </AdminTableCell>
+                  <AdminTableCell className="text-foreground/70 text-xs">
+                    {log.message.replace(log.rootPath, '') || cellFiller(opacity)}
+                  </AdminTableCell>
+                </AdminTableRow>
+              );
+            })}
+          </AdminTableBody>
+        </AdminTable>
+      )}
     </>
   );
 }

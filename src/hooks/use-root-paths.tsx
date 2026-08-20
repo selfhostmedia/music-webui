@@ -26,13 +26,7 @@ export function useRootPaths() {
   });
 
   const createRootPathMutation = useMutation({
-    mutationFn: async ({
-      accountId,
-      body,
-    }: {
-      accountId: number;
-      body: CreateBodyDto;
-    }) => {
+    mutationFn: async ({ accountId, body }: { accountId: number; body: CreateBodyDto }) => {
       const { data, error } = await api.post('/api/admin/create-root-path', {
         params: { header: api.authHeader(), query: { accountId } },
         body,
@@ -52,18 +46,13 @@ export function useRootPaths() {
       await queryClient.invalidateQueries({ queryKey: ROOT_PATHS_QUERY_KEY });
     },
     onError: (error) => {
+      // eslint-disable-next-line no-console
       console.error('Failed to add root path:', error);
     },
   });
 
   const updateRootPathMutation = useMutation({
-    mutationFn: async ({
-      rootPathId,
-      body,
-    }: {
-      rootPathId: number;
-      body: UpdateBodyDto;
-    }) => {
+    mutationFn: async ({ rootPathId, body }: { rootPathId: number; body: UpdateBodyDto }) => {
       const { data, error } = await api.patch(`/api/admin/update-root-path`, {
         params: {
           header: api.authHeader(),
@@ -86,6 +75,7 @@ export function useRootPaths() {
       await queryClient.invalidateQueries({ queryKey: ROOT_PATHS_QUERY_KEY });
     },
     onError: (error) => {
+      // eslint-disable-next-line no-console
       console.error('Failed to update root path:', error);
     },
   });
@@ -113,6 +103,7 @@ export function useRootPaths() {
       await queryClient.invalidateQueries({ queryKey: ROOT_PATHS_QUERY_KEY });
     },
     onError: (error) => {
+      // eslint-disable-next-line no-console
       console.error('Failed to delete root path:', error);
     },
   });

@@ -20,13 +20,7 @@ export function EntryForm({ ...rest }) {
   );
 }
 
-export function EntryFormButton({
-  text,
-  type,
-}: {
-  text: string;
-  type: 'submit' | 'button' | 'reset';
-}) {
+export function EntryFormButton({ text, type }: { text: string; type: 'submit' | 'button' | 'reset' }) {
   return (
     <button
       className="
@@ -47,29 +41,19 @@ export function EntryFormButton({
   );
 }
 
-export function EntryFormDescription({
-  children,
-}: {
-  children?: React.ReactNode;
-}) {
+export function EntryFormDescription({ children }: { children?: React.ReactNode }) {
   return <p className="m-0 p-0 mb-4 text-sm text-foreground/80">{children}</p>;
 }
 
 export function EntryFormError({ text }: { text?: string }) {
-  return (
-    <span className="inline-block text-xs text-red-500">{text || ' '}</span>
-  );
+  return <span className="inline-block text-xs text-red-500">{text || ' '}</span>;
 }
 
 export function EntryFormHeading({ text }: { text: string }) {
   return <h1 className="text-xl m-0 p-0 mb-2 text-foreground">{text}</h1>;
 }
 
-export function EntryFormHorizontalGroup({
-  children,
-}: {
-  children?: React.ReactNode;
-}) {
+export function EntryFormHorizontalGroup({ children }: { children?: React.ReactNode }) {
   return <div className="flex flex-row space-x-2">{children}</div>;
 }
 
@@ -94,13 +78,7 @@ export function EntryFormInput({
   );
 }
 
-export function EntryFormLabel({
-  text,
-  htmlFor,
-}: {
-  text: string;
-  htmlFor: string;
-}) {
+export function EntryFormLabel({ text, htmlFor }: { text: string; htmlFor: string }) {
   return (
     <label className="text-sm font-light cursor-pointer" htmlFor={htmlFor}>
       {text}
@@ -127,10 +105,6 @@ export function EntryFormLink({
   );
 }
 
-export function EntryFormVerticalGroup({
-  children,
-}: {
-  children?: React.ReactNode;
-}) {
+export function EntryFormVerticalGroup({ children }: { children?: React.ReactNode }) {
   return <div className="flex flex-col space-y-1">{children}</div>;
 }

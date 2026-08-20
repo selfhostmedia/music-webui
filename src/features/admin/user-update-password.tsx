@@ -16,16 +16,10 @@ import type { components } from '@/types/api-schema';
 
 type UserDto = components['schemas']['AdminAccountDto'];
 type ErrorCodes =
-  | components['schemas']['AdminResetUserPasswordBadRequestErrorMessage']
-  | components['schemas']['AdminResetUserPasswordNotFoundErrorMessage'];
+  | components['schemas']['AdminResetUserPasswordBadRequestErrorMessageEnum']
+  | components['schemas']['AdminResetUserPasswordNotFoundErrorMessageEnum'];
 
-export function UserUpdatePasswordForm({
-  user,
-  className,
-}: {
-  user: UserDto;
-  className?: string;
-}) {
+export function UserUpdatePasswordForm({ user, className }: { user: UserDto; className?: string }) {
   const [open, setOpen] = useState(false);
   const { resetPassword } = useAccounts();
   const [formData, setFormData] = useState({
@@ -90,8 +84,7 @@ export function UserUpdatePasswordForm({
           <DialogHeader>
             <DialogTitle>Reset user password</DialogTitle>
             <DialogDescription>
-              After resetting the password, the user will be required to log in
-              again with the new password.
+              After resetting the password, the user will be required to log in again with the new password.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -118,11 +111,7 @@ export function UserUpdatePasswordForm({
               />
             </div>
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="destructive">

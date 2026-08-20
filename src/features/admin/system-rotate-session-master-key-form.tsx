@@ -13,40 +13,35 @@ import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import api from '@/lib/api';
 
-export function SystemRotateSessionMasterKeyForm({
-  className,
-}: {
-  className?: string;
-}) {
+export function SystemRotateSessionMasterKeyForm({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { clearSessionToken } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { data, error } = await api.post(
-      '/api/admin/regenerate-master-session-key',
-      {
-        params: {
-          header: {
-            ...api.authHeader(),
-          },
+    const { data, error } = await api.post('/api/admin/regenerate-master-session-key', {
+      params: {
+        header: {
+          ...api.authHeader(),
         },
       },
-    );
+    });
     if (error) {
+      // eslint-disable-next-line no-console
       console.error('Error regenerating session master key', error);
       toast.error('An error occurred generating a new master session key');
       return;
     }
     if (!data.success) {
+      // eslint-disable-next-line no-console
       console.error('Failed to generate new session key', data);
       toast.error('An error occurred generating a new master session key');
       return;
     }
     setOpen(false);
     try {
-      await logout();
+      await clearSessionToken();
     } catch {
       // expect an error here because the session is now invalid
     } finally {
@@ -69,18 +64,13 @@ export function SystemRotateSessionMasterKeyForm({
           <DialogHeader>
             <DialogTitle>Terminate all sessions</DialogTitle>
             <DialogDescription>
-              This will immediately end all sessions for all users and devices.
-              Each user and device will need to sign in again. You will be
-              redirected to the login page.
+              This will immediately end all sessions for all users and devices. Each user and device will need to sign
+              in again. You will be redirected to the login page.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="default">

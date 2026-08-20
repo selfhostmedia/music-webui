@@ -14,16 +14,10 @@ import type { components } from '@/types/api-schema';
 
 type UserDto = components['schemas']['AdminAccountDto'];
 type ErrorCodes =
-  | components['schemas']['AdminDeleteAccountBadRequestErrorMessage']
-  | components['schemas']['AdminDeleteAccountNotFoundErrorMessage'];
+  | components['schemas']['AdminDeleteAccountBadRequestErrorMessageEnum']
+  | components['schemas']['AdminDeleteAccountNotFoundErrorMessageEnum'];
 
-export function UserDeleteForm({
-  user,
-  className,
-}: {
-  user: UserDto;
-  className?: string;
-}) {
+export function UserDeleteForm({ user, className }: { user: UserDto; className?: string }) {
   const [open, setOpen] = useState(false);
   const { deleteAccount } = useAccounts();
 
@@ -43,9 +37,7 @@ export function UserDeleteForm({
             toast.error('The specified account ID is invalid.');
             break;
           case 'account-only-admin-error':
-            toast.error(
-              'You must create a new admin account before deleting this one.',
-            );
+            toast.error('You must create a new admin account before deleting this one.');
             break;
           default:
             toast.error(error.message);
@@ -70,17 +62,13 @@ export function UserDeleteForm({
           <DialogHeader>
             <DialogTitle>Delete account</DialogTitle>
             <DialogDescription>
-              Deleting a user will erase the account and all associated data
-              from the database. This will not delete any files from your disk.
+              Deleting a user will erase the account and all associated data from the database. This will not delete any
+              files from your disk.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="destructive">

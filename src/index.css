@@ -1,7 +1,7 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/inter";
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/inter';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -10,9 +10,13 @@
   src: url('/public/fonts/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
 }
 
-html, body, #root { height: 100% }
+html,
+body,
+#root {
+  height: 100%;
+}
 
-#root { 
+#root {
   min-height: 100vh;
 }
 
@@ -22,7 +26,6 @@ body {
   font-weight: 400;
   font-style: normal;
 }
-
 
 @theme inline {
   --font-heading: var(--font-sans);
@@ -150,7 +153,7 @@ body {
     @apply font-sans;
   }
   button:not(:disabled),
-  [role="button"]:not(:disabled) {
+  [role='button']:not(:disabled) {
     cursor: pointer;
   }
 }

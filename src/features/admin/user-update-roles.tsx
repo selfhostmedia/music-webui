@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { UserRole } from '@/types/api-schema';
+import { UserRoleEnum } from '@/types/api-schema';
 import { toast } from 'sonner';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useState } from 'react';
@@ -17,16 +17,10 @@ import type { components } from '@/types/api-schema';
 
 type UserDto = components['schemas']['AdminAccountDto'];
 type ErrorCodes =
-  | components['schemas']['AdminUpdateUserRolesBadRequestErrorMessage']
-  | components['schemas']['AdminUpdateUserRolesNotFoundErrorMessage'];
+  | components['schemas']['AdminUpdateUserRolesBadRequestErrorMessageEnum']
+  | components['schemas']['AdminUpdateUserRolesNotFoundErrorMessageEnum'];
 
-export function UserUpdateRolesForm({
-  user,
-  className,
-}: {
-  user: UserDto;
-  className?: string;
-}) {
+export function UserUpdateRolesForm({ user, className }: { user: UserDto; className?: string }) {
   const [open, setOpen] = useState(false);
   const { updateRoles } = useAccounts();
   const [formData, setFormData] = useState({ roles: user.roles });
@@ -46,9 +40,7 @@ export function UserUpdateRolesForm({
           const message: ErrorCodes = error.message as ErrorCodes;
           switch (message) {
             case 'account-only-admin-error':
-              toast.error(
-                'You must create another administrator before removing this permission.',
-              );
+              toast.error('You must create another administrator before removing this permission.');
               break;
             case 'account-not-found-error':
               toast.error('The specified account does not exist.');
@@ -66,11 +58,9 @@ export function UserUpdateRolesForm({
     setOpen(false);
   };
 
-  const toggleStatus = (role: UserRole) => {
+  const toggleStatus = (role: UserRoleEnum) => {
     setFormData((prev) => {
-      const newRoles = prev.roles.includes(role)
-        ? prev.roles.filter((r) => r !== role)
-        : [...prev.roles, role];
+      const newRoles = prev.roles.includes(role) ? prev.roles.filter((r) => r !== role) : [...prev.roles, role];
       return { ...prev, roles: newRoles };
     });
   };
@@ -89,34 +79,28 @@ export function UserUpdateRolesForm({
         <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
             <DialogTitle>Update user roles</DialogTitle>
-            <DialogDescription>
-              Grant or revoke permissions for the user account.
-            </DialogDescription>
+            <DialogDescription>Grant or revoke permissions for the user account.</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className={`flex flex-row space-x-2`}>
               <Switch
                 id="admin-role"
-                checked={formData.roles.includes(UserRole.admin)}
-                onCheckedChange={() => toggleStatus(UserRole.admin)}
+                checked={formData.roles.includes(UserRoleEnum.admin)}
+                onCheckedChange={() => toggleStatus(UserRoleEnum.admin)}
               />
               <Label>Administrator</Label>
             </div>
             <div className={`flex flex-row space-x-2`}>
               <Switch
                 id="user-role"
-                checked={formData.roles.includes(UserRole.user)}
-                onCheckedChange={() => toggleStatus(UserRole.user)}
+                checked={formData.roles.includes(UserRoleEnum.user)}
+                onCheckedChange={() => toggleStatus(UserRoleEnum.user)}
               />
               <Label>User</Label>
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="default">
