@@ -112,7 +112,7 @@ jobs:
           exit 1
 
       - name: Run Playwright tests
-        run: DEBUG=* npm run test -- --project=${{ matrix.project }}
+        run: npm run test -- --project=${{ matrix.project }}
 
       - name: Backend debugging logs
         if: failure()
