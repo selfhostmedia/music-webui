@@ -61,7 +61,7 @@ jobs:
           exit 1
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --workers 1
 
       - name: Backend debugging logs
         if: failure()
