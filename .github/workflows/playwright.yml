@@ -23,8 +23,8 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: |
-            $RUNNER_TEMP/music-server/package-lock.json
-            $GITHUB_WORKSPACE/package-lock.json
+            ${{ runner.temp }}/music-server/package-lock.json
+            package-lock.json
 
       - name: Checkout matching branch in music-server
         run: |
