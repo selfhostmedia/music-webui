@@ -17,6 +17,17 @@ jobs:
         run: |
           git clone https://github.com/${{ github.repository_owner }}/music-server.git ../music-server
 
+      - name: Checkout matching branch in music-server
+        run: |
+          cd ../music-server
+          # Try to checkout the same branch as the current workflow
+          if git rev-parse --verify origin/${{ github.ref_name }} > /dev/null 2>&1; then
+            echo "Checking out matching branch: ${{ github.ref_name }}"
+            git checkout ${{ github.ref_name }}
+          else
+            echo "No matching branch found, using default branch"
+          fi
+
       - name: Install music-server dependencies
         run: npm ci
         working-directory: ../music-server
