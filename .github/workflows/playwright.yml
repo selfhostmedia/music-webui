@@ -24,11 +24,11 @@ jobs:
 
       - name: Clone music-server repo
         run: |
-          git clone https://github.com/${{ github.repository_owner }}/music-server.git ../music-server
+          git clone https://github.com/${{ github.repository_owner }}/music-server.git $RUNNER_TEMP/music-server
 
       - name: Checkout matching branch in music-server
         run: |
-          cd ../music-server
+          cd $RUNNER_TEMP/music-server
           # Try to checkout the same branch as the current workflow
           if git rev-parse --verify origin/${{ github.ref_name }} > /dev/null 2>&1; then
             echo "Checking out matching branch: ${{ github.ref_name }}"
@@ -39,7 +39,7 @@ jobs:
 
       - name: Install music-server dependencies
         run: npm ci
-        working-directory: ../music-server
+        working-directory: $RUNNER_TEMP/music-server
 
       - name: Start backend
         run: |
@@ -47,7 +47,7 @@ jobs:
           : > "$LOG_FILE"
           npm run start:test > "$LOG_FILE" 2>&1 &
           echo $! > "$RUNNER_TEMP/api.pid"
-        working-directory: ../music-server
+        working-directory: $RUNNER_TEMP/music-server
 
       - name: Wait for backend to start
         run: |
