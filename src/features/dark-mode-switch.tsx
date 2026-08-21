@@ -1,53 +1,41 @@
 import { Moon, Sun } from 'lucide-react';
 import { Switch } from '../components/ui/switch';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 
 export function DarkModeSwitch({
   className,
-  onClick,
+  onChange,
   ...rest
-}: { className?: string; onClick?: () => void } & React.InputHTMLAttributes<HTMLInputElement>) {
-  const [isDark, setIsDark] = useState(true);
-  const systemPrefersDark = useMediaQuery(
-    {
-      query: '(prefers-color-scheme: dark)',
-    },
-    undefined,
-    (isSystemDark) => setIsDark(isSystemDark),
-  );
+}: {
+  className?: string;
+  onChange?: () => void;
+} & React.InputHTMLAttributes<HTMLInputElement>) {
+  const [isDark, setIsDark] = useState<boolean | undefined>(undefined);
 
-  const clickHandler = () => {
-    if (onClick) {
-      onClick();
-    }
-    setIsDark(!isDark);
+  const systemPrefersDark = useMediaQuery({
+    query: '(prefers-color-scheme: dark)',
+  });
+
+  const applyDarkMode = isDark ?? systemPrefersDark;
+
+  useEffect(() => {
+    document.body.classList.toggle('dark', applyDarkMode);
+  }, [applyDarkMode]);
+
+  const clickHandler = (checked: boolean) => {
+    setIsDark(checked);
+    document.body.classList.toggle('dark', checked);
+    onChange?.();
   };
 
-  const applyDarkMode = useMemo(
-    () => (isDark === undefined ? !!systemPrefersDark : isDark),
-    [isDark, systemPrefersDark],
-  );
-
-  const toggleDarkMode = () => {
-    if (applyDarkMode) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  };
-  useEffect(toggleDarkMode, [applyDarkMode]);
   return (
     <div className={`flex flex-row space-x-2 ${className ?? ''}`} {...rest}>
-      <Sun className="w-4 h-4 mt-0.5" />
-      <Switch
-        role="button"
-        aria-label="Toggle dark mode"
-        id="dark-mode"
-        checked={isDark}
-        onCheckedChange={clickHandler}
-      />
-      <Moon className="w-4 h-4 mt-0.5" />
+      <Sun className="mt-0.5 h-4 w-4" />
+
+      <Switch role="button" aria-label="Toggle dark mode" checked={applyDarkMode} onCheckedChange={clickHandler} />
+
+      <Moon className="mt-0.5 h-4 w-4" />
     </div>
   );
 }

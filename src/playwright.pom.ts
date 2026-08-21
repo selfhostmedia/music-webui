@@ -17,7 +17,7 @@ export class Pom {
     if (responsiveMode) {
       await this.page.getByRole('button', { name: 'Toggle account menu' }).click();
     await this.page.waitForTimeout(500);
-      await this.page.waitForSelector(`a[aria-label="${name}"]`);
+      await this.page.locator(`a[aria-label="${name}"]`).waitFor({ state: 'visible' });
       return this.page.getByRole('link', { name });
     }
     return this.page.getByRole('link', { name });
@@ -29,8 +29,8 @@ export class Pom {
       await this.page.getByRole('button', { name: 'Toggle account menu' }).click();
       await this.page.waitForTimeout(500);
     }
-    await this.page.waitForSelector('button[aria-label="Toggle dark mode"]');
-    await this.page.getByRole('button', { name: 'Toggle dark mode' }).click();
+    await this.page.locator('button[aria-label="Toggle dark mode"]').waitFor({ state: 'visible' });
+    await this.page.locator('button[aria-label="Toggle dark mode"]').click();
     await this.page.waitForTimeout(500);
   }
 
@@ -43,7 +43,7 @@ export class Pom {
   }
 
   async navigateToAdmin(): Promise<void> {
-    await (await this.findNavigationLink('Admin')).click();
+    await (await this.findNavigationLink('Administration')).click();
     await this.page.waitForURL('/admin');
   }
 

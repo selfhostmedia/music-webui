@@ -40,16 +40,16 @@ export function Navbar() {
       {/* Desktop secondary menu */}
       {!isMobile && (
         <nav className="absolute right-1 top-3 items-center flex">
-          <Link className={linkClassName} to="/admin">
+          <Link className={linkClassName} to="/admin" aria-label="Administration">
             Admin
           </Link>
-          <Link className={linkClassName} to="/preferences">
+          <Link className={linkClassName} to="/preferences" aria-label="User preferences">
             Account
           </Link>
-          <Link className={linkClassName} to="/signout">
+          <Link className={linkClassName} to="/signout" aria-label="Sign out">
             Sign out
           </Link>
-          <DarkModeSwitch className="ml-2" />
+          <DarkModeSwitch className="ml-2" aria-label="Toggle dark mode" />
         </nav>
       )}
       {/* Mobile menu button and menu */}
@@ -72,16 +72,16 @@ export function Navbar() {
           className={`absolute right-3 top-12 z-10 flex min-w-32 flex-col rounded-lg 
             border border-primary/20 bg-background p-2 pb-4 shadow-lg`}
         >
-          <Link className={linkClassName} to="/admin" onClick={closeMobileMenu}>
+          <Link className={linkClassName} to="/admin" onClick={closeMobileMenu} aria-label="Administration">
             Admin
           </Link>
-          <Link className={linkClassName} to="/preferences" onClick={closeMobileMenu}>
+          <Link className={linkClassName} to="/preferences" onClick={closeMobileMenu} aria-label="User preferences">
             Preferences
           </Link>
-          <Link className={linkClassName} to="/signout" onClick={closeMobileMenu}>
+          <Link className={linkClassName} to="/signout" onClick={closeMobileMenu} aria-label="Sign out">
             Sign out
           </Link>
-          <DarkModmeSwitch className="ml-2 mt-2" onClick={closeMobileMenu} />
+          <DarkModeSwitch className="ml-2 mt-2" onChange={closeMobileMenu} aria-label="Toggle dark mode" />
         </nav>
       )}
     </header>
