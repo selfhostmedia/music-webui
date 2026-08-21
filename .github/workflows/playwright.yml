@@ -19,8 +19,8 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: |
-            ../music-server/package-lock.json
-            ./package-lock.json
+            $RUNNER_TEMP/music-server/package-lock.json
+            `pwd`/package-lock.json
 
       - name: Clone music-server repo
         run: |
