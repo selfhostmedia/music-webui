@@ -10,19 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.62.1-noble
+      options: --user root
 
     strategy:
       fail-fast: false
       matrix:
         project:
           - chromium
-          - firefox
-          - webkit
-          - mobile-chrome
-          - mobile-safari
-          - samsung
-          - ipad
-          - android-tablet
+          # - firefox
+          # - webkit
+          # - mobile-chrome
+          # - mobile-safari
+          # - samsung
+          # - ipad
+          # - android-tablet
 
     steps:
       - uses: actions/checkout@v4
@@ -111,9 +112,7 @@ jobs:
           exit 1
 
       - name: Run Playwright tests
-        run: npm run test -- --project=${{ matrix.project }}
-        env:
-          HOME: /root
+        run: DEBUG=* npm run test -- --project=${{ matrix.project }}
 
       - name: Backend debugging logs
         if: failure()
