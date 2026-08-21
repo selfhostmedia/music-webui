@@ -12,7 +12,7 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.48.0-noble
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
@@ -38,7 +38,7 @@ jobs:
         working-directory: ../music-server
 
       - name: Start test stack (backend + db)
-        run: npm run start:test > "$RUNNER_TEMP/api.log" 2>&1 &
+        run: npm run start:test # > "$RUNNER_TEMP/api.log" 2>&1 &
         working-directory: ../music-server
 
       - name: Wait for backend to start
