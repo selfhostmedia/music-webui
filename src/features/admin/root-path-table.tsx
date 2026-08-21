@@ -75,10 +75,13 @@ export function RootPathTable() {
     <>
       {/* Mobile card view */}
       {isMobile && (
-        <>
+        <div role="list" aria-label="Root paths">
           {(isLoading ? dummyRows : rootPaths).map((rootPath) => {
+            const ariaLabel = `Root path for ${
+              rootPath.username ? `${rootPath.username} ${rootPath.rootPath}` : 'loading'
+            }`;
             return (
-              <AdminCard key={`card-${rootPath.id}`}>
+              <AdminCard key={`card-${rootPath.id}`} role="row" aria-label={ariaLabel}>
                 <AdminCardTitle>{rootPath.username}</AdminCardTitle>
                 <AdminCardContent>
                   <div>
@@ -104,11 +107,11 @@ export function RootPathTable() {
               </AdminCard>
             );
           })}
-        </>
+        </div>
       )}
       {/* Desktop table view */}
       {!isMobile && (
-        <AdminTable>
+        <AdminTable role="table" aria-label="Root paths">
           <AdminTableHeader>
             <AdminTableHeaderCell className="w-50">Username</AdminTableHeaderCell>
             <AdminTableHeaderCell className="w-100">Path</AdminTableHeaderCell>
@@ -119,8 +122,11 @@ export function RootPathTable() {
           <AdminTableBody>
             {(isLoading ? dummyRows : rootPaths).map((rootPath, index) => {
               const opacity = index % 2 === 0 ? 20 : 10;
+              const ariaLabel = `Root path for ${
+                rootPath.username ? `${rootPath.username} ${rootPath.rootPath}` : 'loading'
+              }`;
               return (
-                <AdminTableRow key={`row-${rootPath.id}`}>
+                <AdminTableRow key={`row-${rootPath.id}`} role="row" aria-label={ariaLabel}>
                   <AdminTableCell>{rootPath.username || cellFiller(opacity)}</AdminTableCell>
                   <AdminTableCell>{rootPath.rootPath || cellFiller(opacity)}</AdminTableCell>
                   <AdminTableCell>

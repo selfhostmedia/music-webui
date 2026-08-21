@@ -4426,7 +4426,7 @@ export interface operations {
     parameters: {
       query: {
         /** @description The ID of the account to create the root path for. */
-        accountId: number;
+        id: number;
       };
       header: {
         /** @description Bearer token for authentication */
@@ -4474,7 +4474,7 @@ export interface operations {
     parameters: {
       query: {
         /** @description The ID of the account to be deleted. */
-        accountId: number;
+        id: number;
       };
       header: {
         /** @description Bearer token for authentication */
@@ -5517,6 +5517,7 @@ export enum UserRoleEnum {
   admin = 'admin',
 }
 export enum AdminCreateAccountBadRequestErrorMessageEnum {
+  invalid_role_error = 'invalid-role-error',
   invalid_user_role_error = 'invalid-user-role-error',
   invalid_username_error = 'invalid-username-error',
   invalid_username_length_error = 'invalid-username-length-error',

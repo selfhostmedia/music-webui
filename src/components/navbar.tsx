@@ -1,5 +1,5 @@
 import { Button } from './ui/button';
-import { DarkModeSwitch } from './dark-mode-switch';
+import { DarkModeSwitch } from '../features/dark-mode-switch';
 import { Link } from 'react-router';
 import { Menu } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-is-mobile';

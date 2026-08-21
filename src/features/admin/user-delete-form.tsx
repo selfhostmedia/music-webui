@@ -54,7 +54,7 @@ export function UserDeleteForm({ user, className }: { user: UserDto; className?:
         onClick={() => setOpen(true)}
         variant="destructive"
       >
-        Delete user
+        Delete account
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -72,7 +72,7 @@ export function UserDeleteForm({ user, className }: { user: UserDto; className?:
                 Cancel
               </Button>
               <Button type="submit" variant="destructive">
-                Delete account
+                Delete user
               </Button>
             </DialogFooter>
           </form>

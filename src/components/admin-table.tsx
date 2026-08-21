@@ -1,9 +1,14 @@
 import React from 'react';
 
-export function AdminTable({ children }: { children: React.ReactNode }) {
+export function AdminTable({
+  children,
+  ...rest
+}: { children: React.ReactNode } & React.HTMLAttributes<HTMLTableElement>) {
   return (
     <div className="w-full overflow-x-auto">
-      <table className="w-full table-auto border-collapse border border-foreground/10">{children}</table>
+      <table className="w-full table-auto border-collapse border border-foreground/10" {...rest}>
+        {children}
+      </table>
     </div>
   );
 }
@@ -24,8 +29,11 @@ export function AdminTableHeaderCell({ children, className }: { children: React.
   );
 }
 
-export function AdminTableRow({ children }: { children: React.ReactNode }) {
-  return <tr>{children}</tr>;
+export function AdminTableRow({
+  children,
+  ...rest
+}: { children: React.ReactNode } & React.HTMLAttributes<HTMLTableRowElement>) {
+  return <tr {...rest}>{children}</tr>;
 }
 
 export function AdminTableCell({ children, className }: { children: React.ReactNode; className?: string }) {

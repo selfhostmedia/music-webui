@@ -16,6 +16,8 @@ export function IndexerToggle({
   return (
     <div className={`flex flex-row space-x-2 ${className ?? ''}`} {...rest}>
       <Switch
+        role="button"
+        aria-label="Toggle indexer"
         checked={isEnabled}
         onCheckedChange={() => handleSubmit(new Event('submit') as unknown as React.FormEvent<HTMLFormElement>)}
       />

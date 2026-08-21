@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
+import { Controller, useForm } from 'react-hook-form';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { FormValidationError } from '@/components/form-validation-error';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
@@ -8,30 +10,77 @@ import { UserRoleEnum } from '@/types/api-schema';
 import { toast } from 'sonner';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod/v3';
 import type { components } from '@/types/api-schema';
 
 type ErrorCodes = components['schemas']['AdminCreateAccountBadRequestErrorMessageEnum'];
 
+type FormData = {
+  username: string;
+  password: string;
+  confirmPassword: string;
+  roles: UserRoleEnum[];
+};
+
+const schema = z
+  .object({
+    username: z
+      .string()
+      .refine((val) => val.length > 0, {
+        message: 'Username is required',
+      })
+      .refine((val) => val.length >= 1, {
+        message: 'Username is too short',
+      })
+      .refine((val) => val.length <= 255, {
+        message: 'Username is too long',
+      }),
+    password: z
+      .string()
+      .refine((val) => val.length > 0, {
+        message: 'Password is required',
+      })
+      .refine((val) => val.length >= 1, {
+        message: 'Password is too short',
+      })
+      .refine((val) => val.length <= 255, {
+        message: 'Password is too long',
+      }),
+    confirmPassword: z
+      .string()
+      .refine((val) => val.length > 0, {
+        message: 'Confirm password is required',
+      })
+      .refine((val) => val.length >= 1, {
+        message: 'Confirm password is too short',
+      })
+      .refine((val) => val.length <= 255, {
+        message: 'Confirm password is too long',
+      }),
+    roles: z.array(z.nativeEnum(UserRoleEnum)).min(1, { message: 'At least one role must be selected.' }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+  });
+
 export function UserAddForm({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const { createAccount } = useAccounts();
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    confirmPassword: '',
-    roles: [] as UserRoleEnum[],
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    register,
+    setError,
+  } = useForm<FormData>({
+    defaultValues: {
+      roles: [],
+    },
+    resolver: zodResolver(schema),
   });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-    if (!formData.roles.length) {
-      toast.error('Please select at least one role.');
-      return;
-    }
+  const onSubmit = handleSubmit(async (formData: FormData) => {
     await createAccount(
       {
         username: formData.username,
@@ -41,18 +90,25 @@ export function UserAddForm({ className }: { className?: string }) {
       {
         onSuccess: () => {
           setOpen(false);
+          toast.success('Account created successfully. The user will need to log in with the new password.');
         },
         onError: (error) => {
           const message: ErrorCodes = error.message as ErrorCodes;
           switch (message) {
+            case 'invalid-username-not-unique-error':
+              setError('username', { type: 'manual', message: 'User already exists.' });
+              break;
+            case 'invalid-role-error':
+              setError('roles', { type: 'manual', message: 'Invalid role specified.' });
+              break;
             case 'invalid-user-role-error':
-              toast.error('No roles were specified for the account.');
+              setError('roles', { type: 'manual', message: 'At least one role must be selected.' });
               break;
             case 'invalid-password-error':
-              toast.error('The specified password is invalid.');
+              setError('password', { type: 'manual', message: 'Invalid password specified.' });
               break;
             case 'invalid-password-length-error':
-              toast.error('The new password length is invalid.');
+              setError('password', { type: 'manual', message: 'Password length is invalid.' });
               break;
             default:
               toast.error(error.message);
@@ -61,19 +117,10 @@ export function UserAddForm({ className }: { className?: string }) {
         },
       },
     );
-    setOpen(false);
-  };
+  });
 
-  const toggleStatus = (role: UserRoleEnum) => {
-    setFormData((prev) => {
-      const newRoles = prev.roles.includes(role) ? prev.roles.filter((r) => r !== role) : [...prev.roles, role];
-      return { ...prev, roles: newRoles };
-    });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const toggleRole = (currentRoles: UserRoleEnum[], role: UserRoleEnum) => {
+    return currentRoles.includes(role) ? currentRoles.filter((r: UserRoleEnum) => r !== role) : [...currentRoles, role];
   };
 
   return (
@@ -91,63 +138,69 @@ export function UserAddForm({ className }: { className?: string }) {
           <DialogHeader>
             <DialogTitle>Add user account</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className={`flex flex-row space-x-2`}>
-              <Switch
-                id="admin-role"
-                checked={formData.roles.includes(UserRoleEnum.admin)}
-                onCheckedChange={() => toggleStatus(UserRoleEnum.admin)}
-              />
-              <Label>Administrator</Label>
-            </div>
-            <div className={`flex flex-row space-x-2`}>
-              <Switch
-                id="user-role"
-                checked={formData.roles.includes(UserRoleEnum.user)}
-                onCheckedChange={() => toggleStatus(UserRoleEnum.user)}
-              />
-              <Label>User</Label>
-            </div>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <Controller
+              name="roles"
+              control={control}
+              render={({ field }) => (
+                <>
+                  <div className={`flex flex-row space-x-2`}>
+                    <Switch
+                      id="admin-role"
+                      checked={field.value.includes(UserRoleEnum.admin)}
+                      onCheckedChange={() => field.onChange(toggleRole(field.value, UserRoleEnum.admin))}
+                    />
+                    <Label htmlFor="admin-role">Administrator</Label>
+                  </div>
+                  <div className={`flex flex-row space-x-2`}>
+                    <Switch
+                      id="user-role"
+                      checked={field.value.includes(UserRoleEnum.user)}
+                      onCheckedChange={() => field.onChange(toggleRole(field.value, UserRoleEnum.user))}
+                    />
+                    <Label htmlFor="user-role">User</Label>
+                  </div>
+                  <FormValidationError text={errors.roles?.message} />
+                </>
+              )}
+            />
 
             <div className="space-y-2">
               <Label htmlFor="password">Username</Label>
               <Input
                 id="username"
-                name="username"
                 type="text"
-                value={formData.username}
-                onChange={handleChange}
+                {...register('username', { required: true })}
                 placeholder="Enter username"
               />
+              <FormValidationError text={errors.username?.message} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
-                name="password"
                 type="password"
-                value={formData.password}
-                onChange={handleChange}
+                {...register('password', { required: true })}
                 placeholder="Enter new password"
               />
+              <FormValidationError text={errors.password?.message} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm password</Label>
               <Input
                 id="confirmPassword"
-                name="confirmPassword"
                 type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
+                {...register('confirmPassword', { required: true })}
                 placeholder="Enter new password"
               />
+              <FormValidationError text={errors.confirmPassword?.message} />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="default">
-                Add account
+                Create new account
               </Button>
             </DialogFooter>
           </form>

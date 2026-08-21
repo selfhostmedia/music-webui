@@ -28,5 +28,4 @@
     "noUncheckedSideEffectImports": true
   },
   "include": ["src"],
-  "exclude": ["src/playwright.ts"]
-}
+  "exclude": ["**/*.pom.ts", "**/*.test.ts", "**/*.spec.ts", "node_modules"]}

@@ -33,7 +33,7 @@
     "@nuxt/kit": "^4.4.8",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.3.0",
-    "@types/node": "^24.13.1",
+    "@types/node": "^24.13.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -63,7 +63,7 @@
     "lint": "eslint . --fix",
     "prettier": "prettier --write .",
     "start:dev": "vite --host ${HOST:-localhost} --port ${PORT:-8000} -- --inspect",
-    "start:test": "vite preview --host ${HOST:-localhost} --port ${PORT:-8100}",
+    "start:test": "tsc --noEmit -p tsconfig.app.json && vite build --mode test && vite preview --mode test --host ${HOST:-localhost} --port ${PORT:-8100}",
     "openapi:generate": "npx openapi-typescript http://localhost:7000/swagger.json -o ./src/types/api-schema.ts --enum --export-type"
   },
   "name": "ui",

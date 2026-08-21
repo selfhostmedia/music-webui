@@ -28,7 +28,7 @@ export function useRootPaths() {
   const createRootPathMutation = useMutation({
     mutationFn: async ({ accountId, body }: { accountId: number; body: CreateBodyDto }) => {
       const { data, error } = await api.post('/api/admin/create-root-path', {
-        params: { header: api.authHeader(), query: { accountId } },
+        params: { header: api.authHeader(), query: { id: accountId } },
         body,
       });
       if (error) {
