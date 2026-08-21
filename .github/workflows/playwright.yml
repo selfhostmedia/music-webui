@@ -52,15 +52,20 @@ jobs:
         run: npm ci
         working-directory: music-server
 
-      - name: Run Playwright setup
-        run: |
-          if [ "${{ matrix.project }}" = "firefox" ]; then
-            npx playwright install --with-deps firefox
-          elif [ "${{ matrix.project }}" = "webkit" ]; then
-            npx playwright install --with-deps webkit
-          else
-            npx playwright install --with-deps
-          fi
+      # This is only needed if the playwright version in the 
+      # package is different to the playwright version of the
+      # docker image.  If they are aligned then everything is
+      # ready to use.
+
+      # - name: Run Playwright setup
+      #   run: |
+      #     if [ "${{ matrix.project }}" = "firefox" ]; then
+      #       npx playwright install --with-deps firefox
+      #     elif [ "${{ matrix.project }}" = "webkit" ]; then
+      #       npx playwright install --with-deps webkit
+      #     else
+      #       npx playwright install --with-deps
+      #     fi
 
       - name: Start backend
         run: |
@@ -106,7 +111,7 @@ jobs:
           exit 1
 
       - name: Run Playwright tests
-        run: npx playwright test --workers 1 --reporter=line --project=${{ matrix.project }} --config=playwright.config.ts
+        run: npm run test -- --project=${{ matrix.project }}
         env:
           HOME: /root
 
