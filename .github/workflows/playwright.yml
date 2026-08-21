@@ -85,7 +85,9 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
-        run: DEBUG=* npx playwright test --workers 1 --reporter=line
+        run: npx playwright test --workers 1 --reporter=line
+        env:
+          HOME: /root
 
       - name: Backend debugging logs
         if: failure()
