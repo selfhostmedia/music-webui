@@ -47,8 +47,10 @@ jobs:
       - name: Wait for backend to start
         run: |
           LOG_FILE="$RUNNER_TEMP/api.log"
+          EXPECTED='LOG [IndexerService] [accountId: 1 rootPathId: 2] adding folder'
           for i in $(seq 1 120); do
-            if grep -Fq 'LOG [IndexerService] [accountId: 1 rootPathId: 2] adding folder' "$LOG_FILE"; then
+            if sed -E 's/\x1B\[[0-9;]*[[:alpha:]]//g' "$LOG_FILE" 2>/dev/null |
+              grep -Fq "$EXPECTED"; then
               echo "Backend startup message detected"
               exit 0
             fi
