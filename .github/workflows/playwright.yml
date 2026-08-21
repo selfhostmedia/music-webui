@@ -16,6 +16,11 @@ jobs:
       - name: Clone music-server repo
         run: |
           git clone https://github.com/${{ github.repository_owner }}/music-server.git music-server
+          cd music-server
+          if git rev-parse --verify origin/${{ github.ref_name }} > /dev/null 2>&1; then
+            echo "Checking out matching branch: ${{ github.ref_name }}"
+            git checkout ${{ github.ref_name }}
+          fi
 
       - name: Use Node.js 24
         uses: actions/setup-node@v4
@@ -26,16 +31,8 @@ jobs:
             music-server/package-lock.json
             package-lock.json
 
-      - name: Checkout matching branch in music-server
-        run: |
-          cd music-server
-          # Try to checkout the same branch as the current workflow
-          if git rev-parse --verify origin/${{ github.ref_name }} > /dev/null 2>&1; then
-            echo "Checking out matching branch: ${{ github.ref_name }}"
-            git checkout ${{ github.ref_name }}
-          else
-            echo "No matching branch found, using default branch"
-          fi
+      - name: Install music-webui dependencies
+        run: npm ci
 
       - name: Install music-server dependencies
         run: npm ci
@@ -44,14 +41,13 @@ jobs:
       - name: Start backend
         run: |
           LOG_FILE="$RUNNER_TEMP/api.log"
-          : > "$LOG_FILE"
           npm run start:test > "$LOG_FILE" 2>&1 &
         working-directory: music-server
 
       - name: Wait for backend to start
         run: |
           LOG_FILE="$RUNNER_TEMP/api.log"
-          for i in {1..120}; do
+          for i in $(seq 1 120); do
             if grep -Fq 'LOG [IndexerService] [accountId: 1 rootPathId: 2] adding folder' "$LOG_FILE"; then
               echo "Backend startup message detected"
               exit 0
@@ -61,10 +57,6 @@ jobs:
           done
           echo "Backend did not emit the expected startup message within 120 seconds"
           exit 1
-
-      - name: Install Playwright test dependencies
-        run: npm ci
-        working-directory: ./
 
       - name: Run Playwright tests
         run: npx playwright test
