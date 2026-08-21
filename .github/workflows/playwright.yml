@@ -12,6 +12,11 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.48.0-noble
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
       - name: Clone music-server repo
         run: |
