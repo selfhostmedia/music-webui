@@ -69,20 +69,19 @@ export function Navbar() {
       {isMobile && mobileMenuOpen && (
         <nav
           id="mobile-secondary-menu"
-          onClick={closeMobileMenu}
           className={`absolute right-3 top-12 z-10 flex min-w-32 flex-col rounded-lg 
             border border-primary/20 bg-background p-2 pb-4 shadow-lg`}
         >
-          <Link className={linkClassName} to="/admin">
+          <Link className={linkClassName} to="/admin" onClick={closeMobileMenu}>
             Admin
           </Link>
-          <Link className={linkClassName} to="/preferences">
+          <Link className={linkClassName} to="/preferences" onClick={closeMobileMenu}>
             Preferences
           </Link>
-          <Link className={linkClassName} to="/signout">
+          <Link className={linkClassName} to="/signout" onClick={closeMobileMenu}>
             Sign out
           </Link>
-          <DarkModeSwitch className="ml-2 mt-2" />
+          <DarkModmeSwitch className="ml-2 mt-2" onClick={closeMobileMenu} />
         </nav>
       )}
     </header>

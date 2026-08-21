@@ -16,7 +16,8 @@ export class Pom {
     const responsiveMode = await this.isResponsive();
     if (responsiveMode) {
       await this.page.getByRole('button', { name: 'Toggle account menu' }).click();
-      await this.page.waitForTimeout(500);
+    await this.page.waitForTimeout(500);
+      await this.page.waitForSelector(`a[aria-label="${name}"]`);
       return this.page.getByRole('link', { name });
     }
     return this.page.getByRole('link', { name });
@@ -28,8 +29,9 @@ export class Pom {
       await this.page.getByRole('button', { name: 'Toggle account menu' }).click();
       await this.page.waitForTimeout(500);
     }
+    await this.page.waitForSelector('button[aria-label="Toggle dark mode"]');
     await this.page.getByRole('button', { name: 'Toggle dark mode' }).click();
-    await this.page.waitForTimeout(500); // Wait for the dark mode transition to complete
+    await this.page.waitForTimeout(500);
   }
 
 

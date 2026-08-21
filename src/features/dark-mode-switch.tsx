@@ -5,8 +5,9 @@ import { useMediaQuery } from 'react-responsive';
 
 export function DarkModeSwitch({
   className,
+  onClick,
   ...rest
-}: { className?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+}: { className?: string; onClick?: () => void } & React.InputHTMLAttributes<HTMLInputElement>) {
   const [isDark, setIsDark] = useState(true);
   const systemPrefersDark = useMediaQuery(
     {
@@ -15,6 +16,14 @@ export function DarkModeSwitch({
     undefined,
     (isSystemDark) => setIsDark(isSystemDark),
   );
+
+  const clickHandler = () => {
+    if (onClick) {
+      onClick();
+    }
+    setIsDark(!isDark);
+  };
+
   const applyDarkMode = useMemo(
     () => (isDark === undefined ? !!systemPrefersDark : isDark),
     [isDark, systemPrefersDark],
@@ -31,7 +40,13 @@ export function DarkModeSwitch({
   return (
     <div className={`flex flex-row space-x-2 ${className ?? ''}`} {...rest}>
       <Sun className="w-4 h-4 mt-0.5" />
-      <Switch role="button" aria-label="Toggle dark mode" id="dark-mode" checked={isDark} onCheckedChange={setIsDark} />
+      <Switch
+        role="button"
+        aria-label="Toggle dark mode"
+        id="dark-mode"
+        checked={isDark}
+        onCheckedChange={clickHandler}
+      />
       <Moon className="w-4 h-4 mt-0.5" />
     </div>
   );

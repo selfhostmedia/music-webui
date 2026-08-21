@@ -537,10 +537,11 @@ test.describe('admin home', () => {
           const api = new AdminApi(jwtToken);
           await pom.navigateToAdmin();
           const configurationBefore = await api.getIndexerConfiguration();
-          page.waitForResponse(
+          const response = page.waitForResponse(
             (response) => response.url().includes('/api/admin/set-indexer-status') && response.status() === 200,
           );
           await page.getByRole('button', { name: 'Toggle indexer' }).click();
+          await response;
           const configurationAfter = await api.getIndexerConfiguration();
           expect(configurationBefore.isEnabled).toBe(!configurationAfter.isEnabled);
         });
