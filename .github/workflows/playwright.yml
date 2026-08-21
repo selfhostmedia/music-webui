@@ -20,7 +20,7 @@ jobs:
           cache: npm
           cache-dependency-path: |
             $RUNNER_TEMP/music-server/package-lock.json
-            `pwd`/package-lock.json
+            $GITHUB_WORKSPACE/package-lock.json
 
       - name: Clone music-server repo
         run: |
