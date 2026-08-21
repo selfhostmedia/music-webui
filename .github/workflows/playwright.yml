@@ -81,6 +81,9 @@ jobs:
           echo "Frontend did not emit the expected startup message within 120 seconds"
           exit 1
 
+      - name: Run Playwright setup
+        run: npx playwright install --with-deps
+
       - name: Run Playwright tests
         run: npx playwright test --workers 1
 
