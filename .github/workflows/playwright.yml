@@ -25,7 +25,7 @@ jobs:
           - android-tablet
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4a
 
       - name: Clone music-server repo
         run: |
@@ -61,7 +61,7 @@ jobs:
       - name: Start frontend
         run: |
           LOG_FILE="$RUNNER_TEMP/frontend.log"
-          npm run start:test --project="${{ matrix.project }}" > "$LOG_FILE" 2>&1 &
+          npm run start:test" > "$LOG_FILE" 2>&1 &
 
       - name: Wait for backend to start
         run: |
@@ -95,11 +95,8 @@ jobs:
           echo "Frontend did not emit the expected startup message within 120 seconds"
           exit 1
 
-      - name: Run Playwright setup
-        run: npx playwright install --with-deps
-
       - name: Run Playwright tests
-        run: npx playwright test --workers 1 --reporter=line
+        run: npx playwright test --workers 1 --reporter=line --project=${{ matrix.project }} --config=playwright.config.ts
         env:
           HOME: /root
 
