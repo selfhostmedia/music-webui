@@ -6,11 +6,19 @@ export function IndexerToggle({
   className,
   ...rest
 }: { className?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
-  const { isEnabled, toggleStatus } = useIndexer();
+  const { isEnabled, isLoadingStatus, toggleStatus } = useIndexer();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await toggleStatus();
+  if (isLoadingStatus) {
+    return (
+      <div className={`flex flex-row space-x-2 ${className ?? ''}`} {...rest}>
+        <Switch role="button" aria-label="Toggle indexer" checked={false} disabled />
+        <Label>Loading indexer status...</Label>
+      </div>
+    );
+  }
+
+  const handleSubmit = async (value: boolean) => {
+    await toggleStatus(value);
   };
 
   return (
@@ -19,7 +27,7 @@ export function IndexerToggle({
         role="button"
         aria-label="Toggle indexer"
         checked={isEnabled}
-        onCheckedChange={() => handleSubmit(new Event('submit') as unknown as React.FormEvent<HTMLFormElement>)}
+        onCheckedChange={(value) => handleSubmit(value)}
       />
       <Label>Indexer is {isEnabled ? 'active' : 'disabled'}</Label>
     </div>

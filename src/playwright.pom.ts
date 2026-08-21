@@ -1,10 +1,7 @@
-import createClient from 'openapi-fetch';
-import type { Page } from '@playwright/test';
-import type { components, paths } from './types/api-schema';
+import { expect, type Locator, type Page } from '@playwright/test';
+import type { components } from './types/api-schema';
 
-type CreateUserBody = components['schemas']['AdminCreateAccountBodyDto'];
 type CreateSessionBody = components['schemas']['GuestCreateSessionBodyDto'];
-type User = components['schemas']['AdminAccountDto'];
 
 export class Pom {
   private readonly page: Page;
@@ -15,7 +12,40 @@ export class Pom {
     this.jwtToken = jwtToken;
   }
 
-  async signIn(params?: CreateSessionBody): Promise<void> {
+  async findNavigationLink(name: string): Promise<Locator> {
+    const responsiveMode = await this.isResponsive();
+    if (responsiveMode) {
+      await this.page.getByRole('button', { name: 'Toggle account menu' }).click();
+      await this.page.waitForTimeout(500);
+      return this.page.getByRole('link', { name });
+    }
+    return this.page.getByRole('link', { name });
+  }
+
+  async toggleDarkMode(): Promise<void> {
+    const responsiveMode = await this.isResponsive();
+    if (responsiveMode) {
+      await this.page.getByRole('button', { name: 'Toggle account menu' }).click();
+      await this.page.waitForTimeout(500);
+    }
+    await this.page.getByRole('button', { name: 'Toggle dark mode' }).click();
+    await this.page.waitForTimeout(500); // Wait for the dark mode transition to complete
+  }
+
+
+  async isResponsive(): Promise<boolean> {
+    const isResponsive = await this.page.evaluate(() => {
+      return window.innerWidth < 768;
+    });
+    return isResponsive;
+  }
+
+  async navigateToAdmin(): Promise<void> {
+    await (await this.findNavigationLink('Admin')).click();
+    await this.page.waitForURL('/admin');
+  }
+
+  async signIn(params?: CreateSessionBody, expectSuccess = true): Promise<void> {
     await this.page.goto('/signin');
     if (this.jwtToken) {
       await this.page.waitForLoadState('networkidle');
@@ -30,7 +60,7 @@ export class Pom {
         console.error('*** POM SIGNIN ERROR:', error);
       }
     }
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForSelector('input[placeholder="Enter your username"]');
     await this.page.getByPlaceholder('Enter your username').click();
     await this.page.getByPlaceholder('Enter your username').fill(params?.username || '');
     await this.page.getByPlaceholder('Enter your password').click();
@@ -38,102 +68,18 @@ export class Pom {
     if (params?.expiresDays) {
       await this.page.getByRole('checkbox', { name: 'Remember me' }).check();
     }
-    const response = this.page.waitForResponse((response) => response.url().includes('/api/guest/create-session'));
+    const response = this.page.waitForResponse((response) => {
+      const url = response.url();
+      const status = response.status();
+      return url.includes('/api/guest/create-session') && ((expectSuccess && status === 201) || (!expectSuccess && (status === 400 || status === 404)));
+    });
     await this.page.getByRole('button', { name: 'Sign In' }).click();
     const responseData = await response;
     const responseJSon = await responseData.json();
     this.jwtToken = responseJSon?.jwtToken;
-    await this.page.waitForLoadState('networkidle');
+    if (expectSuccess) {
+      expect(this.jwtToken).not.toBeNull();
+      await this.page.waitForURL('/')
+    }
   }
-
-  async navigateToAdmin(): Promise<void> {
-    await this.page.getByRole('link', { name: 'Admin' }).click();
-  }
-}
-
-const api = createClient<paths>({
-  baseUrl: process.env.VITE_API_BASE_URL,
-});
-
-export async function createTestUser(userData: CreateUserBody, jwtToken?: string): Promise<User> {
-  if (!jwtToken) {
-    throw new Error('JWT token is required to create a test user');
-  }
-  const { error } = await api.POST('/api/admin/create-account', {
-    body: userData,
-    params: {
-      header: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-    },
-  });
-  if (error) {
-    throw new Error(`API error: ${error.message}`);
-  }
-  const { data } = await api.GET('/api/admin/list-accounts', {
-    params: {
-      header: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-    },
-  });
-  const account = data?.accounts.find((account) => account.username === userData.username);
-  if (!account) {
-    throw new Error('Failed to create test user');
-  }
-  return account;
-}
-
-export async function deleteTestUser(accountId: number, jwtToken?: string): Promise<void> {
-  if (!jwtToken) {
-    throw new Error('JWT token is required to delete a test user');
-  }
-  const { error } = await api.DELETE('/api/admin/delete-account', {
-    params: {
-      header: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      query: { id: accountId },
-    },
-  });
-  if (error) {
-    throw new Error(`API error: ${error.message}`);
-  }
-}
-
-export async function createRootPath(accountId: number, rootPath: string, jwtToken?: string): Promise<void> {
-  if (!jwtToken) {
-    throw new Error('JWT token is required to create a root path');
-  }
-  const { error } = await api.POST('/api/admin/create-root-path', {
-    body: { rootPath },
-    params: {
-      header: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      query: { id: accountId },
-    },
-  });
-  if (error) {
-    throw new Error(`API error: ${error.message}`);
-  }
-}
-
-export async function getIndexerConfiguration(
-  jwtToken?: string,
-): Promise<components['schemas']['AdminIndexerConfigurationDto']> {
-  if (!jwtToken) {
-    throw new Error('JWT token is required to get indexer configuration');
-  }
-  const { data } = await api.GET('/api/admin/indexer-configuration', {
-    params: {
-      header: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-    },
-  });
-  if (!data) {
-    throw new Error('API error could not load configuration');
-  }
-  return data.configuration;
 }

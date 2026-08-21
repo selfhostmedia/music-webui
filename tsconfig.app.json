@@ -28,5 +28,5 @@
     "noUncheckedSideEffectImports": true
   },
   "include": ["src"],
-  "exclude": ["**/*.pom.ts", "**/*.test.ts", "**/*.spec.ts", "node_modules"]
+  "exclude": ["**/*.pom.ts", "**/test-helper.ts", "**/*.test.ts", "**/*.spec.ts", "node_modules"]
 }

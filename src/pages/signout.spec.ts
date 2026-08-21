@@ -5,7 +5,7 @@ test.describe('signout', () => {
   test.describe('authorized access', () => {
     test('should not allow guest access', async ({ page }, testInfo) => {
       await page.goto('/signout');
-      await page.waitForLoadState('networkidle');
+      await page.waitForURL('/signin');
       expect(page.url()).toBe(`${testInfo.project.use.baseURL}/signin`);
     });
   });
@@ -14,7 +14,7 @@ test.describe('signout', () => {
     const pom = new Pom(page);
     await pom.signIn({ username: 'admin', password: 'admin' });
     expect(page.url()).toBe(`${testInfo.project.use.baseURL}/`);
-    await page.getByRole('link', { name: 'Sign Out' }).click();
+    await (await pom.findNavigationLink('Sign out')).click();
     await page.waitForURL('/signin');
     expect(page.url()).toBe(`${testInfo.project.use.baseURL}/signin`);
     // tokens are gone

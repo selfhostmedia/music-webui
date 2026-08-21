@@ -10,6 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.48.0-noble
+
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - chromium
+          - firefox
+          - webkit
+          - mobile-chrome
+          - mobile-safari
+          - samsung
+          - ipad
+          - android-tablet
+
     steps:
       - uses: actions/checkout@v4
 
@@ -47,7 +61,7 @@ jobs:
       - name: Start frontend
         run: |
           LOG_FILE="$RUNNER_TEMP/frontend.log"
-          npm run start:test > "$LOG_FILE" 2>&1 &
+          npm run start:test --project="${{ matrix.project }}" > "$LOG_FILE" 2>&1 &
 
       - name: Wait for backend to start
         run: |

@@ -11,4 +11,5 @@ export default defineConfig({
       external: [/.*\.pom\.ts$/, /.*pom\.ts$/],
     },
   },
+  envDir: false,
 });

@@ -9,15 +9,16 @@ dotenv.config({ path: join(__dirname, '.env.test') });
 
 export default defineConfig({
   testDir: './src',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: 'line',
   use: {
     baseURL: 'http://localhost:8100',
     trace: 'on-first-retry',
   },
+  timeout: 30000,
   tsconfig: './tsconfig.node.json',
   projects: [
     // Desktops
@@ -37,24 +38,24 @@ export default defineConfig({
     },
     // Mobile phones
     {
-      name: 'Mobile Chrome',
+      name: 'mobile-chrome',
       use: { ...devices['Pixel 5'] },
     },
     {
-      name: 'Mobile Safari',
+      name: 'mobile-safari',
       use: { ...devices['iPhone 12'] },
     },
     {
-      name: 'Mobile Samsung',
+      name: 'samsung',
       use: { ...devices['Galaxy S9+'] },
     },
     // Tablets
     {
-      name: 'iPad',
+      name: 'ipad',
       use: { ...devices['iPad Pro'] },
     },
     {
-      name: 'Android Tablet',
+      name: 'android-tablet',
       use: { ...devices['Pixel Tablet'] },
     },
   ],

@@ -11,7 +11,7 @@ interface IndexerContextType {
   isLoadingStatus: boolean;
   isUpdatingStatus: boolean;
   listIndexerLogs: (accountId?: number, rootPathId?: number, search?: string) => Promise<void>;
-  toggleStatus: () => Promise<void>;
+  toggleStatus: (value: boolean) => Promise<void>;
 }
 
 const IndexerContext = createContext<IndexerContextType>({
@@ -54,9 +54,9 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
     fetchIndexerStatus();
   }, []);
 
-  const toggleStatus = async () => {
+  const toggleStatus = async (value: boolean) => {
     try {
-      const newStatus = !isEnabled;
+      const newStatus = value;
       setEnabled(newStatus);
       setUpdatingStatus(true);
       const response = await api.patch('/api/admin/set-indexer-status', {
@@ -64,7 +64,7 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
           header: api.authHeader(),
         },
         body: {
-          enabled: !isEnabled,
+          enabled: value,
         },
       });
       if (!response.data || !response.data.success) {

@@ -5,13 +5,13 @@ test.describe('signin', () => {
   test.describe('errors', () => {
     test('rejects invalid username', async ({ page }) => {
       const pom = new Pom(page);
-      await pom.signIn({ username: 'invalid', password: 'admin' });
+      await pom.signIn({ username: 'invalid', password: 'admin' }, false);
       await expect(page.getByText('Your username is not valid')).toBeVisible();
     });
 
     test('rejects invalid password', async ({ page }) => {
       const pom = new Pom(page);
-      await pom.signIn({ username: 'admin', password: 'invalid' });
+      await pom.signIn({ username: 'admin', password: 'invalid' }, false);
       await expect(page.getByText('Your password is not valid')).toBeVisible();
     });
   });
