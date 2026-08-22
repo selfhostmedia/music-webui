@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import type { components } from '@/types/api-schema';
 
@@ -18,26 +19,20 @@ type ErrorCodes = components['schemas']['AdminRegenerateUserSessionKeyNotFoundEr
 export function UserRotateSessionKeyForm({ user, className }: { user: UserDto; className?: string }) {
   const [open, setOpen] = useState(false);
   const { regenerateSessionKey } = useAccounts();
+  const { handleSubmit } = useForm();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = handleSubmit(async () => {
     await regenerateSessionKey(user.id, {
       onSuccess: () => {
         setOpen(false);
+        toast.success('All sessions terminated. The user will need to log in from any devices.');
       },
       onError: (error) => {
         const message: ErrorCodes = error.message as ErrorCodes;
-        switch (message) {
-          case 'account-not-found-error':
-            toast.error('The specified account does not exist.');
-            break;
-          default:
-            toast.error(error.message);
-            break;
-        }
+        toast.error(message || error.message);
       },
     });
-  };
+  });
 
   return (
     <>
@@ -54,16 +49,17 @@ export function UserRotateSessionKeyForm({ user, className }: { user: UserDto; c
           <DialogHeader>
             <DialogTitle>Terminate sessions</DialogTitle>
             <DialogDescription>
-              Terminating sessions will invalidate all existing sessions for the user.
+              Terminating sessions will invalidate all existing sessions for the user by generating a new secret session
+              key. The user will need to log in again from any devices.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="default">
-                Terminate sessions
+                End sessions
               </Button>
             </DialogFooter>
           </form>

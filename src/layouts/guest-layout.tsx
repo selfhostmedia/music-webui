@@ -1,4 +1,4 @@
-import { DarkModeSwitch } from '@/components/dark-mode-switch';
+import { DarkModeSwitch } from '@/features/dark-mode-switch';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
 

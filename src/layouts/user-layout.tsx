@@ -9,7 +9,11 @@ export default function UserLayout() {
   const { user, loading } = useAuth();
   useEffect(() => {
     if (!loading && !user) {
-      navigate(`/signin?from=${location.pathname}`);
+      if (location.pathname.startsWith('/signout')) {
+        navigate('/signin');
+      } else {
+        navigate(`/signin?returnUrl=${encodeURIComponent(location.pathname)}`);
+      }
     }
   }, [user, loading, navigate]);
   if (loading) {

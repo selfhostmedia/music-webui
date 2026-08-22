@@ -16,6 +16,9 @@ import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import api from '@/lib/api';
 import z from 'zod/v3';
+import type { components } from '@/types/api-schema';
+
+type GuestCreateSessionBadRequestResponseDto = components['schemas']['GuestCreateSessionBadRequestResponseDto'];
 
 type FormData = {
   username: string;
@@ -31,47 +34,61 @@ const schema = z.object({
 
 export default function SignInPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
-  const { login } = useAuth();
 
-  const onSubmit = handleSubmit(async (data: FormData) => {
+  const onSubmit = handleSubmit(async (formData: FormData) => {
     try {
-      const { error, data: response } = await api.post('/api/guest/create-session', {
+      const { error, data } = await api.post('/api/guest/create-session', {
         body: {
-          username: data.username,
-          password: data.password,
-          expiresDays: data.remember ? 3650 : 1,
+          username: formData.username,
+          password: formData.password,
+          expiresDays: formData.remember ? 3650 : 1,
         },
       });
       if (error) {
-        throw error instanceof Error ? error : new Error('An unknown error occurred');
+        let message: string;
+        if (error instanceof Error) {
+          message = error.message;
+        } else {
+          const errorResponse = error as GuestCreateSessionBadRequestResponseDto;
+          message = errorResponse.message[0] || 'An unknown error occurred';
+        }
+        throw new Error(message);
       }
-      if (!response.success || !response.jwtToken) {
+      if (!data.success || !data.jwtToken) {
         throw new Error('An unknown error occurred');
       }
-      login(response.jwtToken, data.remember);
-      await navigate('/');
+      login(data.jwtToken, formData.remember);
+      const params = new URLSearchParams(window.location.search);
+      const returnUrl = params.get('returnUrl') || '/';
+      if (!returnUrl.startsWith('/')) {
+        await navigate('/');
+      }
+      await navigate(returnUrl);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error signing in:', error instanceof Error ? error.message : error);
-      switch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      switch (errorMessage) {
         case 'invalid-username-error':
-          errors.username = {
+          setError('username', {
             type: 'manual',
             message: 'Your username is not valid',
-          };
+          });
           return;
         case 'invalid-password-error':
-          errors.password = {
+          setError('password', {
             type: 'manual',
             message: 'Your password is not valid',
-          };
+          });
           return;
         default:
           toast.error('An unknown error occurred');
@@ -90,7 +107,7 @@ export default function SignInPage() {
         <EntryFormInput
           type="text"
           id="username"
-          placeholder="username"
+          placeholder="Enter your username"
           {...register('username', { required: true })}
         />
         <EntryFormError text={errors.username?.message} />
@@ -100,7 +117,7 @@ export default function SignInPage() {
         <EntryFormInput
           id="password"
           type="password"
-          placeholder="********"
+          placeholder="Enter your password"
           {...register('password', { required: true })}
         />
         <EntryFormError text={errors.password?.message} />

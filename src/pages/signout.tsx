@@ -13,7 +13,7 @@ export default function SignOut() {
         // eslint-disable-next-line no-console
         console.error('Error signing out:', error instanceof Error ? error.message : error);
       }
-      navigate('/signin');
+      navigate('/signin?signout=false');
     };
     signOut();
   }, []);

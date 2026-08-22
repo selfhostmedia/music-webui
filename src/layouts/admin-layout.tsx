@@ -1,6 +1,7 @@
 import { IndexerProvider } from '@/hooks/use-indexer';
 import { Navbar } from '@/components';
 import { Outlet, useLocation, useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { useEffect } from 'react';
 
@@ -10,9 +11,15 @@ export default function AdminLayout() {
   const { user, loading } = useAuth();
   useEffect(() => {
     if (!loading && !user) {
-      navigate(`/signin?from=${location.pathname}`);
+      if (!location.pathname.startsWith('/signout')) {
+        navigate(`/signin?returnUrl=${encodeURIComponent(location.pathname)}`);
+      } else {
+        navigate(`/signin`);
+      }
+      return;
     }
     if (!loading && user?.roles.indexOf('admin') === -1) {
+      toast.error('You must be signed in as an admin to access this page.');
       navigate(`/`);
     }
   }, [user, loading, navigate]);

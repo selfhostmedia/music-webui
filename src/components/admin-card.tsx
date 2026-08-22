@@ -1,7 +1,11 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-export function AdminCard({ children }: { children: React.ReactNode }) {
-  return <Card className="min-w-32 bg-background/80">{children}</Card>;
+export function AdminCard({ children, ...rest }: { children: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <Card className="min-w-32 bg-background/80" {...rest}>
+      {children}
+    </Card>
+  );
 }
 
 export function AdminCardTitle({ children }: { children: React.ReactNode }) {

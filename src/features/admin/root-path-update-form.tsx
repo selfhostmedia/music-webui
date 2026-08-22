@@ -7,12 +7,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { FormValidationError } from '@/components/form-validation-error';
 import { IndexerToggle } from './indexer-toggle';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
 import { useRootPaths } from '@/hooks/use-root-paths';
 import { useState } from 'react';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import type { components } from '@/types/api-schema';
 
 type ErrorCodes =
@@ -21,13 +25,37 @@ type ErrorCodes =
 
 type RootPathDto = components['schemas']['AdminRootPathDto'];
 
+type FormData = {
+  newPath: string;
+};
+
+const schema = z.object({
+  newPath: z
+    .string()
+    .refine((val) => val.length > 0, {
+      message: 'Root path is required',
+    })
+    .refine((val) => val.length >= 1, {
+      message: 'Root path is too short',
+    })
+    .refine((val) => val.length <= 1024, {
+      message: 'Root path is too long',
+    }),
+});
+
 export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({ newPath: rootPath.rootPath });
   const { updateRootPath } = useRootPaths();
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+    setError,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = handleSubmit(async (formData: FormData) => {
     await updateRootPath(
       {
         rootPathId: rootPath.id,
@@ -35,17 +63,20 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
       },
       {
         onSuccess: () => {
-          setFormData({ newPath: '' });
           setOpen(false);
+          toast.success('Root path updated successfully.  It will begin indexing shortly if the indexer is enabled.');
         },
         onError: (error) => {
           const message: ErrorCodes = error.message as ErrorCodes;
           switch (message) {
             case 'root-path-does-not-exist-error':
-              toast.error('The specified root path does not exist.');
+              setError('newPath', { type: 'manual', message: 'The new root path does not exist.' });
               break;
             case 'duplicate-root-path-error':
-              toast.error('The specified root path has already been added to this account.');
+              setError('newPath', {
+                type: 'manual',
+                message: 'The new root path has already been added to this account.',
+              });
               break;
             default:
               toast.error(error.message);
@@ -54,13 +85,7 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
         },
       },
     );
-    setOpen(false);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  });
 
   return (
     <>
@@ -92,22 +117,17 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
             <IndexerToggle />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="newPath">New path</Label>
-              <Input
-                id="newPath"
-                name="newPath"
-                value={formData.newPath}
-                onChange={handleChange}
-                placeholder="Enter new path"
-              />
+              <Input id="newPath" {...register('newPath', { required: true })} placeholder="Enter new path" />
+              <FormValidationError text={errors.newPath?.message} />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Update root path</Button>
+              <Button type="submit">Save new path</Button>
             </DialogFooter>
           </form>
         </DialogContent>

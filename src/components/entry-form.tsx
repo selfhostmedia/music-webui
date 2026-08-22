@@ -1,3 +1,4 @@
+import { FormValidationError } from './form-validation-error';
 import { Input } from './ui/input';
 import { Link } from 'react-router-dom';
 
@@ -46,7 +47,7 @@ export function EntryFormDescription({ children }: { children?: React.ReactNode 
 }
 
 export function EntryFormError({ text }: { text?: string }) {
-  return <span className="inline-block text-xs text-red-500">{text || ' '}</span>;
+  return <FormValidationError text={text || ''} />;
 }
 
 export function EntryFormHeading({ text }: { text: string }) {
@@ -80,7 +81,7 @@ export function EntryFormInput({
 
 export function EntryFormLabel({ text, htmlFor }: { text: string; htmlFor: string }) {
   return (
-    <label className="text-sm font-light cursor-pointer" htmlFor={htmlFor}>
+    <label className="text-xs font-semibold cursor-pointer" htmlFor={htmlFor}>
       {text}
     </label>
   );

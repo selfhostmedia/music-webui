@@ -124,10 +124,10 @@ export function IndexerLogsTable() {
 
   const handleDownloadCsv = () => {
     const headings = [`Date`, `User`, `Path`, `Message`];
-    const csv = `${headings.join('\t')}\n${indexerLogs
+    const csv = `${headings.join(',')}\n${indexerLogs
       .map((item) => {
         const values = [item.date.toString(), item.username || '-', item.rootPath || '-', item.message];
-        return values.join('\t');
+        return values.join(',');
       })
       .join('\n')}`;
     const blob = new Blob([csv], {
@@ -181,15 +181,27 @@ export function IndexerLogsTable() {
           Refresh
         </Button>
       )}
-      <Button className="mr-2 mb-4" variant="outline" onClick={handleViewRaw}>
+      <Button role="button" aria-label="View raw logs" className="mr-2 mb-4" variant="outline" onClick={handleViewRaw}>
         <LogsIcon />
         View
       </Button>
-      <Button className="mr-2 mb-4" variant="outline" onClick={handleDownloadJson}>
+      <Button
+        role="button"
+        aria-label="Download logs as JSON"
+        className="mr-2 mb-4"
+        variant="outline"
+        onClick={handleDownloadJson}
+      >
         <DownloadIcon />
         JSON
       </Button>
-      <Button className="mb-2" variant="outline" onClick={handleDownloadCsv}>
+      <Button
+        role="button"
+        aria-label="Download logs as CSV"
+        className="mb-2"
+        variant="outline"
+        onClick={handleDownloadCsv}
+      >
         <DownloadIcon />
         CSV
       </Button>

@@ -134,7 +134,7 @@ export function useAccounts() {
       const { data, error } = await api.delete('/api/admin/delete-account', {
         params: {
           header: api.authHeader(),
-          query: { accountId },
+          query: { id: accountId },
         },
       });
       if (error) {

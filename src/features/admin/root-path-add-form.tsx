@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Controller, useForm } from 'react-hook-form';
 import {
   Dialog,
   DialogContent,
@@ -7,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { FormValidationError } from '@/components/form-validation-error';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
@@ -15,49 +17,77 @@ import { toast } from 'sonner';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useRootPaths } from '@/hooks/use-root-paths';
 import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod/v3';
 import type { components } from '@/types/api-schema';
 
 type ErrorCodes =
   | components['schemas']['AdminCreateRootPathBadRequestErrorMessageEnum']
   | components['schemas']['AdminCreateRootPathNotFoundErrorMessageEnum'];
 
+type FormData = {
+  accountId: number;
+  rootPath: string;
+};
+
+const schema = z.object({
+  accountId: z.number().refine((val) => val > 0, {
+    message: 'Account is required',
+  }),
+  rootPath: z
+    .string()
+    .refine((val) => val.length > 0, {
+      message: 'Root path is required',
+    })
+    .refine((val) => val.length >= 1, {
+      message: 'Root path is too short',
+    })
+    .refine((val) => val.length <= 1024, {
+      message: 'Root path is too long',
+    }),
+});
+
 export function RootPathAddForm() {
   const [open, setOpen] = useState(false);
   const { accounts } = useAccounts();
-  const [formData, setFormData] = useState({ accountId: 0, rootPath: '' });
   const { createRootPath } = useRootPaths();
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    register,
+    setError,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (formData.accountId === 0) {
-      toast.error('Please select an account.');
-      return;
-    }
-    if (!formData.rootPath) {
-      toast.error('Please enter a root path.');
-      return;
-    }
-    createRootPath(
+  const onSubmit = handleSubmit(async (formData: FormData) => {
+    await createRootPath(
       {
         accountId: formData.accountId,
-        body: formData,
+        body: {
+          rootPath: formData.rootPath,
+        },
       },
       {
         onSuccess: () => {
-          setFormData({ accountId: 0, rootPath: '' });
           setOpen(false);
+          toast.success('Root path added successfully.  It will begin indexing shortly if the indexer is enabled.');
         },
         onError: (error) => {
           const message: ErrorCodes = error.message as ErrorCodes;
           switch (message) {
             case 'root-path-does-not-exist-error':
-              toast.error('The specified root path does not exist.');
+              setError('rootPath', { type: 'manual', message: 'The specified root path does not exist.' });
               break;
             case 'duplicate-root-path-error':
-              toast.error('The specified root path has already been added to this account.');
+              setError('rootPath', {
+                type: 'manual',
+                message: 'The specified root path has already been added to this account.',
+              });
               break;
             case 'account-not-found-error':
-              toast.error('The specified account does not exist.');
+              setError('accountId', { type: 'manual', message: 'The specified account does not exist.' });
               break;
             default:
               toast.error(error.message);
@@ -66,16 +96,10 @@ export function RootPathAddForm() {
         },
       },
     );
-  };
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = e.target;
-    setFormData((prev) => ({ ...prev, accountId: Number(value) }));
+  const selectAccount = (accountId: number) => {
+    return accountId;
   };
 
   return (
@@ -94,33 +118,41 @@ export function RootPathAddForm() {
               </span>
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="accountId">Account</Label>
-              <NativeSelect id="accountId" name="accountId" onChange={handleSelect} className="w-full">
-                <NativeSelectOption value={0}>Select an account</NativeSelectOption>
-                {accounts?.map((account) => (
-                  <NativeSelectOption key={account.id} value={account.id}>
-                    {account.username}
-                  </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </div>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <Controller
+              name="rootPath"
+              control={control}
+              render={({ field }) => (
+                <div className="space-y-2">
+                  <Label htmlFor="accountId">Account</Label>
+                  <NativeSelect
+                    id="accountId"
+                    name="accountId"
+                    onChange={(e) => field.onChange(selectAccount(Number(e.target.value)))}
+                    value={field.value}
+                    className="w-full"
+                  >
+                    <NativeSelectOption value={0}>Select an account</NativeSelectOption>
+                    {accounts?.map((account) => (
+                      <NativeSelectOption key={account.id} value={account.id}>
+                        {account.username}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
+                  <FormValidationError text={errors.accountId?.message} />
+                </div>
+              )}
+            />
             <div className="space-y-2">
               <Label htmlFor="rootPath">New path</Label>
-              <Input
-                id="rootPath"
-                name="rootPath"
-                value={formData.rootPath}
-                onChange={handleChange}
-                placeholder="Enter new path"
-              />
+              <Input id="rootPath" {...register('rootPath', { required: true })} placeholder="Enter new path" />
+              <FormValidationError text={errors.rootPath?.message} />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Add root path</Button>
+              <Button type="submit">Save new path</Button>
             </DialogFooter>
           </form>
         </DialogContent>

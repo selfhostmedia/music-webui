@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Controller, useForm } from 'react-hook-form';
 import {
   Dialog,
   DialogContent,
@@ -7,12 +8,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { FormValidationError } from '@/components/form-validation-error';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { UserRoleEnum } from '@/types/api-schema';
 import { toast } from 'sonner';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod/v3';
 import type { components } from '@/types/api-schema';
 
 type UserDto = components['schemas']['AdminAccountDto'];
@@ -20,13 +24,30 @@ type ErrorCodes =
   | components['schemas']['AdminUpdateUserRolesBadRequestErrorMessageEnum']
   | components['schemas']['AdminUpdateUserRolesNotFoundErrorMessageEnum'];
 
+type FormData = {
+  roles: UserRoleEnum[];
+};
+
+const schema = z.object({
+  roles: z.array(z.nativeEnum(UserRoleEnum)).min(1, { message: 'At least one role must be selected.' }),
+});
+
 export function UserUpdateRolesForm({ user, className }: { user: UserDto; className?: string }) {
   const [open, setOpen] = useState(false);
   const { updateRoles } = useAccounts();
-  const [formData, setFormData] = useState({ roles: user.roles });
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    setError,
+  } = useForm<FormData>({
+    defaultValues: {
+      roles: user.roles,
+    },
+    resolver: zodResolver(schema),
+  });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = handleSubmit(async (formData: FormData) => {
     await updateRoles(
       {
         accountId: user.id,
@@ -35,18 +56,28 @@ export function UserUpdateRolesForm({ user, className }: { user: UserDto; classN
       {
         onSuccess: () => {
           setOpen(false);
+          toast.success('Roles updated successfully. The user will need to log in with the new permissions.');
         },
         onError: (error) => {
           const message: ErrorCodes = error.message as ErrorCodes;
           switch (message) {
             case 'account-only-admin-error':
-              toast.error('You must create another administrator before removing this permission.');
+              setError('roles', {
+                type: 'manual',
+                message: 'You must create another administrator before removing this permission.',
+              });
               break;
             case 'account-not-found-error':
-              toast.error('The specified account does not exist.');
+              setError('roles', {
+                type: 'manual',
+                message: 'The specified account does not exist.',
+              });
               break;
             case 'invalid-user-role-error':
-              toast.error('An invalid role was specified');
+              setError('roles', {
+                type: 'manual',
+                message: 'An invalid role was specified.',
+              });
               break;
             default:
               toast.error(error.message);
@@ -55,16 +86,11 @@ export function UserUpdateRolesForm({ user, className }: { user: UserDto; classN
         },
       },
     );
-    setOpen(false);
-  };
+  });
 
-  const toggleStatus = (role: UserRoleEnum) => {
-    setFormData((prev) => {
-      const newRoles = prev.roles.includes(role) ? prev.roles.filter((r) => r !== role) : [...prev.roles, role];
-      return { ...prev, roles: newRoles };
-    });
+  const toggleRole = (currentRoles: UserRoleEnum[], role: UserRoleEnum) => {
+    return currentRoles.includes(role) ? currentRoles.filter((r: UserRoleEnum) => r !== role) : [...currentRoles, role];
   };
-
   return (
     <>
       <Button
@@ -81,30 +107,38 @@ export function UserUpdateRolesForm({ user, className }: { user: UserDto; classN
             <DialogTitle>Update user roles</DialogTitle>
             <DialogDescription>Grant or revoke permissions for the user account.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className={`flex flex-row space-x-2`}>
-              <Switch
-                id="admin-role"
-                checked={formData.roles.includes(UserRoleEnum.admin)}
-                onCheckedChange={() => toggleStatus(UserRoleEnum.admin)}
-              />
-              <Label>Administrator</Label>
-            </div>
-            <div className={`flex flex-row space-x-2`}>
-              <Switch
-                id="user-role"
-                checked={formData.roles.includes(UserRoleEnum.user)}
-                onCheckedChange={() => toggleStatus(UserRoleEnum.user)}
-              />
-              <Label>User</Label>
-            </div>
-
+          <form onSubmit={onSubmit} className="space-y-4">
+            <Controller
+              name="roles"
+              control={control}
+              render={({ field }) => (
+                <>
+                  <div className={`flex flex-row space-x-2`}>
+                    <Switch
+                      id="admin-role"
+                      checked={field.value.includes(UserRoleEnum.admin)}
+                      onCheckedChange={() => field.onChange(toggleRole(field.value, UserRoleEnum.admin))}
+                    />
+                    <Label htmlFor="admin-role">Administrator</Label>
+                  </div>
+                  <div className={`flex flex-row space-x-2`}>
+                    <Switch
+                      id="user-role"
+                      checked={field.value.includes(UserRoleEnum.user)}
+                      onCheckedChange={() => field.onChange(toggleRole(field.value, UserRoleEnum.user))}
+                    />
+                    <Label htmlFor="user-role">User</Label>
+                  </div>
+                  <FormValidationError text={errors.roles?.message} />
+                </>
+              )}
+            />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="default">
-                Update roles
+                Save new roles
               </Button>
             </DialogFooter>
           </form>

@@ -52,11 +52,15 @@ export function UserTable() {
     <>
       {/* Mobile card view */}
       {isMobile && (
-        <>
+        <div role="list" aria-label="User accounts">
           {(isLoading ? dummyRows : accounts).map((account, index) => {
             const opacity = index % 2 === 0 ? 20 : 10;
             return (
-              <AdminCard key={`card-${account.id}`}>
+              <AdminCard
+                key={`card-${account.id}`}
+                role="row"
+                aria-label={`User account ${account.username || 'loading'}`}
+              >
                 <AdminCardTitle>{account.username || cellFiller(opacity)}</AdminCardTitle>
                 <AdminCardContent>
                   <AdminCardSubtitle>Role(s)</AdminCardSubtitle>
@@ -88,12 +92,12 @@ export function UserTable() {
               </AdminCard>
             );
           })}
-        </>
+        </div>
       )}
 
       {/* Desktop table view */}
       {!isMobile && (
-        <AdminTable>
+        <AdminTable role="table" aria-label="User accounts">
           <AdminTableHeader>
             <AdminTableHeaderCell className="w-50">Username</AdminTableHeaderCell>
             <AdminTableHeaderCell className="w-50">Role(s)</AdminTableHeaderCell>
@@ -103,7 +107,11 @@ export function UserTable() {
             {(isLoading ? dummyRows : accounts).map((account, index) => {
               const opacity = index % 2 === 0 ? 20 : 10;
               return (
-                <AdminTableRow key={`row-${account.id}`}>
+                <AdminTableRow
+                  key={`row-${account.id}`}
+                  role="row"
+                  aria-label={`User account ${account.username || 'loading'}`}
+                >
                   <AdminTableCell>{account.username || cellFiller(opacity)}</AdminTableCell>
                   <AdminTableCell>
                     {account.roles.length

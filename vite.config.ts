@@ -6,4 +6,10 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), tsconfigPaths()],
+  build: {
+    rollupOptions: {
+      external: [/.*\.pom\.ts$/, /.*pom\.ts$/],
+    },
+  },
+  envDir: false,
 });

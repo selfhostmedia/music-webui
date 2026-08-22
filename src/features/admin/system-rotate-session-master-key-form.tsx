@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import api from '@/lib/api';
@@ -17,9 +18,9 @@ export function SystemRotateSessionMasterKeyForm({ className }: { className?: st
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { clearSessionToken } = useAuth();
+  const { handleSubmit } = useForm();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = handleSubmit(async () => {
     const { data, error } = await api.post('/api/admin/regenerate-master-session-key', {
       params: {
         header: {
@@ -39,7 +40,6 @@ export function SystemRotateSessionMasterKeyForm({ className }: { className?: st
       toast.error('An error occurred generating a new master session key');
       return;
     }
-    setOpen(false);
     try {
       await clearSessionToken();
     } catch {
@@ -47,7 +47,7 @@ export function SystemRotateSessionMasterKeyForm({ className }: { className?: st
     } finally {
       navigate('/signin');
     }
-  };
+  });
 
   return (
     <>
@@ -64,17 +64,17 @@ export function SystemRotateSessionMasterKeyForm({ className }: { className?: st
           <DialogHeader>
             <DialogTitle>Terminate all sessions</DialogTitle>
             <DialogDescription>
-              This will immediately end all sessions for all users and devices. Each user and device will need to sign
-              in again. You will be redirected to the login page.
+              This will immediately end all sessions for all users and devices by generating a new secret master session
+              key. Each user and device will need to sign in again. You will be redirected to the login page.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="default">
-                Terminate all sessions
+                End all sessions
               </Button>
             </DialogFooter>
           </form>

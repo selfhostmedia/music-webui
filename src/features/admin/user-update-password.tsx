@@ -41,6 +41,7 @@ export function UserUpdatePasswordForm({ user, className }: { user: UserDto; cla
       {
         onSuccess: () => {
           setOpen(false);
+          toast.success('Password reset successfully. The user will need to log in again with the new password.');
         },
         onError: (error) => {
           const message: ErrorCodes = error.message as ErrorCodes;
@@ -115,7 +116,7 @@ export function UserUpdatePasswordForm({ user, className }: { user: UserDto; cla
                 Cancel
               </Button>
               <Button type="submit" variant="destructive">
-                Reset password
+                Set new password
               </Button>
             </DialogFooter>
           </form>
