@@ -10,6 +10,20 @@ const client = createClient<paths>({
   baseUrl: import.meta.env.VITE_API_BASE_URL,
 });
 
+client.use({
+  async onResponse({ response }) {
+    if (response.status === 401) {
+      sessionStorage.removeItem('jwt-token');
+      localStorage.removeItem('jwt-token');
+      if (window.location.pathname !== '/signin') {
+        const returnUrl = window.location.pathname + window.location.search + window.location.hash;
+        window.location.assign(`/signin?returnUrl=${encodeURIComponent(returnUrl)}`);
+      }
+    }
+    return response;
+  },
+});
+
 export default {
   authHeader,
   get: client.GET,
