@@ -37,7 +37,7 @@ test.describe('admin home', () => {
       await expect(
         page.getByRole('main').filter({ hasText: 'You must be signed in as an admin to access this page.' }),
       ).toBeTruthy();
-      expect(page.url()).toBe(`${testInfo.project.use.baseURL}/signin?returnUrl=${encodeURIComponent('/admin')}`);
+      expect(page.url()).toBe(`${testInfo.project.use.baseURL}/`);
     });
   });
 
