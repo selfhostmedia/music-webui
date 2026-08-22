@@ -24,9 +24,7 @@ test.describe('admin home', () => {
 
   test.describe('authorized access', () => {
     test('should not allow guest access', async ({ page }, testInfo) => {
-      console.log(`(1) Page URL: ${page.url()}`, `Expected URL: ${testInfo.project.use.baseURL}/signin?returnUrl=${encodeURIComponent('/admin')}`, `Page content: ${await page.content()}`);
       await page.goto('/admin');
-      console.log(`(2) Page URL: ${page.url()}`, `Expected URL: ${testInfo.project.use.baseURL}/signin?returnUrl=${encodeURIComponent('/admin')}`, `Page content: ${await page.content()}`);
       await page.waitForSelector('input[name="username"]');
       expect(page.url()).toBe(`${testInfo.project.use.baseURL}/signin?returnUrl=${encodeURIComponent('/admin')}`);
     });

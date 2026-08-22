@@ -9,25 +9,6 @@ export class Pom {
 
   constructor(page: Page, jwtToken?: string) {
     this.page = page;
-    this.page.on('console', (msg) => {
-      console.log(`*** POM CONSOLE: ${msg.type()} - ${msg.text()}`);
-    });
-    this.page.on('pageerror', (err) => {
-      console.error(`*** POM PAGE ERROR: ${err}`);
-    });
-    this.page.on('requestfailed', (request) => {
-      console.error(`*** POM REQUEST FAILED: ${request.url()} - ${request.failure()?.errorText}`);
-    });
-    this.page.on('response', (response) => {
-      if (!response.ok()) {
-        console.error(`*** POM RESPONSE ERROR: ${response.url()} - ${response.status()} - ${response.statusText()}`);
-      } else {
-        console.log(`*** POM RESPONSE: ${response.url()} - ${response.status()} - ${response.statusText()}`);
-      }
-    });
-    this.page.on('request', (request) => {
-      console.log(`*** POM REQUEST: ${request.method()} - ${request.url()}`);
-    });
     this.jwtToken = jwtToken;
   }
 

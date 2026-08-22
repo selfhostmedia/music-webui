@@ -17,13 +17,13 @@ jobs:
       matrix:
         project:
           - chromium
-          # - firefox
-          # - webkit
-          # - mobile-chrome
-          # - mobile-safari
-          # - samsung
-          # - ipad
-          # - android-tablet
+          - firefox
+          - webkit
+          - mobile-chrome
+          - mobile-safari
+          - samsung
+          - ipad
+          - android-tablet
 
     steps:
       - uses: actions/checkout@v4
@@ -114,10 +114,6 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-          echo "backend log"
-          cat "$RUNNER_TEMP/backend.log"
-          echo "frontend log"
-          cat "$RUNNER_TEMP/frontend.log"
           npm run test -- --project=${{ matrix.project }}
 
       - name: Backend debugging logs
