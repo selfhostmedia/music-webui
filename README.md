@@ -26,3 +26,11 @@ $ npm run build
 ```bash
 $ npm run start:prod
 ```
+
+## Technical details
+
+The web interface is built with React using React Hook Forms, React-Router, Tanstack-Query, Shadcn components with Tailwind CSS and Lucide icons.
+
+UI tests are performed using Playwright in Chrome, Firefox and WebKit using desktop and mobile specifications.
+
+It leverages the backend's OpenAPI specification for importing API type definitions and typed-API clients using `openapi-typescript` and `openapi-fetch`.
