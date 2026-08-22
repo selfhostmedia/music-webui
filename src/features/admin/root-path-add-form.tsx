@@ -98,10 +98,6 @@ export function RootPathAddForm() {
     );
   });
 
-  const selectAccount = (accountId: number) => {
-    return accountId;
-  };
-
   return (
     <>
       <Button className="px-2 mb-4 py-1 rounded text-xs uppercase" onClick={() => setOpen(true)} variant="outline">
@@ -120,7 +116,7 @@ export function RootPathAddForm() {
           </DialogHeader>
           <form onSubmit={onSubmit} className="space-y-4">
             <Controller
-              name="rootPath"
+              name="accountId"
               control={control}
               render={({ field }) => (
                 <div className="space-y-2">
@@ -128,7 +124,7 @@ export function RootPathAddForm() {
                   <NativeSelect
                     id="accountId"
                     name="accountId"
-                    onChange={(e) => field.onChange(selectAccount(Number(e.target.value)))}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                     value={field.value}
                     className="w-full"
                   >
