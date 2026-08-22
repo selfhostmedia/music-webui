@@ -16,8 +16,8 @@ client.use({
       sessionStorage.removeItem('jwt-token');
       localStorage.removeItem('jwt-token');
       if (window.location.pathname !== '/signin') {
-        const returnTo = window.location.pathname + window.location.search + window.location.hash;
-        window.location.assign(`/signin?returnTo=${encodeURIComponent(returnTo)}`);
+        const returnUrl = window.location.pathname + window.location.search + window.location.hash;
+        window.location.assign(`/signin?returnUrl=${encodeURIComponent(returnUrl)}`);
       }
     }
     return response;
