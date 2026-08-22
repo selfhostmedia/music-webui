@@ -558,11 +558,13 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken;
           await pom.signIn({ username: 'admin', password: 'admin' });
           await pom.navigateToAdmin();
+          type WindowWithCapturedBlob = Window & { capturedBlob: Blob | null };
           await page.addInitScript(() => {
-            window.capturedBlob = null;
+            const w = window as unknown as WindowWithCapturedBlob;
+            w.capturedBlob = null;
             const originalCreateObjectURL = URL.createObjectURL;
             URL.createObjectURL = function (blob) {
-              window.capturedBlob = blob;
+              w.capturedBlob = blob as Blob;
               return originalCreateObjectURL(blob);
             };
           });
@@ -575,8 +577,9 @@ test.describe('admin home', () => {
 
           // Get the captured blob content from the original page
           const blobText = await page.evaluate(async () => {
-            if (window.capturedBlob) {
-              return await window.capturedBlob.text();
+            const w = window as unknown as WindowWithCapturedBlob;
+            if (w.capturedBlob) {
+              return await w.capturedBlob.text();
             }
             return null;
           });

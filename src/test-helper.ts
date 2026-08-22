@@ -33,7 +33,7 @@ export class AdminApi {
   }
 
   async createUser(userData: CreateUserBody): Promise<User> {
-    const { error, data } = await api.POST('/api/admin/create-account', {
+    const { error } = await api.POST('/api/admin/create-account', {
       body: userData,
       params: {
         header: this.authHeader,
