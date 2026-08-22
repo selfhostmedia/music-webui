@@ -12,4 +12,12 @@ export default defineConfig({
     },
   },
   envDir: false,
+  server: {
+    host: process.env.HOST || 'localhost',
+    port: Number(process.env.PORT || 8000),
+  },
+  preview: {
+    host: process.env.HOST || 'localhost',
+    port: Number(process.env.PORT || 8100),
+  },
 });
