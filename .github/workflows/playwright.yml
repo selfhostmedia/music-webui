@@ -32,10 +32,10 @@ jobs:
         run: |
           git clone https://github.com/${{ github.repository_owner }}/music-server.git music-server
           cd music-server
-          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
-            echo "Using frontend branch: $branch"
-            git fetch origin "$branch"
-            git checkout -B "$branch" "origin/$branch"
+          if git ls-remote --exit-code --heads origin "${{ github.ref_name }}" >/dev/null 2>&1; then
+            echo "Using frontend branch: ${{ github.ref_name }}"
+            git fetch origin "${{ github.ref_name }}"
+            git checkout -B "${{ github.ref_name }}" "origin/${{ github.ref_name }}"
           fi
       - name: Use Node.js 24
         uses: actions/setup-node@v4
