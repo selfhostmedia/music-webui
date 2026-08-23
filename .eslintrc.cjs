@@ -26,6 +26,9 @@ module.exports = {
     'vite.config.ts',
     'playwright.config.ts',
     'src/components/ui/**',
+    'src/**/*.spec.ts',
+    'src/test-helper.ts',
+    'src/playwright.pom.ts',
   ],
   rules: {
     // single quotes
