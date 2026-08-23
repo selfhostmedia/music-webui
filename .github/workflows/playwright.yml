@@ -45,7 +45,7 @@ jobs:
         run: |
           git clone https://github.com/${{ github.repository_owner }}/music-server.git music-server
           cd music-server
-          if git ls-remote --exit-code --heads origin "$${{ steps.branch.outputs.name }}" >/dev/null 2>&1; then
+          if git ls-remote --exit-code --heads origin "${{ steps.branch.outputs.name }}" >/dev/null 2>&1; then
             echo "Using frontend branch: ${{ steps.branch.outputs.name }}"
             git fetch origin "$${{ steps.branch.outputs.name }}"
             git checkout -B "$${{ steps.branch.outputs.name }}" "origin/$${{ steps.branch.outputs.name }}"
