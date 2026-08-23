@@ -54,6 +54,7 @@ export function UserTable() {
                 key={`card-${account.id}`}
                 role="row"
                 aria-label={`User account ${account.username || 'loading'}`}
+                className="mb-4"
               >
                 <DataCardTitle>{account.username || cellFiller(opacity)}</DataCardTitle>
                 <DataCardContent>

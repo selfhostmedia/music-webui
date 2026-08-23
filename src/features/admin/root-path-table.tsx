@@ -59,7 +59,7 @@ export function RootPathTable() {
               rootPath.username ? `${rootPath.username} ${rootPath.rootPath}` : 'loading'
             }`;
             return (
-              <DataCard key={`card-${rootPath.id}`} role="row" aria-label={ariaLabel}>
+              <DataCard key={`card-${rootPath.id}`} role="row" aria-label={ariaLabel} className="mb-4">
                 <DataCardTitle>{rootPath.username}</DataCardTitle>
                 <DataCardContent>
                   <div>

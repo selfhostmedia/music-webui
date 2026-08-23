@@ -53,7 +53,7 @@ export function RootPathTable() {
           {(isLoading ? dummyRows : rootPaths).map((rootPath) => {
             const ariaLabel = `Root path for ${rootPath.rootPath || 'loading'}`;
             return (
-              <DataCard key={`card-${rootPath.id}`} role="row" aria-label={ariaLabel}>
+              <DataCard key={`card-${rootPath.id}`} role="row" aria-label={ariaLabel} className="mb-4">
                 <DataCardTitle>{rootPath.rootPath}</DataCardTitle>
                 <DataCardContent>
                   <div className="grid grid-cols-2 gap-4">

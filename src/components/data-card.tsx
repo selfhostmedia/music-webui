@@ -1,8 +1,12 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-export function DataCard({ children, ...rest }: { children: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
+export function DataCard({
+  children,
+  className,
+  ...rest
+}: { children: React.ReactNode; className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <Card className="min-w-32 bg-background/80" {...rest}>
+    <Card className={`min-w-32 bg-background/80 ${className || ''}`} {...rest}>
       {children}
     </Card>
   );

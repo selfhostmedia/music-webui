@@ -165,7 +165,7 @@ export function IndexerLogsTable() {
           {(isLoadingLogs ? dummyRows : indexerLogs).map((log, index) => {
             const opacity = index % 2 === 0 ? 20 : 10;
             return (
-              <DataCard key={`card-${index}`}>
+              <DataCard key={`card-${index}`} className="mb-4">
                 <DataCardTitle>{log.date ? dateInformation(log.date) : cellFiller(opacity)}</DataCardTitle>
                 <DataCardContent>
                   <div className="grid grid-cols-2 gap-4">
