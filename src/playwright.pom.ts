@@ -16,28 +16,29 @@ export class Pom {
   async findNavigationLink(name: string): Promise<Locator> {
     const responsiveMode = await this.isResponsive();
     if (responsiveMode) {
-      await this.page.getByRole('button', { name: 'Toggle account menu' }).click();
+      await this.page.getByRole('button', { name: 'Open account menu' }).click();
       await this.page.waitForTimeout(500);
-      await this.page.locator(`a[aria-label="${name}"]`).waitFor({ state: 'visible' });
+      await this.page.locator(`a[aria-label="${name}"]`).last().waitFor({ state: 'visible' });
       return this.page.getByRole('link', { name });
     }
-    return this.page.getByRole('link', { name });
+    return this.page.getByRole('link', { name }).first();
   }
 
   async toggleDarkMode(): Promise<void> {
     const responsiveMode = await this.isResponsive();
     if (responsiveMode) {
-      await this.page.getByRole('button', { name: 'Toggle account menu' }).click();
-      await this.page.waitForTimeout(500);
+      await this.page.getByRole('button', { name: 'Open account menu' }).click();
+      await this.page.locator('button[aria-label="Toggle dark mode"]').last().waitFor({ state: 'visible' });
+      await this.page.getByRole('button', { name: 'Toggle dark mode' }).last().click();
+    } else {
+      await this.page.locator('button[aria-label="Toggle dark mode"]').first().waitFor({ state: 'visible' });
+      await this.page.getByRole('button', { name: 'Toggle dark mode' }).first().click();
     }
-    await this.page.locator('button[aria-label="Toggle dark mode"]').waitFor({ state: 'visible' });
-    await this.page.locator('button[aria-label="Toggle dark mode"]').click();
-    await this.page.waitForTimeout(500);
   }
 
   async isResponsive(): Promise<boolean> {
     const isResponsive = await this.page.evaluate(() => {
-      return window.innerWidth < 768;
+       return !window.matchMedia('(min-width: 640px)').matches;
     });
     return isResponsive;
   }
@@ -48,7 +49,7 @@ export class Pom {
   }
 
   async navigateToAdmin(): Promise<void> {
-    await (await this.findNavigationLink('Administration')).click();
+    await (await this.findNavigationLink('Admin')).click();
     await this.page.waitForURL('/admin');
   }
 

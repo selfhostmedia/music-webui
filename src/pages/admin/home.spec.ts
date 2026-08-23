@@ -496,23 +496,6 @@ test.describe('admin home', () => {
       });
     });
 
-    test.describe('toggle dark mode', () => {
-      test.describe('success', () => {
-        test('should turn dark mode on or off', async ({ page }) => {
-          const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
-          jwtToken = jwtToken || pom.jwtToken;
-          await pom.navigateToAdmin();
-          const isDark = await page.evaluate(() => document.body.classList.contains('dark'));
-          expect(isDark).toBeDefined();
-          await pom.toggleDarkMode();
-          const isDarkNow = await page.evaluate(() => document.body.classList.contains('dark'));
-          expect(isDarkNow).toBeDefined();
-          expect(isDark).toBe(!isDarkNow);
-        });
-      });
-    });
-
     test.describe('toggle indexer', () => {
       test.describe('success', () => {
         test('should turn indexer on or off', async ({ page }) => {
