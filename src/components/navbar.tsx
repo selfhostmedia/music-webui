@@ -43,7 +43,7 @@ export function Navbar() {
           <Link className={linkClassName} to="/admin" aria-label="Administration">
             Admin
           </Link>
-          <Link className={linkClassName} to="/preferences" aria-label="User preferences">
+          <Link className={linkClassName} to="/account" aria-label="Account settings and preferences">
             Account
           </Link>
           <Link className={linkClassName} to="/signout" aria-label="Sign out">
@@ -75,8 +75,14 @@ export function Navbar() {
           <Link className={linkClassName} to="/admin" onClick={closeMobileMenu} aria-label="Administration">
             Admin
           </Link>
-          <Link className={linkClassName} to="/preferences" onClick={closeMobileMenu} aria-label="User preferences">
-            Preferences
+          <Link
+            className={linkClassName}
+            to="/account"
+            onClick={closeMobileMenu}
+            aria-label="Account 
+          settings and preferences"
+          >
+            Account
           </Link>
           <Link className={linkClassName} to="/signout" onClick={closeMobileMenu} aria-label="Sign out">
             Sign out

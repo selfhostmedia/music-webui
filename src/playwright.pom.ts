@@ -42,6 +42,11 @@ export class Pom {
     return isResponsive;
   }
 
+  async navigateToAccount(): Promise<void> {
+    await (await this.findNavigationLink('Account')).click();
+    await this.page.waitForURL('/account');
+  }
+
   async navigateToAdmin(): Promise<void> {
     await (await this.findNavigationLink('Administration')).click();
     await this.page.waitForURL('/admin');

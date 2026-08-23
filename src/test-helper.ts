@@ -12,7 +12,6 @@ export const ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD || 'admin';
 export const USER_USERNAME = process.env.DEFAULT_USER_USERNAME || 'user';
 export const USER_PASSWORD = process.env.DEFAULT_USER_PASSWORD || 'user';
 
-
 const api = createClient<paths>({
   baseUrl: process.env.VITE_API_BASE_URL,
 });

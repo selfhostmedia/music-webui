@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from './components/ui/tooltip';
+import AccountPage from './pages/account';
 import AdminHomePage from './pages/admin/home.tsx';
 import AdminLayout from './layouts/admin-layout.tsx';
 import GuestLayout from './layouts/guest-layout';
@@ -20,6 +21,7 @@ const router = createBrowserRouter(
       </Route>
       <Route element={<UserLayout />}>
         <Route path="" element={<HomePage />} />
+        <Route path="account" element={<AccountPage />} />
         <Route path="signout" element={<SignOutPage />} />
       </Route>
       <Route element={<AdminLayout />}>
