@@ -47,8 +47,8 @@ jobs:
           cd music-server
           if git ls-remote --exit-code --heads origin "${{ steps.branch.outputs.name }}" >/dev/null 2>&1; then
             echo "Using frontend branch: ${{ steps.branch.outputs.name }}"
-            git fetch origin "$${{ steps.branch.outputs.name }}"
-            git checkout -B "$${{ steps.branch.outputs.name }}" "origin/$${{ steps.branch.outputs.name }}"
+            git fetch origin "${{ steps.branch.outputs.name }}"
+            git checkout -B "${{ steps.branch.outputs.name }}" "origin/${{ steps.branch.outputs.name }}"
           fi
       - name: Use Node.js 24
         uses: actions/setup-node@v4
