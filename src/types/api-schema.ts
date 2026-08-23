@@ -40,6 +40,46 @@ export type paths = {
     patch?: never;
     trace?: never;
   };
+  '/api/user/create-root-path': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create a new root path
+     * @description Creates a new root path for the specified account.
+     */
+    post: operations['UserCreateRootPathController_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/delete-root-path': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete a root path
+     * @description Deletes the specified root path.  This will delete all associated information in the database immediately, the songs and folders will no longer be present in their data.  This will not affect any files on the file system.
+     */
+    delete: operations['UserDeleteRootPathController_delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/user/end-session': {
     parameters: {
       query?: never;
@@ -55,6 +95,66 @@ export type paths = {
      * @description Ends a user session and invalidates the associated JWT token.
      */
     delete: operations['UserEndSessionController_delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-root-paths': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List all root paths
+     * @description Retrieves a list of all root paths in the system.
+     */
+    get: operations['UserListRootPathsController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/reset-password': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Reset password
+     * @description Resets the user's password to a new value.
+     */
+    post: operations['UserResetPasswordController_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/regenerate-session-key': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Invalidate a user's sessions
+     * @description Regenerates the session key for the user invalidating all existing sessions for their account.
+     */
+    post: operations['UserRegenerateSessionKeyController_post'];
+    delete?: never;
     options?: never;
     head?: never;
     patch?: never;
@@ -769,6 +869,68 @@ export type components = {
        */
       message: InternalServerErrorResponseDtoMessage;
     };
+    UserCreateRootPathBodyDto: {
+      /** @description The fully-qualified path to set for the root path */
+      rootPath: string;
+    };
+    UserCreateRootPathResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    UserCreateRootPathBadRequestErrorMessageEnum: UserCreateRootPathBadRequestErrorMessageEnum;
+    UserCreateRootPathBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default root-path-does-not-exist-error
+       */
+      message: components['schemas']['UserCreateRootPathBadRequestErrorMessageEnum'][];
+    };
+    UserDeleteRootPathResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    UserDeleteRootPathNotFoundErrorMessageEnum: UserDeleteRootPathNotFoundErrorMessageEnum;
+    UserDeleteRootPathNotFoundResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default root-path-not-found-error
+       */
+      message: components['schemas']['UserDeleteRootPathNotFoundErrorMessageEnum'][];
+    };
     SuccessResponseDto: {
       /**
        * Format: constant
@@ -791,6 +953,80 @@ export type components = {
        * @enum {string}
        */
       message: BadRequestResponseDtoMessage;
+    };
+    UserRootPathDto: {
+      /**
+       * Format: date-time
+       * @description The date and time the row was created
+       */
+      createdAt: string;
+      /**
+       * @description The number of files or songs that have been found in this root path, this excludes
+       *     anything that is not a music track.
+       */
+      fileCount: number;
+      /** @description The ID of the root path row in the database */
+      id: number;
+      /** @description The fully-qualified path of the root path, this is the base path where music is stored for a user */
+      rootPath: string;
+      /** @description The total size of all the files in this root path contained in the `fileCount` field */
+      totalSize: number;
+      /**
+       * Format: date-time
+       * @description The date and time the row was last updated, this field is optional and may not be present
+       *     if the row has never been updated
+       */
+      updatedAt?: string;
+    };
+    UserListRootPathsResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of root paths with associated account owner information */
+      rootPaths: components['schemas']['UserRootPathDto'][];
+    };
+    UserResetPasswordBodyDto: {
+      newPassword: string;
+    };
+    UserResetPasswordResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    UserResetPasswordBadRequestErrorMessageEnum: UserResetPasswordBadRequestErrorMessageEnum;
+    UserResetPasswordBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default invalid-password-error
+       */
+      message: components['schemas']['UserResetPasswordBadRequestErrorMessageEnum'][];
+    };
+    UserRegenerateSessionKeyResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
     };
     /** @enum {string} */
     UserRoleEnum: UserRoleEnum;
@@ -3331,10 +3567,27 @@ export type components = {
        */
       success: boolean;
     };
+    SynologyPlaylistSongDto: {
+      additional: components['schemas']['SynologySongAdditionalDto'];
+      type: components['schemas']['ContentTypeEnum'];
+      id: string;
+      path: string;
+      title: string;
+      position: number;
+    };
+    SynologyPlaylistAdditionalWithItemsDto: {
+      /** @example and */
+      rules_conjunction?: components['schemas']['SmartPlaylistConjugalEnum'];
+      rules?: components['schemas']['SynologyPlaylistRuleDto'][];
+      sharing_info: components['schemas']['SynologyPlaylistSharingInfoDto'];
+      songs: components['schemas']['SynologyPlaylistSongDto'][];
+      songs_offset: number;
+      songs_total: number;
+    };
     SynologyPlaylistWithItemsDto: {
       /** @example normal */
       type: components['schemas']['PlaylistTypeEnum'];
-      additional: components['schemas']['SynologyPlaylistAdditionalDto'];
+      additional: components['schemas']['SynologyPlaylistAdditionalWithItemsDto'];
       id: string;
       library: string;
       name: string;
@@ -4342,6 +4595,77 @@ export interface operations {
       };
     };
   };
+  UserCreateRootPathController_post: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UserCreateRootPathBodyDto'];
+      };
+    };
+    responses: {
+      /** @description Root path created successfully */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserCreateRootPathResponseDto'];
+        };
+      };
+      /** @description Invalid request data */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserCreateRootPathBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserDeleteRootPathController_delete: {
+    parameters: {
+      query: {
+        /** @description The ID of the root path to delete */
+        id: number;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Root path deleted successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserDeleteRootPathResponseDto'];
+        };
+      };
+      /** @description Root path not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserDeleteRootPathNotFoundResponseDto'];
+        };
+      };
+    };
+  };
   UserEndSessionController_delete: {
     parameters: {
       query?: never;
@@ -4384,6 +4708,103 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['SuccessResponseDto'];
+        };
+      };
+    };
+  };
+  UserListRootPathsController_get: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListRootPathsResponseDto'];
+        };
+      };
+    };
+  };
+  UserResetPasswordController_post: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UserResetPasswordBodyDto'];
+      };
+    };
+    responses: {
+      /** @description Password reset successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserResetPasswordResponseDto'];
+        };
+      };
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserResetPasswordResponseDto'];
+        };
+      };
+      /** @description Invalid request data or additional requirements not met */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserResetPasswordBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserRegenerateSessionKeyController_post: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Session key regenerated successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserRegenerateSessionKeyResponseDto'];
+        };
+      };
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserRegenerateSessionKeyResponseDto'];
         };
       };
     };
@@ -4839,7 +5260,7 @@ export interface operations {
     parameters: {
       query: {
         /** @description The ID of the account to regenerate the session key for. */
-        accountId: number;
+        id: number;
       };
       header: {
         /** @description Bearer token for authentication */
@@ -5473,6 +5894,13 @@ export enum InternalServerErrorResponseDtoMessage {
   root_path_does_not_exist_error = 'root-path-does-not-exist-error',
   duplicate_root_path_error = 'duplicate-root-path-error',
 }
+export enum UserCreateRootPathBadRequestErrorMessageEnum {
+  root_path_does_not_exist_error = 'root-path-does-not-exist-error',
+  duplicate_root_path_error = 'duplicate-root-path-error',
+}
+export enum UserDeleteRootPathNotFoundErrorMessageEnum {
+  root_path_not_found_error = 'root-path-not-found-error',
+}
 export enum BadRequestResponseDtoMessage {
   invalid_account_error = 'invalid-account-error',
   invalid_enabled_error = 'invalid-enabled-error',
@@ -5511,6 +5939,10 @@ export enum BadRequestResponseDtoMessage {
   not_found_error = 'not-found-error',
   root_path_does_not_exist_error = 'root-path-does-not-exist-error',
   duplicate_root_path_error = 'duplicate-root-path-error',
+}
+export enum UserResetPasswordBadRequestErrorMessageEnum {
+  invalid_password_error = 'invalid-password-error',
+  invalid_password_length_error = 'invalid-password-length-error',
 }
 export enum UserRoleEnum {
   user = 'user',
