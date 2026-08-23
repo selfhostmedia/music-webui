@@ -1,4 +1,4 @@
-import { IndexerProvider } from '@/hooks/use-indexer';
+import { IndexerProvider } from '@/hooks/admin/use-indexer';
 import { Navbar } from '@/components';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';

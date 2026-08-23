@@ -11,7 +11,7 @@ import {
 import { DownloadIcon, LogsIcon, RefreshCcwIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { formatDateToRelative } from '@/utils/format';
-import { useIndexer } from '@/hooks/admin/use-indexer';
+import { useIndexer } from '@/hooks/user/use-indexer';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 
 export function IndexerLogsTable() {
@@ -24,33 +24,22 @@ export function IndexerLogsTable() {
 
   const handleViewRaw = async () => {
     let maximumDateLength = 0;
-    let maximumUsernameLength = 0;
     let maximumPathLength = 0;
     indexerLogs.reverse().forEach((item) => {
       const dateLength = item.date.toString().length;
-      const usernameLength = (item.username || '-').length;
       const pathLength = (item.rootPath || '-').length;
       if (dateLength > maximumDateLength) {
         maximumDateLength = dateLength;
-      }
-      if (usernameLength > maximumUsernameLength) {
-        maximumUsernameLength = usernameLength;
       }
       if (pathLength > maximumPathLength) {
         maximumPathLength = pathLength;
       }
     });
-    const headings = [
-      `Date`.padEnd(maximumDateLength, ' '),
-      `User`.padEnd(maximumUsernameLength, ' '),
-      `Path`.padEnd(maximumPathLength, ' '),
-      `Message`,
-    ];
+    const headings = [`Date`.padEnd(maximumDateLength, ' '), `Path`.padEnd(maximumPathLength, ' '), `Message`];
     const csv = `${headings.join('    ')}\n${indexerLogs
       .map((item) => {
         const values = [
           item.date.toString().padEnd(maximumDateLength),
-          (item.username || '-').padEnd(maximumUsernameLength, ' '),
           (item.rootPath || '-').padEnd(maximumPathLength),
           item.message,
         ];
@@ -89,7 +78,7 @@ export function IndexerLogsTable() {
     const headings = [`Date`, `User`, `Path`, `Message`];
     const csv = `${headings.join(',')}\n${indexerLogs
       .map((item) => {
-        const values = [item.date.toString(), item.username || '-', item.rootPath || '-', item.message];
+        const values = [item.date.toString(), '-', item.rootPath || '-', item.message];
         return values.join(',');
       })
       .join('\n')}`;
@@ -109,21 +98,18 @@ export function IndexerLogsTable() {
   const cellFiller = (opacity: number) => <span className={`bg-foreground/${opacity} h-8 w-full block`} />;
   const dummyRows = [
     {
-      accountId: -1,
       date: '',
       username: '',
       rootPath: '',
       message: '',
     },
     {
-      accountId: -2,
       date: '',
       username: '',
       rootPath: '',
       message: '',
     },
     {
-      accountId: -3,
       date: '',
       username: '',
       rootPath: '',
@@ -179,17 +165,13 @@ export function IndexerLogsTable() {
           {(isLoadingLogs ? dummyRows : indexerLogs).map((log, index) => {
             const opacity = index % 2 === 0 ? 20 : 10;
             return (
-              <DataCard key={`card-${log.accountId}-${index}`} className="mb-4">
+              <DataCard key={`card-${index}`} className="mb-4">
                 <DataCardTitle>{log.date ? dateInformation(log.date) : cellFiller(opacity)}</DataCardTitle>
                 <DataCardContent>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <DataCardSubtitle>Username</DataCardSubtitle>
-                      <p className="text-sm">{log.username || (log.accountId < 0 ? cellFiller(opacity) : '-')}</p>
-                    </div>
-                    <div>
                       <DataCardSubtitle>Root path</DataCardSubtitle>
-                      <p className="text-sm">{log.rootPath || (log.accountId < 0 ? cellFiller(opacity) : '-')}</p>
+                      <p className="text-sm">{log.rootPath || (log.rootPath === '' ? cellFiller(opacity) : '-')}</p>
                     </div>
                   </div>
                   <p className="text-sm">{log.message.replace(log.rootPath, '') || cellFiller(opacity)}</p>
@@ -206,7 +188,6 @@ export function IndexerLogsTable() {
         <DataTable>
           <DataTableHeader>
             <DataTableHeaderCell className="w-50">Date</DataTableHeaderCell>
-            <DataTableHeaderCell className="w-50">Username</DataTableHeaderCell>
             <DataTableHeaderCell className="w-100">Root path</DataTableHeaderCell>
             <DataTableHeaderCell>Message</DataTableHeaderCell>
           </DataTableHeader>
@@ -214,15 +195,12 @@ export function IndexerLogsTable() {
             {(isLoadingLogs ? dummyRows : indexerLogs).map((log, index) => {
               const opacity = index % 2 === 0 ? 20 : 10;
               return (
-                <DataTableRow key={`row-${log.accountId}-${index}`}>
+                <DataTableRow key={`row-${index}`}>
                   <DataTableCell className="text-foreground/50 text-xs">
                     {log.date ? dateInformation(log.date) : cellFiller(opacity)}
                   </DataTableCell>
                   <DataTableCell className="text-foreground/70 text-xs">
-                    {log.username || (log.accountId < 0 ? cellFiller(opacity) : '-')}
-                  </DataTableCell>
-                  <DataTableCell className="text-foreground/70 text-xs">
-                    {log.rootPath || (log.accountId < 0 ? cellFiller(opacity) : '-')}
+                    {log.rootPath || (log.rootPath === '' ? cellFiller(opacity) : '-')}
                   </DataTableCell>
                   <DataTableCell className="text-foreground/70 text-xs">
                     {log.message.replace(log.rootPath, '') || cellFiller(opacity)}

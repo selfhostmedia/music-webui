@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Controller, useForm } from 'react-hook-form';
+import { type CreateAccountBodyDto, type CreateAccountErrorCodes, useAccounts } from '@/hooks/admin/use-accounts';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { FormValidationError } from '@/components/form-validation-error';
 import { Input } from '@/components/ui/input';
@@ -8,19 +9,12 @@ import { Plus } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { UserRoleEnum } from '@/types/api-schema';
 import { toast } from 'sonner';
-import { useAccounts } from '@/hooks/use-accounts';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod/v3';
-import type { components } from '@/types/api-schema';
 
-type ErrorCodes = components['schemas']['AdminCreateAccountBadRequestErrorMessageEnum'];
-
-type FormData = {
-  username: string;
-  password: string;
+type FormData = CreateAccountBodyDto & {
   confirmPassword: string;
-  roles: UserRoleEnum[];
 };
 
 const schema = z
@@ -83,9 +77,11 @@ export function UserAddForm({ className }: { className?: string }) {
   const onSubmit = handleSubmit(async (formData: FormData) => {
     await createAccount(
       {
-        username: formData.username,
-        password: formData.password,
-        roles: formData.roles,
+        body: {
+          username: formData.username,
+          password: formData.password,
+          roles: formData.roles,
+        },
       },
       {
         onSuccess: () => {
@@ -93,7 +89,7 @@ export function UserAddForm({ className }: { className?: string }) {
           toast.success('Account created successfully. The user will need to log in with the new password.');
         },
         onError: (error) => {
-          const message: ErrorCodes = error.message as ErrorCodes;
+          const message = error.message as CreateAccountErrorCodes;
           switch (message) {
             case 'invalid-username-not-unique-error':
               setError('username', { type: 'manual', message: 'User already exists.' });
@@ -111,7 +107,9 @@ export function UserAddForm({ className }: { className?: string }) {
               setError('password', { type: 'manual', message: 'Password length is invalid.' });
               break;
             default:
-              toast.error(error.message);
+              // eslint-disable-next-line no-console
+              console.error('Unexpected error occurred while creating account:', error);
+              toast.error('An internal server error occurred. Please try again later.');
               break;
           }
         },

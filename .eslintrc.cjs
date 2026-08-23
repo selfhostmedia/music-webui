@@ -24,8 +24,11 @@ module.exports = {
     'node_modules',
     'api-schema.ts',
     'vite.config.ts',
+    'playwright.config.ts',
     'src/components/ui/**',
-    'src/playwright.ts',
+    'src/**/*.spec.ts',
+    'src/test-helper.ts',
+    'src/playwright.pom.ts',
   ],
   rules: {
     // single quotes

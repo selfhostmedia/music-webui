@@ -1,6 +1,6 @@
 import { Label } from '../../components/ui/label';
 import { Switch } from '../../components/ui/switch';
-import { useIndexer } from '@/hooks/use-indexer';
+import { useIndexer } from '@/hooks/admin/use-indexer';
 
 export function IndexerToggle({
   className,
@@ -18,7 +18,11 @@ export function IndexerToggle({
   }
 
   const handleSubmit = async (value: boolean) => {
-    await toggleStatus(value);
+    await toggleStatus({
+      body: {
+        enabled: value,
+      },
+    });
   };
 
   return (

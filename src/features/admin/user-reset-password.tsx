@@ -1,3 +1,9 @@
+import {
+  type AccountDto,
+  type ResetPasswordBodyDto,
+  type ResetPasswordErrorCodes,
+  useAccounts,
+} from '@/hooks/admin/use-accounts';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -7,36 +13,69 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { FormValidationError } from '@/components/form-validation-error';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { useAccounts } from '@/hooks/use-accounts';
+import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import type { components } from '@/types/api-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod/v3';
 
-type UserDto = components['schemas']['AdminAccountDto'];
-type ErrorCodes =
-  | components['schemas']['AdminResetUserPasswordBadRequestErrorMessageEnum']
-  | components['schemas']['AdminResetUserPasswordNotFoundErrorMessageEnum'];
+type FormData = ResetPasswordBodyDto & {
+  confirmPassword: string;
+};
 
-export function UserUpdatePasswordForm({ user, className }: { user: UserDto; className?: string }) {
-  const [open, setOpen] = useState(false);
-  const { resetPassword } = useAccounts();
-  const [formData, setFormData] = useState({
-    newPassword: '',
-    confirmPassword: '',
+const schema = z
+  .object({
+    newPassword: z
+      .string()
+      .refine((val) => val.length > 0, {
+        message: 'Password is required',
+      })
+      .refine((val) => val.length >= 1, {
+        message: 'Password is too short',
+      })
+      .refine((val) => val.length <= 255, {
+        message: 'Password is too long',
+      }),
+    confirmPassword: z
+      .string()
+      .refine((val) => val.length > 0, {
+        message: 'Confirm password is required',
+      })
+      .refine((val) => val.length >= 1, {
+        message: 'Confirm password is too short',
+      })
+      .refine((val) => val.length <= 255, {
+        message: 'Confirm password is too long',
+      }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
   });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (formData.newPassword !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
+export function UserResetPasswordForm({ user, className }: { user: AccountDto; className?: string }) {
+  const [open, setOpen] = useState(false);
+  const { resetPassword } = useAccounts();
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+    setError,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = handleSubmit(async (formData: FormData) => {
     await resetPassword(
       {
-        accountId: user.id,
-        newPassword: formData.newPassword,
+        query: {
+          id: user.id,
+        },
+        body: {
+          newPassword: formData.newPassword,
+        },
       },
       {
         onSuccess: () => {
@@ -44,31 +83,28 @@ export function UserUpdatePasswordForm({ user, className }: { user: UserDto; cla
           toast.success('Password reset successfully. The user will need to log in again with the new password.');
         },
         onError: (error) => {
-          const message: ErrorCodes = error.message as ErrorCodes;
+          const message = error.message as ResetPasswordErrorCodes;
           switch (message) {
             case 'account-not-found-error':
               toast.error('The specified account does not exist.');
               break;
             case 'invalid-password-error':
-              toast.error('The specified password is invalid.');
+              setError('newPassword', { type: 'manual', message: 'The specified password is invalid.' });
               break;
             case 'invalid-password-length-error':
-              toast.error('The new password length is invalid.');
+              setError('newPassword', { type: 'manual', message: 'The new password length is invalid.' });
               break;
             default:
-              toast.error(error.message);
+              // eslint-disable-next-line no-console
+              console.error('Unexpected error occurred while resetting password:', error);
+              toast.error('An internal server error occurred. Please try again later.');
               break;
           }
         },
       },
     );
     setOpen(false);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  });
 
   return (
     <>
@@ -88,28 +124,26 @@ export function UserUpdatePasswordForm({ user, className }: { user: UserDto; cla
               After resetting the password, the user will be required to log in again with the new password.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="newPassword">New password</Label>
               <Input
                 id="newPassword"
-                name="newPassword"
                 type="password"
-                value={formData.newPassword}
-                onChange={handleChange}
+                {...register('newPassword', { required: true })}
                 placeholder="Enter new password"
               />
+              <FormValidationError text={errors.newPassword?.message} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm password</Label>
               <Input
                 id="confirmPassword"
-                name="confirmPassword"
+                {...register('confirmPassword', { required: true })}
                 type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
                 placeholder="Enter new password"
               />
+              <FormValidationError text={errors.confirmPassword?.message} />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>

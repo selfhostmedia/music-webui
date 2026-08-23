@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { type DeleteErrorCodes, type RootPathDto, useRootPaths } from '@/hooks/admin/use-root-paths';
+import { type DeleteErrorCodes, type RootPathDto, useRootPaths } from '@/hooks/user/use-root-paths';
 import {
   Dialog,
   DialogContent,
@@ -33,7 +33,7 @@ export function RootPathDeleteForm({ rootPath }: { rootPath: RootPathDto }) {
             default:
               // eslint-disable-next-line no-console
               console.error('Unexpected error occurred while deleting root path:', error);
-              toast.error(error.message);
+              toast.error('An internal server error occurred. Please try again later.');
               break;
           }
         },
@@ -52,9 +52,10 @@ export function RootPathDeleteForm({ rootPath }: { rootPath: RootPathDto }) {
           <DialogHeader>
             <DialogTitle>Delete root path</DialogTitle>
             <DialogDescription>
-              Deleting the path will not delete the files from your disk, but it will remove all references to the files
-              in the database. These files can be reindexed any time by adding the path again, but custom metadata will
-              be permanently lost by this action.
+              Deleting the path will not delete your files from your disk, but it will remove all references to your
+              files in the database. These files can be reindexed any time by adding the path again, but custom metadata
+              will be permanently lost by this action. To preserve custom metadata an administrator can pause the
+              indexer, update this root path to a new location, and then resume the indexer.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={onSubmit} className="space-y-4">

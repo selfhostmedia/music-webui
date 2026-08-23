@@ -1,3 +1,9 @@
+import {
+  type AccountDto,
+  type UpdateRolesBodyDto,
+  type UpdateRolesErrorCodes,
+  useAccounts,
+} from '@/hooks/admin/use-accounts';
 import { Button } from '@/components/ui/button';
 import { Controller, useForm } from 'react-hook-form';
 import {
@@ -13,26 +19,15 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { UserRoleEnum } from '@/types/api-schema';
 import { toast } from 'sonner';
-import { useAccounts } from '@/hooks/use-accounts';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod/v3';
-import type { components } from '@/types/api-schema';
-
-type UserDto = components['schemas']['AdminAccountDto'];
-type ErrorCodes =
-  | components['schemas']['AdminUpdateUserRolesBadRequestErrorMessageEnum']
-  | components['schemas']['AdminUpdateUserRolesNotFoundErrorMessageEnum'];
-
-type FormData = {
-  roles: UserRoleEnum[];
-};
 
 const schema = z.object({
   roles: z.array(z.nativeEnum(UserRoleEnum)).min(1, { message: 'At least one role must be selected.' }),
 });
 
-export function UserUpdateRolesForm({ user, className }: { user: UserDto; className?: string }) {
+export function UserUpdateRolesForm({ user, className }: { user: AccountDto; className?: string }) {
   const [open, setOpen] = useState(false);
   const { updateRoles } = useAccounts();
   const {
@@ -40,18 +35,22 @@ export function UserUpdateRolesForm({ user, className }: { user: UserDto; classN
     formState: { errors },
     handleSubmit,
     setError,
-  } = useForm<FormData>({
+  } = useForm<UpdateRolesBodyDto>({
     defaultValues: {
       roles: user.roles,
     },
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = handleSubmit(async (formData: FormData) => {
+  const onSubmit = handleSubmit(async (formData: UpdateRolesBodyDto) => {
     await updateRoles(
       {
-        accountId: user.id,
-        roles: formData.roles,
+        query: {
+          id: user.id,
+        },
+        body: {
+          roles: formData.roles,
+        },
       },
       {
         onSuccess: () => {
@@ -59,7 +58,7 @@ export function UserUpdateRolesForm({ user, className }: { user: UserDto; classN
           toast.success('Roles updated successfully. The user will need to log in with the new permissions.');
         },
         onError: (error) => {
-          const message: ErrorCodes = error.message as ErrorCodes;
+          const message = error.message as UpdateRolesErrorCodes;
           switch (message) {
             case 'account-only-admin-error':
               setError('roles', {
@@ -80,7 +79,9 @@ export function UserUpdateRolesForm({ user, className }: { user: UserDto; classN
               });
               break;
             default:
-              toast.error(error.message);
+              // eslint-disable-next-line no-console
+              console.error('Unexpected error occurred while updating roles:', error);
+              toast.error('An internal server error occurred. Please try again later.');
               break;
           }
         },

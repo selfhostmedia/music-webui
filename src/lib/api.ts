@@ -1,5 +1,5 @@
 import createClient from 'openapi-fetch';
-import type { paths } from 'src/types/api-schema';
+import type { BadRequestErrorEnum, InternalServerErrorEnum, paths } from 'src/types/api-schema';
 
 const authHeader = () => {
   const token = sessionStorage.getItem('jwt-token') || localStorage.getItem('jwt-token');
@@ -32,3 +32,32 @@ export default {
   patch: client.PATCH,
   put: client.PUT,
 };
+
+export type ErrorResponse<T> = {
+  message: (T | GenericErrorCodes)[];
+};
+
+export class ApiError<T> extends Error {
+  declare errorCodes: (T | GenericErrorCodes)[];
+
+  constructor(public readonly error: ErrorResponse<T | GenericErrorCodes>) {
+    super(error.message.join(', '));
+    this.name = 'ApiError';
+    this.errorCodes = error.message;
+  }
+}
+
+export function getErrorMessage(error: unknown, fallbackMessage?: string): string {
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const { message } = error as { message?: unknown };
+    if (Array.isArray(message)) {
+      return message.join(', ');
+    }
+    if (typeof message === 'string') {
+      return message;
+    }
+  }
+  return fallbackMessage ?? 'Request failed';
+}
+
+export type GenericErrorCodes = InternalServerErrorEnum.internal_server_error | BadRequestErrorEnum.bad_request_error;

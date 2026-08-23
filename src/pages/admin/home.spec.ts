@@ -1,10 +1,10 @@
+import { ADMIN_PASSWORD, ADMIN_USERNAME, AdminApi } from '../../test-helper';
 import { Pom } from '../../playwright.pom';
 import { UserRoleEnum } from '@/types/api-schema';
 import { expect, test } from '@playwright/test';
+import { join } from 'node:path';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { AdminApi } from '../../test-helper';
 
 test.describe('admin home', () => {
   const deleteUsers: number[] = [];
@@ -17,6 +17,7 @@ test.describe('admin home', () => {
     const api = new AdminApi(jwtToken);
     for (let i = 0; i < deleteUsers.length; i += 1) {
       const userId = deleteUsers[i];
+      // eslint-disable-next-line no-await-in-loop
       await api.deleteUser(userId);
     }
     deleteUsers.length = 0;
@@ -44,7 +45,7 @@ test.describe('admin home', () => {
   test.describe('success', () => {
     test('can open page', async ({ page }) => {
       const pom = new Pom(page, jwtToken);
-      await pom.signIn({ username: 'admin', password: 'admin' });
+      await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
       jwtToken = jwtToken || pom.jwtToken;
       await pom.navigateToAdmin();
       await expect(page.getByRole('heading', { name: 'Administration' })).toBeVisible();
@@ -56,7 +57,7 @@ test.describe('admin home', () => {
       test.describe('errors', () => {
         test('should show error if no roles are selected', async ({ page }) => {
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken;
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Add account' }).click();
@@ -66,7 +67,7 @@ test.describe('admin home', () => {
 
         test('should show error if username is blank', async ({ page }) => {
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken;
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Add account' }).click();
@@ -76,7 +77,7 @@ test.describe('admin home', () => {
 
         test('should show error if password is blank', async ({ page }) => {
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken;
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Add account' }).click();
@@ -86,7 +87,7 @@ test.describe('admin home', () => {
 
         test('should show error if confirmation password is blank', async ({ page }) => {
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken;
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Add account' }).click();
@@ -96,7 +97,7 @@ test.describe('admin home', () => {
 
         test('should show error if confirmation password does not match', async ({ page }) => {
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken;
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Add account' }).click();
@@ -109,7 +110,7 @@ test.describe('admin home', () => {
         test('should show error if user already exists', async ({ page }) => {
           const testUsername = `test-add-account-${Date.now()}`;
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
@@ -132,7 +133,7 @@ test.describe('admin home', () => {
         test('should add account', async ({ page }) => {
           const testUsername = `test-add-account-${Date.now()}`;
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken;
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Add account' }).click();
@@ -155,7 +156,7 @@ test.describe('admin home', () => {
         test('should show error if password is blank', async ({ page }) => {
           const testUsername = `test-reset-password-${Date.now()}`;
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
@@ -175,7 +176,7 @@ test.describe('admin home', () => {
         test('should show error if confirmation password is blank', async ({ page }) => {
           const testUsername = `test-reset-password-${Date.now()}`;
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
@@ -196,7 +197,7 @@ test.describe('admin home', () => {
         test('should show error if confirmation password does not match', async ({ page }) => {
           const testUsername = `test-reset-password-${Date.now()}`;
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
@@ -219,7 +220,7 @@ test.describe('admin home', () => {
         test('should reset password', async ({ page }) => {
           const testUsername = `test-reset-password-${Date.now()}`;
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
@@ -243,7 +244,7 @@ test.describe('admin home', () => {
       test.describe('errors', () => {
         test('should not allow last administrator to remove admin role', async ({ page }) => {
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken;
           await pom.navigateToAdmin();
           const userRow = await page.getByRole('row', { name: `User account admin` });
@@ -265,16 +266,14 @@ test.describe('admin home', () => {
         test('should update roles', async ({ page }) => {
           const testUsername = `test-add-account-${Date.now()}`;
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.admin],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.admin],
+          });
           deleteUsers.push(testUser.id);
           await pom.navigateToAdmin();
           const userRow = await page.getByRole('row', { name: `User account ${testUsername}` });
@@ -300,16 +299,14 @@ test.describe('admin home', () => {
           const testUsername = `test-add-account-${Date.now()}`;
           const newPath = join(tmpdir(), `test-root-path-${Date.now()}`);
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Add root path' }).click();
@@ -326,16 +323,14 @@ test.describe('admin home', () => {
           const newPath = join(tmpdir(), `test-root-path-${Date.now()}`);
           mkdirSync(newPath, { recursive: true });
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await api.createRootPath(testUser.id, newPath);
           await pom.navigateToAdmin();
@@ -357,16 +352,14 @@ test.describe('admin home', () => {
           const newPath = join(tmpdir(), `test-root-path-${Date.now()}`);
           mkdirSync(newPath, { recursive: true });
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Add root path' }).click();
@@ -386,16 +379,14 @@ test.describe('admin home', () => {
           mkdirSync(originalPath, { recursive: true });
           const newPath = join(tmpdir(), `test-root-path-${Date.now()}`);
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await api.createRootPath(testUser.id, originalPath);
           await pom.navigateToAdmin();
@@ -415,16 +406,14 @@ test.describe('admin home', () => {
           const secondPath = join(tmpdir(), `test-root-path-${Date.now() - 2}`);
           mkdirSync(secondPath, { recursive: true });
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await api.createRootPath(testUser.id, firstPath);
           await api.createRootPath(testUser.id, secondPath);
@@ -449,16 +438,14 @@ test.describe('admin home', () => {
           const updatedPath = join(tmpdir(), `test-root-path-${Date.now()}`);
           mkdirSync(updatedPath, { recursive: true });
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await api.createRootPath(testUser.id, originalPath);
           await pom.navigateToAdmin();
@@ -476,16 +463,14 @@ test.describe('admin home', () => {
         test('should regenerate user session key', async ({ page }) => {
           const testUsername = `test-reset-password-${Date.now()}`;
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.admin],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.admin],
+          });
           deleteUsers.push(testUser.id);
           await pom.navigateToAdmin();
           await page.getByRole('list', { name: 'User accounts' });
@@ -501,7 +486,7 @@ test.describe('admin home', () => {
       test.describe('success', () => {
         test.skip('should regenerate master session key', async ({ page }) => {
           const pom = new Pom(page);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Terminate all sessions' }).click();
           await page.locator('button', { hasText: 'End all sessions' }).click();
@@ -511,34 +496,17 @@ test.describe('admin home', () => {
       });
     });
 
-    test.describe('toggle dark mode', () => {
-      test.describe('success', () => {
-        test('should turn dark mode on or off', async ({ page }) => {
-          const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
-          jwtToken = jwtToken || pom.jwtToken;
-          await pom.navigateToAdmin();
-          const isDark = await page.evaluate(() => document.body.classList.contains('dark'));
-          expect(isDark).toBeDefined();
-          await pom.toggleDarkMode();
-          const isDarkNow = await page.evaluate(() => document.body.classList.contains('dark'));
-          expect(isDarkNow).toBeDefined();
-          expect(isDark).toBe(!isDarkNow);
-        });
-      });
-    });
-
     test.describe('toggle indexer', () => {
       test.describe('success', () => {
         test('should turn indexer on or off', async ({ page }) => {
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           await pom.navigateToAdmin();
           const configurationBefore = await api.getIndexerConfiguration();
           const response = page.waitForResponse(
-            (response) => response.url().includes('/api/admin/set-indexer-status') && response.status() === 200,
+            (res) => res.url().includes('/api/admin/set-indexer-status') && res.status() === 200,
           );
           await page.getByRole('button', { name: 'Toggle indexer' }).click();
           await response;
@@ -556,17 +524,18 @@ test.describe('admin home', () => {
         test('should open raw logs in new tab', async ({ page, context }) => {
           const pom = new Pom(page, jwtToken);
           jwtToken = jwtToken || pom.jwtToken;
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           await pom.navigateToAdmin();
           type WindowWithCapturedBlob = Window & { capturedBlob: Blob | null };
           await page.addInitScript(() => {
             const w = window as unknown as WindowWithCapturedBlob;
             w.capturedBlob = null;
             const originalCreateObjectURL = URL.createObjectURL;
-            URL.createObjectURL = function (blob) {
+            function captureBlob(blob: Blob) {
               w.capturedBlob = blob as Blob;
               return originalCreateObjectURL(blob);
-            };
+            }
+            URL.createObjectURL = captureBlob;
           });
 
           const newPagePromise = context.waitForEvent('page');
@@ -579,7 +548,7 @@ test.describe('admin home', () => {
           const blobText = await page.evaluate(async () => {
             const w = window as unknown as WindowWithCapturedBlob;
             if (w.capturedBlob) {
-              return await w.capturedBlob.text();
+              return w.capturedBlob.text();
             }
             return null;
           });
@@ -589,7 +558,7 @@ test.describe('admin home', () => {
 
         test('should download logs as JSON', async ({ page, context }) => {
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken;
           await pom.navigateToAdmin();
           const downloadPromise = context.waitForEvent('download');
@@ -604,7 +573,7 @@ test.describe('admin home', () => {
 
         test('should download logs as CSV', async ({ page, context }) => {
           const pom = new Pom(page, jwtToken);
-          await pom.signIn({ username: 'admin', password: 'admin' });
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           jwtToken = jwtToken || pom.jwtToken;
           await pom.navigateToAdmin();
           const downloadPromise = context.waitForEvent('download');

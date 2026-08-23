@@ -8,11 +8,10 @@ import {
   DataTableRow,
 } from '../../components/data-table';
 import { RootPathDeleteForm } from './root-path-delete-form';
-import { RootPathUpdateForm } from './root-path-update-form';
 import { Separator } from '@/components/ui/separator';
 import { formatNumber, formatSize } from '@/utils/format';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { useRootPaths } from '@/hooks/admin/use-root-paths';
+import { useRootPaths } from '@/hooks/user/use-root-paths';
 
 export function RootPathTable() {
   const { rootPaths, isLoading } = useRootPaths();
@@ -22,7 +21,6 @@ export function RootPathTable() {
   const dummyRows = [
     {
       id: -1,
-      accountId: -1,
       rootPath: '',
       fileCount: -1,
       totalSize: -1,
@@ -31,7 +29,6 @@ export function RootPathTable() {
     },
     {
       id: -2,
-      accountId: -2,
       rootPath: '',
       fileCount: -2,
       totalSize: -2,
@@ -40,7 +37,6 @@ export function RootPathTable() {
     },
     {
       id: -3,
-      accountId: -3,
       rootPath: '',
       fileCount: -3,
       totalSize: -3,
@@ -55,17 +51,11 @@ export function RootPathTable() {
       {isMobile && (
         <div role="list" aria-label="Root paths">
           {(isLoading ? dummyRows : rootPaths).map((rootPath) => {
-            const ariaLabel = `Root path for ${
-              rootPath.username ? `${rootPath.username} ${rootPath.rootPath}` : 'loading'
-            }`;
+            const ariaLabel = `Root path for ${rootPath.rootPath || 'loading'}`;
             return (
               <DataCard key={`card-${rootPath.id}`} role="row" aria-label={ariaLabel} className="mb-4">
-                <DataCardTitle>{rootPath.username}</DataCardTitle>
+                <DataCardTitle>{rootPath.rootPath}</DataCardTitle>
                 <DataCardContent>
-                  <div>
-                    <DataCardSubtitle>Path</DataCardSubtitle>
-                    <p className="break-all text-sm">{rootPath.rootPath}</p>
-                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <DataCardSubtitle>Files</DataCardSubtitle>
@@ -79,7 +69,6 @@ export function RootPathTable() {
                 </DataCardContent>
                 <Separator />
                 <DataCardFooter>
-                  <RootPathUpdateForm rootPath={rootPath} />
                   <RootPathDeleteForm rootPath={rootPath} />
                 </DataCardFooter>
               </DataCard>
@@ -91,7 +80,6 @@ export function RootPathTable() {
       {!isMobile && (
         <DataTable role="table" aria-label="Root paths">
           <DataTableHeader>
-            <DataTableHeaderCell className="w-50">Username</DataTableHeaderCell>
             <DataTableHeaderCell className="w-100">Path</DataTableHeaderCell>
             <DataTableHeaderCell className="w-25">Files</DataTableHeaderCell>
             <DataTableHeaderCell className="w-25">Size</DataTableHeaderCell>
@@ -100,12 +88,9 @@ export function RootPathTable() {
           <DataTableBody>
             {(isLoading ? dummyRows : rootPaths).map((rootPath, index) => {
               const opacity = index % 2 === 0 ? 20 : 10;
-              const ariaLabel = `Root path for ${
-                rootPath.username ? `${rootPath.username} ${rootPath.rootPath}` : 'loading'
-              }`;
+              const ariaLabel = `Root path for ${rootPath.rootPath || 'loading'}`;
               return (
                 <DataTableRow key={`row-${rootPath.id}`} role="row" aria-label={ariaLabel}>
-                  <DataTableCell>{rootPath.username || cellFiller(opacity)}</DataTableCell>
                   <DataTableCell>{rootPath.rootPath || cellFiller(opacity)}</DataTableCell>
                   <DataTableCell>
                     {rootPath.fileCount > -1 ? formatNumber(rootPath.fileCount) : cellFiller(opacity)}
@@ -116,7 +101,6 @@ export function RootPathTable() {
                   <DataTableCell>
                     {rootPath.id > 0 ? (
                       <div className="flex gap-2 whitespace-nowrap">
-                        <RootPathUpdateForm rootPath={rootPath} />
                         <RootPathDeleteForm rootPath={rootPath} />
                       </div>
                     ) : (

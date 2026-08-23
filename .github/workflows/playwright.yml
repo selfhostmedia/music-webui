@@ -27,15 +27,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+      - name: Determine current branch
+        id: branch
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            branch="${{ github.head_ref }}"
+          else
+            branch="${{ github.ref_name }}"
+          fi
+          # Docker build arguments cannot safely contain a newline.
+          branch="${branch//$'\n'/}"
+          branch="${branch//$'\r'/}"
+          echo "Using branch: $branch"
+          echo "name=$branch" >> "$GITHUB_OUTPUT"
       - name: Clone music-server repo
         run: |
           git clone https://github.com/${{ github.repository_owner }}/music-server.git music-server
           cd music-server
-          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
-            echo "Using frontend branch: $branch"
-            git fetch origin "$branch"
-            git checkout -B "$branch" "origin/$branch"
+          if git ls-remote --exit-code --heads origin "${{ steps.branch.outputs.name }}" >/dev/null 2>&1; then
+            echo "Using frontend branch: ${{ steps.branch.outputs.name }}"
+            git fetch origin "${{ steps.branch.outputs.name }}"
+            git checkout -B "${{ steps.branch.outputs.name }}" "origin/${{ steps.branch.outputs.name }}"
           fi
       - name: Use Node.js 24
         uses: actions/setup-node@v4
@@ -45,19 +58,15 @@ jobs:
           cache-dependency-path: |
             music-server/package-lock.json
             package-lock.json
-
       - name: Install music-webui dependencies
         run: npm ci
-
       - name: Install music-server dependencies
         run: npm ci
         working-directory: music-server
-
-      # This is only needed if the playwright version in the 
+      # This is only needed if the playwright version in the
       # package is different to the playwright version of the
       # docker image.  If they are aligned then everything is
       # ready to use.
-
       # - name: Run Playwright setup
       #   run: |
       #     if [ "${{ matrix.project }}" = "firefox" ]; then
@@ -67,19 +76,16 @@ jobs:
       #     else
       #       npx playwright install --with-deps
       #     fi
-
       - name: Start backend
         run: |
           LOG_FILE="$RUNNER_TEMP/backend.log"
           npm run start:test > "$LOG_FILE" 2>&1 &
         working-directory: music-server
-
       - name: Start frontend
         run: |
           LOG_FILE="$RUNNER_TEMP/frontend.log"
           npm run build:test
           npm run start:test > "$LOG_FILE" 2>&1 &
-
       - name: Wait for backend to start
         run: |
           LOG_FILE="$RUNNER_TEMP/backend.log"
@@ -95,7 +101,6 @@ jobs:
           done
           echo "Backend did not emit the expected startup message within 120 seconds"
           exit 1
-
       - name: Wait for frontend to start
         run: |
           LOG_FILE="$RUNNER_TEMP/frontend.log"
@@ -116,8 +121,6 @@ jobs:
         run: npm run test -- --project=${{ matrix.project }}
         env:
           HOME: /root
-
-
       - name: Backend debugging logs
         if: failure()
         shell: bash
@@ -128,7 +131,6 @@ jobs:
           else
             echo "No backend.log found at $RUNNER_TEMP/backend.log"
           fi
-
       - name: Frontend debugging logs
         if: failure()
         shell: bash
@@ -139,7 +141,6 @@ jobs:
           else
             echo "No frontend.log found at $RUNNER_TEMP/frontend.log"
           fi
-
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

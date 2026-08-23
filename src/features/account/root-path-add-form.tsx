@@ -1,11 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Controller, useForm } from 'react-hook-form';
-import {
-  type CreateBodyDto,
-  type CreateErrorCodes,
-  type CreateQueryDto,
-  useRootPaths,
-} from '@/hooks/admin/use-root-paths';
+import { type CreateBodyDto, type CreateErrorCodes, useRootPaths } from '@/hooks/user/use-root-paths';
 import {
   Dialog,
   DialogContent,
@@ -17,20 +11,14 @@ import {
 import { FormValidationError } from '@/components/form-validation-error';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { useAccounts } from '@/hooks/admin/use-accounts';
+import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod/v3';
 
-type FormData = CreateQueryDto & CreateBodyDto;
-
 const schema = z.object({
-  id: z.number().refine((val) => val > 0, {
-    message: 'Account is required',
-  }),
   rootPath: z
     .string()
     .refine((val) => val.length > 0, {
@@ -46,24 +34,19 @@ const schema = z.object({
 
 export function RootPathAddForm() {
   const [open, setOpen] = useState(false);
-  const { accounts } = useAccounts();
   const { createRootPath } = useRootPaths();
   const {
-    control,
     formState: { errors },
     handleSubmit,
     register,
     setError,
-  } = useForm<FormData>({
+  } = useForm<CreateBodyDto>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = handleSubmit(async (formData: FormData) => {
+  const onSubmit = handleSubmit(async (formData: CreateBodyDto) => {
     await createRootPath(
       {
-        query: {
-          id: formData.id,
-        },
         body: {
           rootPath: formData.rootPath,
         },
@@ -84,9 +67,6 @@ export function RootPathAddForm() {
                 type: 'manual',
                 message: 'The specified root path has already been added to this account.',
               });
-              break;
-            case 'account-not-found-error':
-              setError('id', { type: 'manual', message: 'The specified account does not exist.' });
               break;
             default:
               // eslint-disable-next-line no-console
@@ -111,35 +91,12 @@ export function RootPathAddForm() {
             <DialogTitle>Add root path</DialogTitle>
             <DialogDescription>
               <span className="block mb-4">
-                Users can configure their own root paths or you can do it on their behalf.
+                Add a path containing some or all of your music library. The indexer will scan this path for music files
+                and add them to your library. You can have multiple paths.
               </span>
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={onSubmit} className="space-y-4">
-            <Controller
-              name="id"
-              control={control}
-              render={({ field }) => (
-                <div className="space-y-2">
-                  <Label htmlFor="accountId">Account</Label>
-                  <NativeSelect
-                    id="accountId"
-                    name="accountId"
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                    value={field.value}
-                    className="w-full"
-                  >
-                    <NativeSelectOption value={0}>Select an account</NativeSelectOption>
-                    {accounts?.map((account) => (
-                      <NativeSelectOption key={account.id} value={account.id}>
-                        {account.username}
-                      </NativeSelectOption>
-                    ))}
-                  </NativeSelect>
-                  <FormValidationError text={errors.id?.message} />
-                </div>
-              )}
-            />
             <div className="space-y-2">
               <Label htmlFor="rootPath">New path</Label>
               <Input id="rootPath" {...register('rootPath', { required: true })} placeholder="Enter new path" />
