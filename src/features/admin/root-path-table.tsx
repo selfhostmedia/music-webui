@@ -1,44 +1,22 @@
+import { DataCard, DataCardContent, DataCardFooter, DataCardSubtitle, DataCardTitle } from '@/components/data-card';
 import {
-  AdminCard,
-  AdminCardContent,
-  AdminCardFooter,
-  AdminCardSubtitle,
-  AdminCardTitle,
-} from '@/components/admin-card';
-import {
-  AdminTable,
-  AdminTableBody,
-  AdminTableCell,
-  AdminTableHeader,
-  AdminTableHeaderCell,
-  AdminTableRow,
-} from '../../components/admin-table';
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHeader,
+  DataTableHeaderCell,
+  DataTableRow,
+} from '../../components/data-table';
 import { RootPathDeleteForm } from './root-path-delete-form';
 import { RootPathUpdateForm } from './root-path-update-form';
 import { Separator } from '@/components/ui/separator';
+import { formatNumber, formatSize } from '@/utils/format';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { useRootPaths } from '@/hooks/use-root-paths';
+import { useRootPaths } from '@/hooks/admin/use-root-paths';
 
 export function RootPathTable() {
   const { rootPaths, isLoading } = useRootPaths();
   const isMobile = useIsMobile();
-
-  function formatNumber(num: number): string {
-    return new Intl.NumberFormat().format(num);
-  }
-
-  function formatSize(size: number): string {
-    if (size >= 1e9) {
-      return `${(size / 1e9).toFixed(2)} GB`;
-    }
-    if (size >= 1e6) {
-      return `${(size / 1e6).toFixed(2)} MB`;
-    }
-    if (size >= 1e3) {
-      return `${(size / 1e3).toFixed(2)} KB`;
-    }
-    return `${size} B`;
-  }
 
   const cellFiller = (opacity: number) => <span className={`bg-foreground/${opacity} h-8 w-full block`} />;
   const dummyRows = [
@@ -81,61 +59,61 @@ export function RootPathTable() {
               rootPath.username ? `${rootPath.username} ${rootPath.rootPath}` : 'loading'
             }`;
             return (
-              <AdminCard key={`card-${rootPath.id}`} role="row" aria-label={ariaLabel}>
-                <AdminCardTitle>{rootPath.username}</AdminCardTitle>
-                <AdminCardContent>
+              <DataCard key={`card-${rootPath.id}`} role="row" aria-label={ariaLabel}>
+                <DataCardTitle>{rootPath.username}</DataCardTitle>
+                <DataCardContent>
                   <div>
-                    <AdminCardSubtitle>Path</AdminCardSubtitle>
+                    <DataCardSubtitle>Path</DataCardSubtitle>
                     <p className="break-all text-sm">{rootPath.rootPath}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <AdminCardSubtitle>Files</AdminCardSubtitle>
+                      <DataCardSubtitle>Files</DataCardSubtitle>
                       <p className="text-sm">{formatNumber(rootPath.fileCount)}</p>
                     </div>
                     <div>
-                      <AdminCardSubtitle>Size</AdminCardSubtitle>
+                      <DataCardSubtitle>Size</DataCardSubtitle>
                       <p className="text-sm">{formatSize(rootPath.totalSize)}</p>
                     </div>
                   </div>
-                </AdminCardContent>
+                </DataCardContent>
                 <Separator />
-                <AdminCardFooter>
+                <DataCardFooter>
                   <RootPathUpdateForm rootPath={rootPath} />
                   <RootPathDeleteForm rootPath={rootPath} />
-                </AdminCardFooter>
-              </AdminCard>
+                </DataCardFooter>
+              </DataCard>
             );
           })}
         </div>
       )}
       {/* Desktop table view */}
       {!isMobile && (
-        <AdminTable role="table" aria-label="Root paths">
-          <AdminTableHeader>
-            <AdminTableHeaderCell className="w-50">Username</AdminTableHeaderCell>
-            <AdminTableHeaderCell className="w-100">Path</AdminTableHeaderCell>
-            <AdminTableHeaderCell className="w-25">Files</AdminTableHeaderCell>
-            <AdminTableHeaderCell className="w-25">Size</AdminTableHeaderCell>
-            <AdminTableHeaderCell>Actions</AdminTableHeaderCell>
-          </AdminTableHeader>
-          <AdminTableBody>
+        <DataTable role="table" aria-label="Root paths">
+          <DataTableHeader>
+            <DataTableHeaderCell className="w-50">Username</DataTableHeaderCell>
+            <DataTableHeaderCell className="w-100">Path</DataTableHeaderCell>
+            <DataTableHeaderCell className="w-25">Files</DataTableHeaderCell>
+            <DataTableHeaderCell className="w-25">Size</DataTableHeaderCell>
+            <DataTableHeaderCell>Actions</DataTableHeaderCell>
+          </DataTableHeader>
+          <DataTableBody>
             {(isLoading ? dummyRows : rootPaths).map((rootPath, index) => {
               const opacity = index % 2 === 0 ? 20 : 10;
               const ariaLabel = `Root path for ${
                 rootPath.username ? `${rootPath.username} ${rootPath.rootPath}` : 'loading'
               }`;
               return (
-                <AdminTableRow key={`row-${rootPath.id}`} role="row" aria-label={ariaLabel}>
-                  <AdminTableCell>{rootPath.username || cellFiller(opacity)}</AdminTableCell>
-                  <AdminTableCell>{rootPath.rootPath || cellFiller(opacity)}</AdminTableCell>
-                  <AdminTableCell>
+                <DataTableRow key={`row-${rootPath.id}`} role="row" aria-label={ariaLabel}>
+                  <DataTableCell>{rootPath.username || cellFiller(opacity)}</DataTableCell>
+                  <DataTableCell>{rootPath.rootPath || cellFiller(opacity)}</DataTableCell>
+                  <DataTableCell>
                     {rootPath.fileCount > -1 ? formatNumber(rootPath.fileCount) : cellFiller(opacity)}
-                  </AdminTableCell>
-                  <AdminTableCell>
+                  </DataTableCell>
+                  <DataTableCell>
                     {rootPath.totalSize > 1 ? formatSize(rootPath.totalSize) : cellFiller(opacity)}
-                  </AdminTableCell>
-                  <AdminTableCell>
+                  </DataTableCell>
+                  <DataTableCell>
                     {rootPath.id > 0 ? (
                       <div className="flex gap-2 whitespace-nowrap">
                         <RootPathUpdateForm rootPath={rootPath} />
@@ -144,12 +122,12 @@ export function RootPathTable() {
                     ) : (
                       cellFiller(opacity)
                     )}
-                  </AdminTableCell>
-                </AdminTableRow>
+                  </DataTableCell>
+                </DataTableRow>
               );
             })}
-          </AdminTableBody>
-        </AdminTable>
+          </DataTableBody>
+        </DataTable>
       )}
     </>
   );

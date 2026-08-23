@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { type DeleteErrorCodes, type RootPathDto, useRootPaths } from '@/hooks/admin/use-root-paths';
 import {
   Dialog,
   DialogContent,
@@ -8,36 +9,37 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { useRootPaths } from '@/hooks/use-root-paths';
+import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import type { components } from '@/types/api-schema';
-
-type RootPathDto = components['schemas']['AdminRootPathDto'];
-type ErrorCodes = components['schemas']['AdminDeleteRootPathNotFoundErrorMessageEnum'];
 
 export function RootPathDeleteForm({ rootPath }: { rootPath: RootPathDto }) {
   const [open, setOpen] = useState(false);
   const { deleteRootPath } = useRootPaths();
+  const { handleSubmit } = useForm();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await deleteRootPath(rootPath.id, {
-      onSuccess: () => {
-        setOpen(false);
+  const onSubmit = handleSubmit(async () => {
+    await deleteRootPath(
+      { query: { id: rootPath.id } },
+      {
+        onSuccess: () => {
+          setOpen(false);
+        },
+        onError: (error) => {
+          const errorMessage = error.message as DeleteErrorCodes;
+          switch (errorMessage) {
+            case 'root-path-not-found-error':
+              toast.error('The specified root path ID is invalid.');
+              break;
+            default:
+              // eslint-disable-next-line no-console
+              console.error('Unexpected error occurred while deleting root path:', error);
+              toast.error(error.message);
+              break;
+          }
+        },
       },
-      onError: (error) => {
-        const errorMessage = error.message as ErrorCodes;
-        switch (errorMessage) {
-          case 'root-path-not-found-error':
-            toast.error('The specified root path ID is invalid.');
-            break;
-          default:
-            toast.error(error.message);
-            break;
-        }
-      },
-    });
-  };
+    );
+  });
 
   return (
     <>
@@ -55,7 +57,7 @@ export function RootPathDeleteForm({ rootPath }: { rootPath: RootPathDto }) {
               be permanently lost by this action.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel

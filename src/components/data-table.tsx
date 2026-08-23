@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function AdminTable({
+export function DataTable({
   children,
   ...rest
 }: { children: React.ReactNode } & React.HTMLAttributes<HTMLTableElement>) {
@@ -13,7 +13,7 @@ export function AdminTable({
   );
 }
 
-export function AdminTableHeader({ children, className }: { children: React.ReactNode; className?: string }) {
+export function DataTableHeader({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <thead>
       <tr className={className || ''}>{children}</tr>
@@ -21,7 +21,7 @@ export function AdminTableHeader({ children, className }: { children: React.Reac
   );
 }
 
-export function AdminTableHeaderCell({ children, className }: { children: React.ReactNode; className?: string }) {
+export function DataTableHeaderCell({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <th className={`text-xs uppercase text-foreground/75 bg-background/50 p-2 text-left ${className ?? ''}`}>
       {children}
@@ -29,17 +29,17 @@ export function AdminTableHeaderCell({ children, className }: { children: React.
   );
 }
 
-export function AdminTableRow({
+export function DataTableRow({
   children,
   ...rest
 }: { children: React.ReactNode } & React.HTMLAttributes<HTMLTableRowElement>) {
   return <tr {...rest}>{children}</tr>;
 }
 
-export function AdminTableCell({ children, className }: { children: React.ReactNode; className?: string }) {
+export function DataTableCell({ children, className }: { children: React.ReactNode; className?: string }) {
   return <td className={`p-2 text-sm ${className ?? ''}`}>{children}</td>;
 }
 
-export function AdminTableBody({ children }: { children: React.ReactNode }) {
+export function DataTableBody({ children }: { children: React.ReactNode }) {
   return <tbody>{children}</tbody>;
 }

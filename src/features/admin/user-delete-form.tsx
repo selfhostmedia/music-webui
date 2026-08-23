@@ -1,3 +1,4 @@
+import { type AccountDto, type DeleteAccountErrorCodes, useAccounts } from '@/hooks/admin/use-accounts';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,44 +9,43 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { useAccounts } from '@/hooks/use-accounts';
+import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import type { components } from '@/types/api-schema';
 
-type UserDto = components['schemas']['AdminAccountDto'];
-type ErrorCodes =
-  | components['schemas']['AdminDeleteAccountBadRequestErrorMessageEnum']
-  | components['schemas']['AdminDeleteAccountNotFoundErrorMessageEnum'];
-
-export function UserDeleteForm({ user, className }: { user: UserDto; className?: string }) {
+export function UserDeleteForm({ user, className }: { user: AccountDto; className?: string }) {
   const [open, setOpen] = useState(false);
   const { deleteAccount } = useAccounts();
+  const { handleSubmit } = useForm();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await deleteAccount(user.id, {
-      onSuccess: () => {
-        setOpen(false);
+  const onSubmit = handleSubmit(async () => {
+    await deleteAccount(
+      { query: { id: user.id } },
+      {
+        onSuccess: () => {
+          setOpen(false);
+        },
+        onError: (error) => {
+          const message = error.message as DeleteAccountErrorCodes;
+          switch (message) {
+            case 'account-not-found-error':
+              toast.error('The specified account does not exist.');
+              break;
+            case 'invalid-account-id-error':
+              toast.error('The specified account ID is invalid.');
+              break;
+            case 'account-only-admin-error':
+              toast.error('You must create a new admin account before deleting this one.');
+              break;
+            default:
+              // eslint-disable-next-line no-console
+              console.error('Unexpected error occurred while deleting account:', error);
+              toast.error('An internal server error occurred. Please try again later.');
+              break;
+          }
+        },
       },
-      onError: (error) => {
-        const message: ErrorCodes = error.message as ErrorCodes;
-        switch (message) {
-          case 'account-not-found-error':
-            toast.error('The specified account does not exist.');
-            break;
-          case 'invalid-account-id-error':
-            toast.error('The specified account ID is invalid.');
-            break;
-          case 'account-only-admin-error':
-            toast.error('You must create a new admin account before deleting this one.');
-            break;
-          default:
-            toast.error(error.message);
-            break;
-        }
-      },
-    });
-  };
+    );
+  });
 
   return (
     <>
@@ -66,7 +66,7 @@ export function UserDeleteForm({ user, className }: { user: UserDto; className?:
               files from your disk.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel

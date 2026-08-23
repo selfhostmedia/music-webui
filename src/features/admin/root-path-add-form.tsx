@@ -1,6 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Controller, useForm } from 'react-hook-form';
 import {
+  type CreateBodyDto,
+  type CreateErrorCodes,
+  type CreateQueryDto,
+  useRootPaths,
+} from '@/hooks/admin/use-root-paths';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -14,24 +20,15 @@ import { Label } from '@/components/ui/label';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { useAccounts } from '@/hooks/use-accounts';
-import { useRootPaths } from '@/hooks/use-root-paths';
+import { useAccounts } from '@/hooks/admin/use-accounts';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod/v3';
-import type { components } from '@/types/api-schema';
 
-type ErrorCodes =
-  | components['schemas']['AdminCreateRootPathBadRequestErrorMessageEnum']
-  | components['schemas']['AdminCreateRootPathNotFoundErrorMessageEnum'];
-
-type FormData = {
-  accountId: number;
-  rootPath: string;
-};
+type FormData = CreateQueryDto & CreateBodyDto;
 
 const schema = z.object({
-  accountId: z.number().refine((val) => val > 0, {
+  id: z.number().refine((val) => val > 0, {
     message: 'Account is required',
   }),
   rootPath: z
@@ -64,7 +61,9 @@ export function RootPathAddForm() {
   const onSubmit = handleSubmit(async (formData: FormData) => {
     await createRootPath(
       {
-        accountId: formData.accountId,
+        query: {
+          id: formData.id,
+        },
         body: {
           rootPath: formData.rootPath,
         },
@@ -75,7 +74,7 @@ export function RootPathAddForm() {
           toast.success('Root path added successfully.  It will begin indexing shortly if the indexer is enabled.');
         },
         onError: (error) => {
-          const message: ErrorCodes = error.message as ErrorCodes;
+          const message = error.message as CreateErrorCodes;
           switch (message) {
             case 'root-path-does-not-exist-error':
               setError('rootPath', { type: 'manual', message: 'The specified root path does not exist.' });
@@ -87,10 +86,12 @@ export function RootPathAddForm() {
               });
               break;
             case 'account-not-found-error':
-              setError('accountId', { type: 'manual', message: 'The specified account does not exist.' });
+              setError('id', { type: 'manual', message: 'The specified account does not exist.' });
               break;
             default:
-              toast.error(error.message);
+              // eslint-disable-next-line no-console
+              console.error('Unexpected error occurred while adding root path:', error);
+              toast.error('An internal server error occurred. Please try again later.');
               break;
           }
         },
@@ -116,7 +117,7 @@ export function RootPathAddForm() {
           </DialogHeader>
           <form onSubmit={onSubmit} className="space-y-4">
             <Controller
-              name="accountId"
+              name="id"
               control={control}
               render={({ field }) => (
                 <div className="space-y-2">
@@ -135,7 +136,7 @@ export function RootPathAddForm() {
                       </NativeSelectOption>
                     ))}
                   </NativeSelect>
-                  <FormValidationError text={errors.accountId?.message} />
+                  <FormValidationError text={errors.id?.message} />
                 </div>
               )}
             />

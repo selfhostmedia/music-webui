@@ -1,29 +1,23 @@
-import {
-  AdminCard,
-  AdminCardContent,
-  AdminCardFooter,
-  AdminCardSubtitle,
-  AdminCardTitle,
-} from '@/components/admin-card';
-import {
-  AdminTable,
-  AdminTableBody,
-  AdminTableCell,
-  AdminTableHeader,
-  AdminTableHeaderCell,
-  AdminTableRow,
-} from '../../components/admin-table';
 import { Badge } from '@/components/ui/badge';
+import { DataCard, DataCardContent, DataCardFooter, DataCardSubtitle, DataCardTitle } from '@/components/data-card';
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHeader,
+  DataTableHeaderCell,
+  DataTableRow,
+} from '../../components/data-table';
 import { Separator } from '@/components/ui/separator';
 import { UserDeleteForm } from './user-delete-form';
+import { UserResetPasswordForm } from './user-reset-password';
 import { UserRotateSessionKeyForm } from './user-rotate-session-key-form';
-import { UserUpdatePasswordForm } from './user-update-password';
 import { UserUpdateRolesForm } from './user-update-roles';
-import { useAccounts } from '@/hooks/use-accounts';
+import { useAccounts } from '@/hooks/admin/use-accounts';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 
 export function UserTable() {
-  const { accounts, isLoading } = useAccounts();
+  const { accounts, isLoadingAccounts } = useAccounts();
   const isMobile = useIsMobile();
 
   const cellFiller = (opacity: number) => <span className={`bg-foreground/${opacity} h-8 w-full block`} />;
@@ -53,17 +47,17 @@ export function UserTable() {
       {/* Mobile card view */}
       {isMobile && (
         <div role="list" aria-label="User accounts">
-          {(isLoading ? dummyRows : accounts).map((account, index) => {
+          {(isLoadingAccounts ? dummyRows : accounts).map((account, index) => {
             const opacity = index % 2 === 0 ? 20 : 10;
             return (
-              <AdminCard
+              <DataCard
                 key={`card-${account.id}`}
                 role="row"
                 aria-label={`User account ${account.username || 'loading'}`}
               >
-                <AdminCardTitle>{account.username || cellFiller(opacity)}</AdminCardTitle>
-                <AdminCardContent>
-                  <AdminCardSubtitle>Role(s)</AdminCardSubtitle>
+                <DataCardTitle>{account.username || cellFiller(opacity)}</DataCardTitle>
+                <DataCardContent>
+                  <DataCardSubtitle>Role(s)</DataCardSubtitle>
                   {account.roles.length ? (
                     <div className="flex flex-wrap gap-2">
                       {account.roles.map((role) => (
@@ -75,21 +69,21 @@ export function UserTable() {
                   ) : (
                     cellFiller(opacity)
                   )}
-                </AdminCardContent>
+                </DataCardContent>
                 <Separator />
-                <AdminCardFooter>
+                <DataCardFooter>
                   {account.id > 0 ? (
                     <>
                       <UserRotateSessionKeyForm user={account} />
                       <UserUpdateRolesForm user={account} />
-                      <UserUpdatePasswordForm user={account} />
+                      <UserResetPasswordForm user={account} />
                       <UserDeleteForm user={account} />
                     </>
                   ) : (
                     cellFiller(opacity)
                   )}
-                </AdminCardFooter>
-              </AdminCard>
+                </DataCardFooter>
+              </DataCard>
             );
           })}
         </div>
@@ -97,23 +91,23 @@ export function UserTable() {
 
       {/* Desktop table view */}
       {!isMobile && (
-        <AdminTable role="table" aria-label="User accounts">
-          <AdminTableHeader>
-            <AdminTableHeaderCell className="w-50">Username</AdminTableHeaderCell>
-            <AdminTableHeaderCell className="w-50">Role(s)</AdminTableHeaderCell>
-            <AdminTableHeaderCell>Actions</AdminTableHeaderCell>
-          </AdminTableHeader>
-          <AdminTableBody>
-            {(isLoading ? dummyRows : accounts).map((account, index) => {
+        <DataTable role="table" aria-label="User accounts">
+          <DataTableHeader>
+            <DataTableHeaderCell className="w-50">Username</DataTableHeaderCell>
+            <DataTableHeaderCell className="w-50">Role(s)</DataTableHeaderCell>
+            <DataTableHeaderCell>Actions</DataTableHeaderCell>
+          </DataTableHeader>
+          <DataTableBody>
+            {(isLoadingAccounts ? dummyRows : accounts).map((account, index) => {
               const opacity = index % 2 === 0 ? 20 : 10;
               return (
-                <AdminTableRow
+                <DataTableRow
                   key={`row-${account.id}`}
                   role="row"
                   aria-label={`User account ${account.username || 'loading'}`}
                 >
-                  <AdminTableCell>{account.username || cellFiller(opacity)}</AdminTableCell>
-                  <AdminTableCell>
+                  <DataTableCell>{account.username || cellFiller(opacity)}</DataTableCell>
+                  <DataTableCell>
                     {account.roles.length
                       ? account.roles.map((role) => (
                           <Badge
@@ -125,24 +119,24 @@ export function UserTable() {
                           </Badge>
                         ))
                       : cellFiller(opacity)}
-                  </AdminTableCell>
-                  <AdminTableCell>
+                  </DataTableCell>
+                  <DataTableCell>
                     {account.id > 0 ? (
                       <div className="flex gap-2 whitespace-nowrap">
                         <UserRotateSessionKeyForm user={account} className="mr-4" />
                         <UserUpdateRolesForm user={account} className="mr-4" />
-                        <UserUpdatePasswordForm user={account} className="mr-4" />
+                        <UserResetPasswordForm user={account} className="mr-4" />
                         <UserDeleteForm user={account} className="mr-4" />
                       </div>
                     ) : (
                       cellFiller(opacity)
                     )}
-                  </AdminTableCell>
-                </AdminTableRow>
+                  </DataTableCell>
+                </DataTableRow>
               );
             })}
-          </AdminTableBody>
-        </AdminTable>
+          </DataTableBody>
+        </DataTable>
       )}
     </>
   );

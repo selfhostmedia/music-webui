@@ -1,65 +1,28 @@
-import { AdminCard, AdminCardContent, AdminCardSubtitle, AdminCardTitle } from '@/components/admin-card';
-import {
-  AdminTable,
-  AdminTableBody,
-  AdminTableCell,
-  AdminTableHeader,
-  AdminTableHeaderCell,
-  AdminTableRow,
-} from '@/components';
 import { Button } from '@/components/ui/button';
+import { DataCard, DataCardContent, DataCardSubtitle, DataCardTitle } from '@/components/data-card';
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHeader,
+  DataTableHeaderCell,
+  DataTableRow,
+} from '@/components';
 import { DownloadIcon, LogsIcon, RefreshCcwIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { useIndexer } from '@/hooks/use-indexer';
+import { formatDateToRelative } from '@/utils/format';
+import { useIndexer } from '@/hooks/admin/use-indexer';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-
-function formatDate(dateString: string) {
-  const date = new Date(Date.parse(dateString));
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  if (diff < 60_000) {
-    const quantity = Math.floor(diff / 1000);
-    return quantity > 1 ? (
-      <span title={date.toLocaleString()}>{quantity} seconds ago</span>
-    ) : (
-      <span>{quantity} second ago</span>
-    );
-  }
-  if (diff < 60 * 60_000) {
-    const quantity = Math.floor(diff / 1000 / 60);
-    return quantity > 1 ? (
-      <span title={date.toLocaleString()}>{quantity} minutes ago</span>
-    ) : (
-      <span>{quantity} minute ago</span>
-    );
-  }
-  if (diff < 24 * 60 * 60_000) {
-    const quantity = Math.floor(diff / 1000 / 60 / 60);
-    return quantity > 1 ? (
-      <span title={date.toLocaleString()}>{quantity} hours ago</span>
-    ) : (
-      <span title={date.toLocaleString()}>{quantity} hour ago</span>
-    );
-  }
-  const quantity = Math.floor(diff / 1000 / 60 / 60 / 24);
-  return quantity > 1 ? (
-    <span title={date.toLocaleString()}>{quantity} days ago</span>
-  ) : (
-    <span title={date.toLocaleString()}>yesterday</span>
-  );
-}
 
 export function IndexerLogsTable() {
   const { isLoadingLogs, indexerLogs, listIndexerLogs } = useIndexer();
   const isMobile = useIsMobile();
 
-  const handleRefresh = async (e: React.FormEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleRefresh = async () => {
     await listIndexerLogs();
   };
 
-  const handleViewRaw = async (e: React.FormEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleViewRaw = async () => {
     let maximumDateLength = 0;
     let maximumUsernameLength = 0;
     let maximumPathLength = 0;
@@ -168,6 +131,11 @@ export function IndexerLogsTable() {
     },
   ];
 
+  const dateInformation = (dateString: string) => {
+    const date = new Date(Date.parse(dateString));
+    return <span title={date.toLocaleString()}>{formatDateToRelative(date)}</span>;
+  };
+
   return (
     <>
       {isLoadingLogs ? (
@@ -211,23 +179,23 @@ export function IndexerLogsTable() {
           {(isLoadingLogs ? dummyRows : indexerLogs).map((log, index) => {
             const opacity = index % 2 === 0 ? 20 : 10;
             return (
-              <AdminCard key={`card-${log.accountId}-${index}`}>
-                <AdminCardTitle>{log.date ? formatDate(log.date) : cellFiller(opacity)}</AdminCardTitle>
-                <AdminCardContent>
+              <DataCard key={`card-${log.accountId}-${index}`}>
+                <DataCardTitle>{log.date ? dateInformation(log.date) : cellFiller(opacity)}</DataCardTitle>
+                <DataCardContent>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <AdminCardSubtitle>Username</AdminCardSubtitle>
+                      <DataCardSubtitle>Username</DataCardSubtitle>
                       <p className="text-sm">{log.username || (log.accountId < 0 ? cellFiller(opacity) : '-')}</p>
                     </div>
                     <div>
-                      <AdminCardSubtitle>Root path</AdminCardSubtitle>
+                      <DataCardSubtitle>Root path</DataCardSubtitle>
                       <p className="text-sm">{log.rootPath || (log.accountId < 0 ? cellFiller(opacity) : '-')}</p>
                     </div>
                   </div>
                   <p className="text-sm">{log.message.replace(log.rootPath, '') || cellFiller(opacity)}</p>
-                </AdminCardContent>
+                </DataCardContent>
                 <Separator />
-              </AdminCard>
+              </DataCard>
             );
           })}
         </>
@@ -235,35 +203,35 @@ export function IndexerLogsTable() {
 
       {/* Desktop table view */}
       {!isMobile && (
-        <AdminTable>
-          <AdminTableHeader>
-            <AdminTableHeaderCell className="w-50">Date</AdminTableHeaderCell>
-            <AdminTableHeaderCell className="w-50">Username</AdminTableHeaderCell>
-            <AdminTableHeaderCell className="w-100">Root path</AdminTableHeaderCell>
-            <AdminTableHeaderCell>Message</AdminTableHeaderCell>
-          </AdminTableHeader>
-          <AdminTableBody>
+        <DataTable>
+          <DataTableHeader>
+            <DataTableHeaderCell className="w-50">Date</DataTableHeaderCell>
+            <DataTableHeaderCell className="w-50">Username</DataTableHeaderCell>
+            <DataTableHeaderCell className="w-100">Root path</DataTableHeaderCell>
+            <DataTableHeaderCell>Message</DataTableHeaderCell>
+          </DataTableHeader>
+          <DataTableBody>
             {(isLoadingLogs ? dummyRows : indexerLogs).map((log, index) => {
               const opacity = index % 2 === 0 ? 20 : 10;
               return (
-                <AdminTableRow key={`row-${log.accountId}-${index}`}>
-                  <AdminTableCell className="text-foreground/50 text-xs">
-                    {log.date ? formatDate(log.date) : cellFiller(opacity)}
-                  </AdminTableCell>
-                  <AdminTableCell className="text-foreground/70 text-xs">
+                <DataTableRow key={`row-${log.accountId}-${index}`}>
+                  <DataTableCell className="text-foreground/50 text-xs">
+                    {log.date ? dateInformation(log.date) : cellFiller(opacity)}
+                  </DataTableCell>
+                  <DataTableCell className="text-foreground/70 text-xs">
                     {log.username || (log.accountId < 0 ? cellFiller(opacity) : '-')}
-                  </AdminTableCell>
-                  <AdminTableCell className="text-foreground/70 text-xs">
+                  </DataTableCell>
+                  <DataTableCell className="text-foreground/70 text-xs">
                     {log.rootPath || (log.accountId < 0 ? cellFiller(opacity) : '-')}
-                  </AdminTableCell>
-                  <AdminTableCell className="text-foreground/70 text-xs">
+                  </DataTableCell>
+                  <DataTableCell className="text-foreground/70 text-xs">
                     {log.message.replace(log.rootPath, '') || cellFiller(opacity)}
-                  </AdminTableCell>
-                </AdminTableRow>
+                  </DataTableCell>
+                </DataTableRow>
               );
             })}
-          </AdminTableBody>
-        </AdminTable>
+          </DataTableBody>
+        </DataTable>
       )}
     </>
   );

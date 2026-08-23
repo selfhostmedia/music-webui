@@ -11,23 +11,19 @@ import { FormValidationError } from '@/components/form-validation-error';
 import { IndexerToggle } from './indexer-toggle';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  type RootPathDto,
+  type UpdateBodyDto,
+  type UpdateErrorCodes,
+  useRootPaths,
+} from '@/hooks/admin/use-root-paths';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
-import { useRootPaths } from '@/hooks/use-root-paths';
 import { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { components } from '@/types/api-schema';
 
-type ErrorCodes =
-  | components['schemas']['AdminUpdateRootPathBadRequestErrorMessageEnum']
-  | components['schemas']['AdminUpdateRootPathNotFoundErrorMessageEnum'];
-
-type RootPathDto = components['schemas']['AdminRootPathDto'];
-
-type FormData = {
-  newPath: string;
-};
+type FormData = UpdateBodyDto;
 
 const schema = z.object({
   newPath: z
@@ -58,7 +54,9 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
   const onSubmit = handleSubmit(async (formData: FormData) => {
     await updateRootPath(
       {
-        rootPathId: rootPath.id,
+        query: {
+          id: rootPath.id,
+        },
         body: formData,
       },
       {
@@ -67,7 +65,7 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
           toast.success('Root path updated successfully.  It will begin indexing shortly if the indexer is enabled.');
         },
         onError: (error) => {
-          const message: ErrorCodes = error.message as ErrorCodes;
+          const message = error.message as UpdateErrorCodes;
           switch (message) {
             case 'root-path-does-not-exist-error':
               setError('newPath', { type: 'manual', message: 'The new root path does not exist.' });
@@ -79,7 +77,9 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
               });
               break;
             default:
-              toast.error(error.message);
+              // eslint-disable-next-line no-console
+              console.error('Unexpected error occurred while updating root path:', error);
+              toast.error('An internal server error occurred. Please try again later.');
               break;
           }
         },

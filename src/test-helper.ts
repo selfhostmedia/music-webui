@@ -1,13 +1,17 @@
 import createClient from 'openapi-fetch';
 import type { components, paths } from './types/api-schema';
 
+type User = components['schemas']['AdminAccountDto'];
+
 if (!process.env.VITE_API_BASE_URL) {
   throw new Error('VITE_API_BASE_URL environment variable is not set');
 }
 
-type CreateUserBody = components['schemas']['AdminCreateAccountBodyDto'];
+export const ADMIN_USERNAME = process.env.DEFAULT_ADMIN_USERNAME || 'admin';
+export const ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD || 'admin';
+export const USER_USERNAME = process.env.DEFAULT_USER_USERNAME || 'user';
+export const USER_PASSWORD = process.env.DEFAULT_USER_PASSWORD || 'user';
 
-type User = components['schemas']['AdminAccountDto'];
 
 const api = createClient<paths>({
   baseUrl: process.env.VITE_API_BASE_URL,
@@ -32,7 +36,23 @@ export class AdminApi {
     };
   }
 
-  async createUser(userData: CreateUserBody): Promise<User> {
+  async getAccount(username: string): Promise<User> {
+    const { data, error } = await api.GET('/api/admin/list-accounts', {
+      params: {
+        header: this.authHeader,
+      },
+    });
+    if (error) {
+      throw new Error(`Failed to list users: ${JSON.stringify(error)}`);
+    }
+    const account = data?.accounts.find((acc) => acc.username === username);
+    if (!account) {
+      throw new Error(`User "${username}" not found`);
+    }
+    return account;
+  }
+
+  async createUser(userData: components['schemas']['AdminCreateAccountBodyDto']): Promise<User> {
     const { error } = await api.POST('/api/admin/create-account', {
       body: userData,
       params: {
