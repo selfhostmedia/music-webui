@@ -50,7 +50,7 @@ export class AdminApi {
     if (listError) {
       throw new Error(`Failed to list users: ${JSON.stringify(listError)}`);
     }
-    const account = data2?.accounts.find((account) => account.username === userData.username);
+    const account = data2?.accounts.find((acc) => acc.username === userData.username);
     if (!account) {
       throw new Error(`Created user "${userData.username}" was not found`);
     }

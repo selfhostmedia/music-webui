@@ -2,7 +2,7 @@
 
 This software provides a responsive web interface for managing users, root folders and sessions for the [music-server](https://github.com/selfhostmedia/music-server).
 
-If you are using the music-server docker image this server is set up automatically in its docker image. You can access it at `http://<your-server-ip>:3000` and log in with the default administrator account `admin` with password `admin` or whatever you set the  `DEFAULT_ADMIN_USERNAME` and `DEFAULT_ADMIN_PASSWORD` environment variables in your environment settings to.
+If you are using the music-server docker image this server is set up automatically in its docker image. You can access it at `http://<your-server-ip>:3000` and log in with the default administrator account `admin` with password `admin` or whatever you set the `DEFAULT_ADMIN_USERNAME` and `DEFAULT_ADMIN_PASSWORD` environment variables in your environment settings to.
 
 ## Manual set up
 

@@ -53,7 +53,7 @@ jobs:
         run: npm ci
         working-directory: music-server
 
-      # This is only needed if the playwright version in the 
+      # This is only needed if the playwright version in the
       # package is different to the playwright version of the
       # docker image.  If they are aligned then everything is
       # ready to use.
@@ -116,7 +116,6 @@ jobs:
         run: npm run test -- --project=${{ matrix.project }}
         env:
           HOME: /root
-
 
       - name: Backend debugging logs
         if: failure()

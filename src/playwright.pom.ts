@@ -1,10 +1,11 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { type Locator, type Page, expect } from '@playwright/test';
 import type { components } from './types/api-schema';
 
 type CreateSessionBody = components['schemas']['GuestCreateSessionBodyDto'];
 
 export class Pom {
   private readonly page: Page;
+
   public jwtToken: string | undefined;
 
   constructor(page: Page, jwtToken?: string) {
@@ -16,7 +17,7 @@ export class Pom {
     const responsiveMode = await this.isResponsive();
     if (responsiveMode) {
       await this.page.getByRole('button', { name: 'Toggle account menu' }).click();
-    await this.page.waitForTimeout(500);
+      await this.page.waitForTimeout(500);
       await this.page.locator(`a[aria-label="${name}"]`).waitFor({ state: 'visible' });
       return this.page.getByRole('link', { name });
     }
@@ -33,7 +34,6 @@ export class Pom {
     await this.page.locator('button[aria-label="Toggle dark mode"]').click();
     await this.page.waitForTimeout(500);
   }
-
 
   async isResponsive(): Promise<boolean> {
     const isResponsive = await this.page.evaluate(() => {
@@ -59,7 +59,8 @@ export class Pom {
         await this.page.waitForLoadState('networkidle');
         return;
       } catch (error) {
-        console.error('*** POM SIGNIN ERROR:', error);
+        // eslint-disable-next-line no-console
+        console.error('*** POM SIGN-IN ERROR:', error);
       }
     }
     await this.page.waitForSelector('input[placeholder="Enter your username"]');
@@ -70,10 +71,13 @@ export class Pom {
     if (params?.expiresDays) {
       await this.page.getByRole('checkbox', { name: 'Remember me' }).check();
     }
-    const response = this.page.waitForResponse((response) => {
-      const url = response.url();
-      const status = response.status();
-      return url.includes('/api/guest/create-session') && ((expectSuccess && status === 201) || (!expectSuccess && (status === 400 || status === 404)));
+    const response = this.page.waitForResponse((res) => {
+      const url = res.url();
+      const status = res.status();
+      return (
+        url.includes('/api/guest/create-session') &&
+        ((expectSuccess && status === 201) || (!expectSuccess && (status === 400 || status === 404)))
+      );
     });
     await this.page.getByRole('button', { name: 'Sign In' }).click();
     const responseData = await response;
@@ -81,7 +85,7 @@ export class Pom {
     this.jwtToken = responseJSon?.jwtToken;
     if (expectSuccess) {
       expect(this.jwtToken).not.toBeNull();
-      await this.page.waitForURL('/')
+      await this.page.waitForURL('/');
     }
   }
 }

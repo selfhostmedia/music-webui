@@ -1,10 +1,10 @@
+import { AdminApi } from '../../test-helper';
 import { Pom } from '../../playwright.pom';
 import { UserRoleEnum } from '@/types/api-schema';
 import { expect, test } from '@playwright/test';
+import { join } from 'node:path';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { AdminApi } from '../../test-helper';
 
 test.describe('admin home', () => {
   const deleteUsers: number[] = [];
@@ -17,6 +17,7 @@ test.describe('admin home', () => {
     const api = new AdminApi(jwtToken);
     for (let i = 0; i < deleteUsers.length; i += 1) {
       const userId = deleteUsers[i];
+      // eslint-disable-next-line no-await-in-loop
       await api.deleteUser(userId);
     }
     deleteUsers.length = 0;
@@ -268,13 +269,11 @@ test.describe('admin home', () => {
           await pom.signIn({ username: 'admin', password: 'admin' });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.admin],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.admin],
+          });
           deleteUsers.push(testUser.id);
           await pom.navigateToAdmin();
           const userRow = await page.getByRole('row', { name: `User account ${testUsername}` });
@@ -303,13 +302,11 @@ test.describe('admin home', () => {
           await pom.signIn({ username: 'admin', password: 'admin' });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Add root path' }).click();
@@ -329,13 +326,11 @@ test.describe('admin home', () => {
           await pom.signIn({ username: 'admin', password: 'admin' });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await api.createRootPath(testUser.id, newPath);
           await pom.navigateToAdmin();
@@ -360,13 +355,11 @@ test.describe('admin home', () => {
           await pom.signIn({ username: 'admin', password: 'admin' });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await pom.navigateToAdmin();
           await page.locator('button', { hasText: 'Add root path' }).click();
@@ -389,13 +382,11 @@ test.describe('admin home', () => {
           await pom.signIn({ username: 'admin', password: 'admin' });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await api.createRootPath(testUser.id, originalPath);
           await pom.navigateToAdmin();
@@ -418,13 +409,11 @@ test.describe('admin home', () => {
           await pom.signIn({ username: 'admin', password: 'admin' });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await api.createRootPath(testUser.id, firstPath);
           await api.createRootPath(testUser.id, secondPath);
@@ -452,13 +441,11 @@ test.describe('admin home', () => {
           await pom.signIn({ username: 'admin', password: 'admin' });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.user],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.user],
+          });
           deleteUsers.push(testUser.id);
           await api.createRootPath(testUser.id, originalPath);
           await pom.navigateToAdmin();
@@ -479,13 +466,11 @@ test.describe('admin home', () => {
           await pom.signIn({ username: 'admin', password: 'admin' });
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
-          const testUser = await api.createUser(
-            {
-              username: testUsername,
-              password: 'testpassword',
-              roles: [UserRoleEnum.admin],
-            },
-          );
+          const testUser = await api.createUser({
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.admin],
+          });
           deleteUsers.push(testUser.id);
           await pom.navigateToAdmin();
           await page.getByRole('list', { name: 'User accounts' });
@@ -538,7 +523,7 @@ test.describe('admin home', () => {
           await pom.navigateToAdmin();
           const configurationBefore = await api.getIndexerConfiguration();
           const response = page.waitForResponse(
-            (response) => response.url().includes('/api/admin/set-indexer-status') && response.status() === 200,
+            (res) => res.url().includes('/api/admin/set-indexer-status') && res.status() === 200,
           );
           await page.getByRole('button', { name: 'Toggle indexer' }).click();
           await response;
@@ -563,10 +548,11 @@ test.describe('admin home', () => {
             const w = window as unknown as WindowWithCapturedBlob;
             w.capturedBlob = null;
             const originalCreateObjectURL = URL.createObjectURL;
-            URL.createObjectURL = function (blob) {
+            function captureBlob(blob) {
               w.capturedBlob = blob as Blob;
               return originalCreateObjectURL(blob);
-            };
+            }
+            URL.createObjectURL = captureBlob;
           });
 
           const newPagePromise = context.waitForEvent('page');
@@ -579,7 +565,7 @@ test.describe('admin home', () => {
           const blobText = await page.evaluate(async () => {
             const w = window as unknown as WindowWithCapturedBlob;
             if (w.capturedBlob) {
-              return await w.capturedBlob.text();
+              return w.capturedBlob.text();
             }
             return null;
           });
