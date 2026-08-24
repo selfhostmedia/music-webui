@@ -100,6 +100,26 @@ export type paths = {
     patch?: never;
     trace?: never;
   };
+  '/api/user/list-albums': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List albums
+     * @description Retrieves a list of albums for the user based on the provided query parameters.
+     */
+    get: operations['UserListAlbumsController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/user/list-indexer-logs': {
     parameters: {
       query?: never;
@@ -982,6 +1002,173 @@ export type components = {
        * @default bad-request-error
        */
       message: components['schemas']['BadRequestErrorEnum'][];
+    };
+    /** @enum {string} */
+    SortDirectionEnum: SortDirectionEnum;
+    /** @enum {string} */
+    AlbumSortFieldEnum: AlbumSortFieldEnum;
+    LibraryAlbumDto: {
+      /** @description The artist for the album, which is all the album artists in a comma-delimited list */
+      albumArtists: string[];
+      albumComposers: string[];
+      /**
+       * Format: date-time
+       * @description The date the album was added to the library
+       */
+      createdAt: string;
+      /**
+       * @description The display name of the artist, which is used for sorting and display consistency when albums
+       *     have a different artist name than the album artist name.  For example, a compilation album may have
+       *     multiple artists but the album artist is "Various Artists" and the display artist is "Various".
+       */
+      displayArtist: string[];
+      /**
+       * @description The name or title of the album, this would usually come from an official source such as MusicBrainz
+       *     or Discogs.
+       */
+      displayName: string;
+      /** @description The internally-generated unique ID of the album */
+      id: number;
+      /** @description The aggregate rating for the album, which is a value between 0 and 5 inclusive applied to tracks. */
+      rating: number;
+      /**
+       * @description The name of the album used for sorting and display consistency, eg "Greatest Hits" but the display
+       *     name is "Greatest Hits (Remastered)".
+       */
+      sortName: string;
+      /** @description The year the album was released. */
+      year: number;
+    };
+    UserListAlbumsQueryDto: {
+      /** @default 100000 */
+      limit: number;
+      /** @default 0 */
+      offset: number;
+      /**
+       * Format: date
+       * @description Optional filter for the date the album was added to the library, which will do an exact match against
+       *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+       */
+      addedAfter?: string;
+      /**
+       * Format: date
+       * @description Optional filter for the date the album was added to the library, which will do an exact match against
+       *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+       */
+      addedBefore?: string;
+      /**
+       * @description Optional filter for the artist name, which will do a case-insensitive partial-match against the
+       *     artists associated with an album.
+       */
+      artist?: string[];
+      /**
+       * @description Optional filter for the composer name, which will do a case-insensitive partial-match against the
+       *     composers associated with an album.
+       */
+      composer?: string[];
+      /**
+       * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+       *     genres associated with an album.
+       */
+      genre?: string[];
+      /**
+       * Format: date
+       * @description Optional filter for the date the album was released, which will do an exact match against
+       *     the date of release.  The date must be in ISO 8601 format (YYYY-MM-DD).
+       */
+      releasedAfter?: string;
+      /**
+       * Format: date
+       * @description Optional filter for the date the album was released, which will do an exact match against
+       *     the date of release.  The date must be in ISO 8601 format (YYYY-MM-DD).
+       */
+      releasedBefore?: string;
+      /**
+       * @description Optional filter for the direction to sort the results by, which will sort the results in either
+       *     ascending or descending order based on the field specified in the sortField parameter.  The
+       *     direction must be one of the following values:
+       *
+       *     - asc
+       *     - desc
+       * @default asc
+       */
+      sortDirection: components['schemas']['SortDirectionEnum'];
+      /**
+       * @description Optional filter for the field to sort by, which will do an exact match against the field associated
+       *     with an album.  The field must be one of the following values:
+       *
+       *     - album
+       *     - artist
+       *     - album_artist
+       *     - composer
+       *     - genre
+       *     - year
+       *     - date_added
+       *     - rating
+       * @default album
+       */
+      sortField: components['schemas']['AlbumSortFieldEnum'];
+      /**
+       * @description Optional filter for the year of the album, which will do an exact match against the year associated
+       *     with an album's release date.
+       */
+      year?: number;
+      /**
+       * @description Optional search filter that will do a case-insensitive partial-match against the album
+       *     name, artist name, composer name, or genre.
+       */
+      filter?: string;
+      /**
+       * @description Maximum rating value, which will do an exact match against the rating associated with an album.  The
+       *     rating is a value between 0 and 5, inclusive.
+       */
+      maxRating?: number;
+      /**
+       * @description Minimum rating value, which will do an exact match against the rating associated with an album.  The
+       *     rating is a value between 0 and 5, inclusive.
+       */
+      minRating?: number;
+    };
+    UserListAlbumsResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of albums that match the query parameters, which may be limited by pagination. */
+      albums: components['schemas']['LibraryAlbumDto'][];
+      /**
+       * @description The query parameters that were used to retrieve the list of albums, which may include filters
+       *     and pagination.
+       */
+      query: components['schemas']['UserListAlbumsQueryDto'];
+      /**
+       * @description The total number of albums that match the query parameters, which may be greater
+       *     than the number of albums returned in the albums array if pagination is applied.
+       */
+      total: number;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request.
+     * @enum {string}
+     */
+    UserListAlbumsBadRequestErrorMessages: UserListAlbumsBadRequestErrorMessages;
+    UserListAlbumsBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request.
+       * @default invalid-added-after-error
+       */
+      message: components['schemas']['UserListAlbumsBadRequestErrorMessages'][];
     };
     UserLogEntryDto: {
       /** Format: date-time */
@@ -4799,6 +4986,119 @@ export interface operations {
       };
     };
   };
+  UserListAlbumsController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedAfter?: string;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedBefore?: string;
+        /**
+         * @description Optional filter for the artist name, which will do a case-insensitive partial-match against the
+         *     artists associated with an album.
+         */
+        artist?: string[];
+        /**
+         * @description Optional filter for the composer name, which will do a case-insensitive partial-match against the
+         *     composers associated with an album.
+         */
+        composer?: string[];
+        /**
+         * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+         *     genres associated with an album.
+         */
+        genre?: string[];
+        /**
+         * @description Optional filter for the date the album was released, which will do an exact match against
+         *     the date of release.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        releasedAfter?: string;
+        /**
+         * @description Optional filter for the date the album was released, which will do an exact match against
+         *     the date of release.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        releasedBefore?: string;
+        /**
+         * @description Optional filter for the direction to sort the results by, which will sort the results in either
+         *     ascending or descending order based on the field specified in the sortField parameter.  The
+         *     direction must be one of the following values:
+         *
+         *     - asc
+         *     - desc
+         */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /**
+         * @description Optional filter for the field to sort by, which will do an exact match against the field associated
+         *     with an album.  The field must be one of the following values:
+         *
+         *     - album
+         *     - artist
+         *     - album_artist
+         *     - composer
+         *     - genre
+         *     - year
+         *     - date_added
+         *     - rating
+         */
+        sortField?: components['schemas']['AlbumSortFieldEnum'];
+        /**
+         * @description Optional filter for the year of the album, which will do an exact match against the year associated
+         *     with an album's release date.
+         */
+        year?: number;
+        /**
+         * @description Optional search filter that will do a case-insensitive partial-match against the album
+         *     name, artist name, composer name, or genre.
+         */
+        filter?: string;
+        /**
+         * @description Maximum rating value, which will do an exact match against the rating associated with an album.  The
+         *     rating is a value between 0 and 5, inclusive.
+         */
+        maxRating?: number;
+        /**
+         * @description Minimum rating value, which will do an exact match against the rating associated with an album.  The
+         *     rating is a value between 0 and 5, inclusive.
+         */
+        minRating?: number;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of albums for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListAlbumsResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListAlbumsBadRequestResponseDto'];
+        };
+      };
+    };
+  };
   UserListIndexerLogsController_get: {
     parameters: {
       query?: {
@@ -5995,6 +6295,44 @@ export enum UserDeleteRootPathNotFoundErrorMessageEnum {
 }
 export enum BadRequestErrorEnum {
   bad_request_error = 'bad-request-error',
+}
+export enum SortDirectionEnum {
+  asc = 'asc',
+  desc = 'desc',
+}
+export enum AlbumSortFieldEnum {
+  album = 'album',
+  album_artist = 'album_artist',
+  artist = 'artist',
+  composer = 'composer',
+  date_added = 'date_added',
+  date_released = 'date_released',
+  genre = 'genre',
+  rating = 'rating',
+  year = 'year',
+}
+export enum UserListAlbumsBadRequestErrorMessages {
+  invalid_added_after_error = 'invalid-added-after-error',
+  invalid_added_after_error = 'invalid-added-after-error',
+  invalid_added_before_error = 'invalid-added-before-error',
+  invalid_added_before_error = 'invalid-added-before-error',
+  invalid_artist_error = 'invalid-artist-error',
+  invalid_artist_length_error = 'invalid-artist-length-error',
+  invalid_composer_error = 'invalid-composer-error',
+  invalid_composer_length_error = 'invalid-composer-length-error',
+  invalid_filter_error = 'invalid-filter-error',
+  invalid_filter_length_error = 'invalid-filter-length-error',
+  invalid_genre_error = 'invalid-genre-error',
+  invalid_genre_length_error = 'invalid-genre-length-error',
+  invalid_max_rating_error = 'invalid-max-rating-error',
+  invalid_min_rating_error = 'invalid-min-rating-error',
+  invalid_released_after_error = 'invalid-released-after-error',
+  invalid_released_after_error = 'invalid-released-after-error',
+  invalid_released_before_error = 'invalid-released-before-error',
+  invalid_released_before_error = 'invalid-released-before-error',
+  invalid_sort_field_error = 'invalid-sort-field-error',
+  invalid_sort_order_error = 'invalid-sort-order-error',
+  invalid_year_error = 'invalid-year-error',
 }
 export enum UserListIndexerLogsBadRequestErrorMessageEnum {
   invalid_account_id_error = 'invalid-account-id-error',
