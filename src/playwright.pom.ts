@@ -38,7 +38,7 @@ export class Pom {
 
   async isResponsive(): Promise<boolean> {
     const isResponsive = await this.page.evaluate(() => {
-       return !window.matchMedia('(min-width: 640px)').matches;
+      return !window.matchMedia('(min-width: 640px)').matches;
     });
     return isResponsive;
   }
