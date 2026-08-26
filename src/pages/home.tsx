@@ -81,8 +81,11 @@ const Home = () => {
   function formatSlug(title: string) {
     return title
       .toLowerCase()
+      .normalize('NFC')
+      .trim()
       .replace(/\s+/g, '-')
-      .replace(/[^\w-]+/g, '');
+      .replace(/[^\p{L}\p{N}-]+/gu, '')
+      .replace(/-+/g, '-');
   }
 
   function toggleAlbum(id: number) {

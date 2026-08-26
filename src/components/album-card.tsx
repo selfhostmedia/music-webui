@@ -27,7 +27,8 @@ export function AlbumCard({
             'w-40 md:w-54 lg:w-68',
             'h-40 md:h-54 lg:h-68',
             'bg-accent rounded-lg p-2 shadow-sm shadow-foreground/50 dark:shadow-background',
-            'hover:bg-muted-foreground transition-colors',
+            'hover:bg-muted-foreground/50 transition-colors',
+            isExpanded ? 'bg-muted-foreground/80 transition-colors' : '',
           ].join(' ')}
         >
           <AlbumImage

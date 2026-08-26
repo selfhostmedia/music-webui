@@ -1,16 +1,17 @@
 import { Button } from './ui/button';
 import { DarkModeSwitch } from '../features/dark-mode-switch';
-import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 
 const linkClassName = 'mx-1 inline-block rounded-lg px-2 py-2 text-xs uppercase text-primary hover:bg-primary/10';
+const activeLinkClassName = 'bg-primary/20 font-semibold';
 
 const primaryLinks = [
-  { to: '/artists', label: 'Artists' },
   { to: '/albums', label: 'Albums' },
+  { to: '/artists', label: 'Artists' },
   { to: '/tracks', label: 'Tracks' },
-  { to: '/queue', label: 'Playing Queue' },
+  { to: '/queue', label: 'Queue' },
 ];
 
 const secondaryLinks = [
@@ -23,13 +24,24 @@ type SecondaryLinksProps = {
   onNavigate?: () => void;
 };
 
+function getLinkClassName(isActive: boolean) {
+  return [linkClassName, isActive ? activeLinkClassName : ''].join(' ');
+}
+
 function SecondaryLinks({ onNavigate }: SecondaryLinksProps) {
   return (
     <>
       {secondaryLinks.map(({ to, label }) => (
-        <Link key={to} className={linkClassName} to={to} onClick={onNavigate} aria-label={label}>
+        <NavLink
+          key={to}
+          to={to}
+          end={to === '/'}
+          className={({ isActive }) => getLinkClassName(isActive)}
+          onClick={onNavigate}
+          aria-label={label}
+        >
           {label}
-        </Link>
+        </NavLink>
       ))}
     </>
   );
@@ -47,9 +59,9 @@ export function Navbar() {
       </div>
       <nav className="mt-2 flex flex-wrap text-base" aria-label="Primary navigation">
         {primaryLinks.map(({ to, label }) => (
-          <Link key={to} className={linkClassName} to={to}>
+          <NavLink key={to} to={to} className={({ isActive }) => getLinkClassName(isActive)}>
             {label}
-          </Link>
+          </NavLink>
         ))}
       </nav>
       {/* Desktop secondary navigation */}
