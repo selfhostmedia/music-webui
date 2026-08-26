@@ -21,6 +21,7 @@ const router = createBrowserRouter(
       </Route>
       <Route element={<UserLayout />}>
         <Route path="" element={<HomePage />} />
+        <Route path="albums/:albumId/:slug" element={<HomePage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="signout" element={<SignOutPage />} />
       </Route>

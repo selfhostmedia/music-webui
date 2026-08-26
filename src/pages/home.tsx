@@ -1,9 +1,11 @@
 import { AlbumCard } from '@/components/album-card';
 import { AlbumDetails } from '@/components/album-details';
 import { Fragment, useLayoutEffect, useRef, useState } from 'react';
-import { useLibrary, type AlbumWithTracksDto } from '@/hooks/user/use-library';
+import { useLibrary } from '@/hooks/user/use-library';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const Home = () => {
+  const navigate = useNavigate();
   const {
     albumsWithTracks,
     albumsWithTracksTotal,
@@ -11,10 +13,12 @@ const Home = () => {
     albumsWithTracksLoading,
     albumsWithTracksError,
   } = useLibrary();
-  const [expandedAlbumId, setExpandedAlbumId] = useState<number | null>(null);
-  const [expandedAlbum, setExpandedAlbum] = useState<AlbumWithTracksDto | null>(null);
-  const listRef = useRef(null);
   const [columnSize, setColumnSize] = useState(0);
+  const listRef = useRef(null);
+  const { albumId } = useParams<{ albumId: string }>();
+  const expandedAlbumId = albumId ? Number(albumId) : null;
+  const expandedAlbum =
+    expandedAlbumId !== null ? (albumsWithTracks.find((album) => album.id === expandedAlbumId) ?? null) : null;
 
   useLayoutEffect(() => {
     const list = listRef.current as HTMLElement | null;
@@ -68,15 +72,31 @@ const Home = () => {
       window.addEventListener('resize', measureColumns);
       return () => {
         observer.disconnect();
+        window.removeEventListener('resize', measureColumns);
       };
     }
     return undefined;
   }, [albumsWithTracks.length]);
 
-  function toggleAlbum(albumId: number) {
-    setExpandedAlbumId((currentId) => (currentId === albumId ? null : albumId));
-    const album = albumsWithTracks.find((item) => item.id === albumId) || null;
-    setExpandedAlbum(album);
+  function formatSlug(title: string) {
+    return title
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]+/g, '');
+  }
+
+  function toggleAlbum(id: number) {
+    if (expandedAlbumId === id) {
+      navigate('/');
+    } else {
+      const album = albumsWithTracks.find((item) => item.id === id);
+      if (!album) {
+        // eslint-disable-next-line no-console
+        console.error(`Album with id ${id} not found`);
+        return;
+      }
+      navigate(`/albums/${id}/${formatSlug(album.displayName)}-${formatSlug(album.albumArtists.join(','))}`);
+    }
   }
 
   const clickedAlbumIndex = albumsWithTracks.findIndex((item) => item.id === expandedAlbumId);
