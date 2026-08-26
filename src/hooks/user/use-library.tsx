@@ -23,6 +23,7 @@ export type RetrieveAlbumErrorCodes =
 
 export type AlbumDto = ListAlbumsResponseDto['albums'][number];
 export type AlbumWithTracksDto = ListAlbumsWithTracksResponseDto['albums'][number];
+export type TrackDto = AlbumWithTracksDto['tracks'][number];
 
 type AlbumsData = {
   albums: AlbumDto[];

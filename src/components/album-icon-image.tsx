@@ -6,7 +6,7 @@ type AlbumImageProps = {
   size: number;
 } & React.HTMLAttributes<HTMLDivElement>;
 
-export function AlbumImage({ albumId, size, style, ...props }: AlbumImageProps) {
+export function AlbumIconImage({ albumId, size, style, ...props }: AlbumImageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const objectUrlRef = useRef<string | null>(null);
 

@@ -1,9 +1,9 @@
 import AlbumsList from '@/features/albums-list';
 
-export default function Home() {
+export default function AlbumsPage() {
   return (
     <>
-      <title>Music Player // SHM</title>
+      <title>Albums // SHM</title>
       <AlbumsList />
     </>
   );
