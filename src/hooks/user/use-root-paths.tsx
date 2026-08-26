@@ -27,7 +27,7 @@ async function fetchRootPaths(): Promise<RootPathDto[]> {
     params: { header: api.authHeader() },
   });
   if (error) {
-    throw new Error(error);
+    throw new Error(getErrorMessage(error));
   }
   if (!data?.rootPaths) {
     throw new Error('No data received');

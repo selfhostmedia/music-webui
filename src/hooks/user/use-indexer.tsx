@@ -1,84 +1,72 @@
-import { type ReactNode, createContext, useContext, useEffect, useState } from 'react';
-import api, { ApiError, type ErrorResponse, getErrorMessage } from '@/lib/api';
-import type { paths } from '@/types/api-schema';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useState } from 'react';
+import api, { type GenericErrorCodes, getErrorMessage } from '@/lib/api';
+import type { paths } from 'src/types/api-schema';
 
-type ListEndpoint = paths['/api/user/list-indexer-logs']['get'];
+type ListIndexerLogsEndpoint = paths['/api/user/list-indexer-logs']['get'];
+type ListIndexerLogsQueryDto = ListIndexerLogsEndpoint['parameters']['query'];
+type ListIndexerLogsResponseDto = ListIndexerLogsEndpoint['responses']['200']['content']['application/json'];
 
-export type LogEntryDto = ListEndpoint['responses']['200']['content']['application/json']['logs'][number];
-export type ListQueryDto = ListEndpoint['parameters']['query'];
-export type ListErrorCodes =
-  | ListEndpoint['responses']['400']['content']['application/json']['message'][number]
-  | ListEndpoint['responses']['404']['content']['application/json']['message'][number];
+export type IndexerLogDto = ListIndexerLogsResponseDto['logs'][number];
+export type ListIndexerLogsErrorCodes =
+  GenericErrorCodes | ListIndexerLogsEndpoint['responses']['400']['content']['application/json']['message'][number];
 
-interface IndexerContextType {
-  indexerLogs: LogEntryDto[];
-  isLoadingLogs: boolean;
-  listIndexerLogs: (vars?: { query?: ListQueryDto }) => Promise<void>;
+const INDEXER_QUERY_KEY = ['user-indexer-logs'] as const;
+
+function indexerQueryKey(query?: ListIndexerLogsQueryDto) {
+  return [...INDEXER_QUERY_KEY, query] as const;
 }
 
-const IndexerContext = createContext<IndexerContextType>({
-  indexerLogs: [],
-  isLoadingLogs: true,
-  listIndexerLogs: async () => {},
-});
+async function fetchIndexerLogs(query?: ListIndexerLogsQueryDto): Promise<IndexerLogDto[]> {
+  const { data, error } = await api.get('/api/user/list-indexer-logs', {
+    params: {
+      query,
+      header: api.authHeader(),
+    },
+  });
 
-export function IndexerProvider({ children }: { children: ReactNode }) {
-  const [isLoadingLogs, setLoadingLogs] = useState(true);
-  const [indexerLogs, setIndexerLogs] = useState<LogEntryDto[]>([]);
+  if (error) {
+    throw new Error(getErrorMessage(error));
+  }
+  if (!data?.logs) {
+    throw new Error('No data received');
+  }
+  return data.logs;
+}
 
-  const listIndexerLogs = async ({ query }: { query?: ListQueryDto } = {}) => {
-    try {
-      setLoadingLogs(true);
-      const { data, error } = await api.get('/api/user/list-indexer-logs', {
-        params: {
-          header: api.authHeader(),
-          query,
-        },
-      });
-
-      if (error) {
-        throw new Error(getErrorMessage(error));
-      }
-      if (!data) {
-        throw new Error('No log data received');
-      }
-      if (!data.success) {
-        const errorPayload = data as unknown as ErrorResponse<ListErrorCodes>;
-        throw new ApiError<ListErrorCodes>(errorPayload);
-      }
-      if (!data.logs) {
-        throw new Error(getErrorMessage(data, 'No logs data received'));
-      }
-      setIndexerLogs(data.logs);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to retrieve indexer logs:', error);
-    } finally {
-      setLoadingLogs(false);
-    }
-  };
-
-  useEffect(() => {
-    listIndexerLogs();
-  }, []);
-
-  return (
-    <IndexerContext.Provider
-      value={{
-        indexerLogs,
-        isLoadingLogs,
-        listIndexerLogs,
-      }}
-    >
-      {children}
-    </IndexerContext.Provider>
-  );
+function fetchIndexerLogsWithClient(queryClient: QueryClient, query?: ListIndexerLogsQueryDto) {
+  return queryClient.fetchQuery({
+    queryKey: indexerQueryKey(query),
+    queryFn: () => fetchIndexerLogs(query),
+  });
 }
 
 export function useIndexer() {
-  const context = useContext(IndexerContext);
-  if (!context) {
-    throw new Error('useIndexer must be used within IndexerProvider');
-  }
-  return context;
+  const queryClient = useQueryClient();
+  const [indexerLogs, setIndexerLogs] = useState<IndexerLogDto[]>([]);
+  const [isLogsLoading, setIsLogsLoading] = useState(false);
+  const [logsLoadingError, setLogsLoadingError] = useState<Error | null>(null);
+
+  const listIndexerLogs = useCallback(
+    async (query?: ListIndexerLogsQueryDto) => {
+      setIsLogsLoading(true);
+      setLogsLoadingError(null);
+      try {
+        const result = await fetchIndexerLogsWithClient(queryClient, query);
+        setIndexerLogs(result);
+      } catch (error) {
+        setLogsLoadingError(error instanceof Error ? error : new Error('Failed to fetch indexer logs'));
+      } finally {
+        setIsLogsLoading(false);
+      }
+    },
+    [queryClient],
+  );
+
+  return {
+    listIndexerLogs,
+    indexerLogs,
+    indexerLogsLoading: isLogsLoading,
+    indexerLogsError: logsLoadingError,
+  };
 }

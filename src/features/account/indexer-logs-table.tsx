@@ -15,7 +15,7 @@ import { useIndexer } from '@/hooks/user/use-indexer';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 
 export function IndexerLogsTable() {
-  const { isLoadingLogs, indexerLogs, listIndexerLogs } = useIndexer();
+  const { indexerLogsLoading, indexerLogs, listIndexerLogs } = useIndexer();
   const isMobile = useIsMobile();
 
   const handleRefresh = async () => {
@@ -124,7 +124,7 @@ export function IndexerLogsTable() {
 
   return (
     <>
-      {isLoadingLogs ? (
+      {indexerLogsLoading ? (
         <Button className="mr-2 mb-4" variant="outline" disabled>
           <RefreshCcwIcon className="animate-spin" />
           Loading
@@ -162,7 +162,7 @@ export function IndexerLogsTable() {
       {/* Mobile card view */}
       {isMobile && (
         <>
-          {(isLoadingLogs ? dummyRows : indexerLogs).map((log, index) => {
+          {(indexerLogsLoading ? dummyRows : indexerLogs).map((log, index) => {
             const opacity = index % 2 === 0 ? 20 : 10;
             return (
               <DataCard key={`card-${index}`} className="mb-4">
@@ -192,7 +192,7 @@ export function IndexerLogsTable() {
             <DataTableHeaderCell>Message</DataTableHeaderCell>
           </DataTableHeader>
           <DataTableBody>
-            {(isLoadingLogs ? dummyRows : indexerLogs).map((log, index) => {
+            {(indexerLogsLoading ? dummyRows : indexerLogs).map((log, index) => {
               const opacity = index % 2 === 0 ? 20 : 10;
               return (
                 <DataTableRow key={`row-${index}`}>
