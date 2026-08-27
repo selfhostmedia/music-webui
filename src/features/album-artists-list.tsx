@@ -1,30 +1,30 @@
-import { AlbumCard } from '@/components/album-card';
-import { AlbumExpandedDetails } from '@/components/album-expanded-details';
-import { AlbumListItem } from '@/components/album-list-item';
-import { AlbumSortFieldEnum, SortDirectionEnum } from '@/types/api-schema';
-import { AlbumStandaloneDetails } from '@/components/album-standalone-details';
+import { AlbumArtistListItem } from '@/components/artist-list-item';
+import { AlbumArtistStandaloneDetails } from '@/components/artist-standalone-details';
+import { ArtistCard } from '@/components/artist-card';
+import { ArtistExpandedDetails } from '@/components/artist-expanded-details';
+import { ArtistSortFieldEnum, SortDirectionEnum } from '@/types/api-schema';
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useLibrary } from '@/hooks/user/use-library';
 import { useNavigate, useParams } from 'react-router-dom';
 
-export default function AlbumsList() {
+export default function AlbumArtistsList() {
   const navigate = useNavigate();
   const {
-    listAlbumsWithTracks,
-    albumsWithTracks,
-    albumsWithTracksTotal,
-    albumsWithTracksOffset,
-    albumsWithTracksLoading,
-    albumsWithTracksError,
+    listAlbumArtistsWithTracks,
+    albumArtistsWithTracks,
+    albumArtistsWithTracksTotal,
+    albumArtistsWithTracksOffset,
+    albumArtistsWithTracksLoading,
+    albumArtistsWithTracksError,
   } = useLibrary();
   const isMobile = useIsMobile();
   const [columnSize, setColumnSize] = useState(0);
   const listRef = useRef(null);
-  const { albumId } = useParams<{ albumId: string }>();
-  const expandedAlbumId = albumId ? Number(albumId) : null;
-  const expandedAlbum =
-    expandedAlbumId !== null ? (albumsWithTracks.find((album) => album.id === expandedAlbumId) ?? null) : null;
+  const { artistId } = useParams<{ artistId: string }>();
+  const expandedArtistId = artistId ? Number(artistId) : null;
+  const expandedArtist =
+    expandedArtistId !== null ? (albumArtistsWithTracks.find((album) => album.id === expandedArtistId) ?? null) : null;
 
   useLayoutEffect(() => {
     const list = listRef.current as HTMLElement | null;
@@ -82,7 +82,7 @@ export default function AlbumsList() {
       };
     }
     return undefined;
-  }, [albumsWithTracks.length]);
+  }, [albumArtistsWithTracks.length]);
 
   function formatSlug(title: string) {
     return title
@@ -94,61 +94,74 @@ export default function AlbumsList() {
       .replace(/-+/g, '-');
   }
 
-  function toggleAlbum(id: number) {
-    if (expandedAlbumId === id) {
-      navigate('/albums');
+  function toggleArtist(id: number) {
+    console.log('toggleArtist called with id', id);
+    if (expandedArtistId === id) {
+      navigate('/album-artists');
     } else {
-      const album = albumsWithTracks.find((item) => item.id === id);
-      if (!album) {
+      const artist = albumArtistsWithTracks.find((item) => item.id === id);
+      if (!artist) {
         // eslint-disable-next-line no-console
-        console.error(`Album with id ${id} not found`);
+        console.error(`Artist with id ${id} not found`);
         return;
       }
-      navigate(`/albums/${id}/${formatSlug(album.displayName)}-${formatSlug(album.albumArtists.join(','))}`);
+      navigate(`/album-artists/${id}/${formatSlug(artist.name)}`);
     }
   }
 
-  const clickedAlbumIndex = albumsWithTracks.findIndex((item) => item.id === expandedAlbumId);
+  const clickedArtistIndex = albumArtistsWithTracks.findIndex((item) => item.id === expandedArtistId);
   const detailsInsertIndex =
-    clickedAlbumIndex >= 0 ? Math.ceil((clickedAlbumIndex + 1) / columnSize) * columnSize - 1 : -1;
-  const insertingAlbum = albumsWithTracks[clickedAlbumIndex];
+    clickedArtistIndex >= 0 ? Math.ceil((clickedArtistIndex + 1) / columnSize) * columnSize - 1 : -1;
+  const insertingArtist = albumArtistsWithTracks[clickedArtistIndex];
+
+  console.log(
+    'album artist lists',
+    'expanded',
+    expandedArtistId,
+    'clickedArtistIndex',
+    clickedArtistIndex,
+    'detailsInsertIndex',
+    detailsInsertIndex,
+    'insertingArtist',
+    insertingArtist,
+  );
 
   useEffect(() => {
-    listAlbumsWithTracks({
-      sortField: AlbumSortFieldEnum.album,
+    listAlbumArtistsWithTracks({
+      sortField: ArtistSortFieldEnum.artist,
       sortDirection: SortDirectionEnum.asc,
     });
-  }, [listAlbumsWithTracks]);
+  }, [listAlbumArtistsWithTracks]);
 
   return (
     <>
-      <title>Albums // SHM</title>
-      {albumsWithTracksLoading && <p>Loading...</p>}
-      {albumsWithTracksError && <p>Error: {albumsWithTracksError.message}</p>}
+      <title>Album artists // SHM</title>
+      {albumArtistsWithTracksLoading && <p>Loading...</p>}
+      {albumArtistsWithTracksError && <p>Error: {albumArtistsWithTracksError.message}</p>}
       {isMobile && (
         <ul className="flex flex-col grow">
-          {insertingAlbum && (
+          {insertingArtist && (
             <li
               className="album-details col-span-full flex flex-col grow  -mx-4"
-              key={`mobile-expanding-album-details ${insertingAlbum.id}`}
+              key={`mobile-expanding-album-details ${insertingArtist.id}`}
             >
-              {expandedAlbum && (
-                <AlbumStandaloneDetails
-                  album={expandedAlbum}
-                  key={`mobile-album-details ${expandedAlbum.id}`}
-                  onClose={() => toggleAlbum(expandedAlbum.id)}
+              {expandedArtist && (
+                <AlbumArtistStandaloneDetails
+                  artist={expandedArtist}
+                  key={`mobile-album-details ${expandedArtist.id}`}
+                  onClose={() => toggleArtist(expandedArtist.id)}
                 />
               )}
             </li>
           )}
-          {!insertingAlbum &&
-            albumsWithTracks.map((item) => {
+          {!insertingArtist &&
+            albumArtistsWithTracks.map((item) => {
               return (
                 <li className="w-full p-2" key={`mobile-album ${item.id}`}>
-                  <AlbumListItem
-                    album={item}
-                    isExpanded={expandedAlbumId === item.id}
-                    onToggle={() => toggleAlbum(item.id)}
+                  <AlbumArtistListItem
+                    artist={item}
+                    isExpanded={expandedArtistId === item.id}
+                    onToggle={() => toggleArtist(item.id)}
                     key={`mobile-album-list-item ${item.id}`}
                   />
                 </li>
@@ -166,26 +179,26 @@ export default function AlbumsList() {
             'gap-4 mx-4',
           ].join(' ')}
         >
-          {albumsWithTracks.map((item, index) => {
-            const isExpanded = expandedAlbumId === item.id;
+          {albumArtistsWithTracks.map((item, index) => {
+            const isExpanded = expandedArtistId === item.id;
             const shouldInsertDetails = detailsInsertIndex === index;
             return (
               <Fragment>
                 <li className="w-full h-full inline-block" key={`album ${item.id}`}>
-                  <AlbumCard
+                  <ArtistCard
                     key={`album-card ${item.id}`}
-                    album={item}
+                    artist={item}
                     isExpanded={isExpanded}
-                    onToggle={() => toggleAlbum(item.id)}
+                    onToggle={() => toggleArtist(item.id)}
                   />
                 </li>
                 {shouldInsertDetails && (
                   <li
                     className="album-details col-span-full -mx-4"
-                    key={`expanding-album-details ${insertingAlbum.id}`}
+                    key={`expanding-album-details ${insertingArtist.id}`}
                   >
-                    {expandedAlbum && (
-                      <AlbumExpandedDetails album={expandedAlbum} key={`album-details ${expandedAlbum.id}`} />
+                    {expandedArtist && (
+                      <ArtistExpandedDetails artist={expandedArtist} key={`album-details ${expandedArtist.id}`} />
                     )}
                   </li>
                 )}
@@ -197,9 +210,9 @@ export default function AlbumsList() {
       {/* pagination */}
       <div>
         <p>
-          Showing {albumsWithTracksOffset + 1}
-          to {Math.min(albumsWithTracksOffset + albumsWithTracks.length, albumsWithTracksTotal)}
-          of {albumsWithTracksTotal} albums
+          Showing {albumArtistsWithTracksOffset + 1}
+          to {Math.min(albumArtistsWithTracksOffset + albumArtistsWithTracks.length, albumArtistsWithTracksTotal)}
+          of {albumArtistsWithTracksTotal} albums
         </p>
       </div>
     </>

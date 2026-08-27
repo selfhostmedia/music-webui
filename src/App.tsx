@@ -7,6 +7,7 @@ import { TooltipProvider } from './components/ui/tooltip';
 import AccountPage from './pages/account';
 import AdminHomePage from './pages/admin/home.tsx';
 import AdminLayout from './layouts/admin-layout.tsx';
+import AlbumArtistsPage from './pages/album-artists.tsx';
 import AlbumsPage from './pages/albums';
 import GuestLayout from './layouts/guest-layout';
 import HomePage from './pages/home';
@@ -21,11 +22,11 @@ const router = createBrowserRouter(
         <Route path="signin" element={<SignInPage />} />
       </Route>
       <Route element={<UserLayout />}>
-        <Route path="" element={<HomePage />} />
-        <Route path="albums" element={<AlbumsPage />}>
-          <Route path="" />
-          <Route path=":albumId/:slug" />
-        </Route>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/albums" element={<AlbumsPage />} />
+        <Route path="/albums/:albumId/:slug" element={<AlbumsPage />} />
+        <Route path="/album-artists" element={<AlbumArtistsPage />} />
+        <Route path="/album-artists/:artistId/:slug" element={<AlbumArtistsPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="signout" element={<SignOutPage />} />
       </Route>

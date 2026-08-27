@@ -22,13 +22,21 @@ export function AlbumStandaloneDetails({ album, onClose }: { album: AlbumWithTra
         backgroundColor: selectedColor,
       }}
     >
+      <menu className="opacity-75">
+        <Button variant="ghost" onClick={onClose} className="inline w-fit self-start m-2">
+          <ArrowLeftCircle />
+          Back
+        </Button>
+      </menu>
       {/* Image on the right */}
       <AlbumFullImage albumId={album.id} size={600} className="w-full" />
       {/* Album data */}
       <div style={{ color: `${getContrastingTextColor(contrastingColor)}`, mixBlendMode: 'screen' }}>
         {/* Physical filler */}
         <div className="p-8">
-          <h3 className="font-semibold text-2xl mb-2">{album.displayName}</h3>
+          <h3 className="font-semibold text-2xl mb-2">
+            {album.displayName} <span className="text-xs">{album.year}</span>
+          </h3>
           {trackGroups.map((trackGroup, index) => (
             <div key={index}>
               {showDiscTitle && <h4 className="uppercase font-semibold text-xs mb-2 opacity-35">Disc {index + 1}</h4>}
@@ -37,10 +45,6 @@ export function AlbumStandaloneDetails({ album, onClose }: { album: AlbumWithTra
           ))}
         </div>
       </div>
-      <Button variant="ghost" onClick={onClose}>
-        <ArrowLeftCircle />
-        Back
-      </Button>
     </div>
   );
 }

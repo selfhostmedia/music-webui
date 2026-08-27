@@ -44,7 +44,7 @@ export function AlbumFullImage({ albumId, size, className, ariaHidden }: AlbumIm
 
   return (
     <img
-      className={`absolute z-0 w-120 h-120 object-cover ${className ?? ''}`}
+      className={`object-cover ${className ?? ''}`}
       src={imageUrl}
       alt={`Album cover for album ID ${albumId}`}
       {...(ariaHidden ? { 'aria-hidden': 'true' } : {})}
