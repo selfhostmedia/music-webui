@@ -1,15 +1,17 @@
 import { AlbumFullImage } from './album-full-image';
 import { AlbumTrackList } from './album-track-list';
+import { Button } from './ui/button';
+import { ListEnd, ListStart, Play, PlayCircle } from 'lucide-react';
 import { createTrackGroups } from '@/utils/library';
 import { getContrastingTextColor } from '@/utils/color';
 import type { AlbumWithTracksDto } from '@/hooks/user/use-library';
+import { AlbumPlaybackControls } from './album-playback-controls';
 
 export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
   const selectedColor = album.coverImageMuted || '#000000';
   const contrastingColor = album.coverImageDarkMuted || '#000000';
   const trackGroups = createTrackGroups(album.tracks);
   const showDiscTitle = trackGroups[0][0]?.discNumber !== trackGroups[trackGroups.length - 1][0]?.discNumber;
-
   return (
     <>
       <div
@@ -63,10 +65,16 @@ export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
           }}
         ></div>
         {/* Album data */}
-        <div style={{ color: `${getContrastingTextColor(contrastingColor)}`, mixBlendMode: 'screen' }}>
+        <div
+          style={{ color: `${getContrastingTextColor(contrastingColor)}`, mixBlendMode: 'screen' }}
+          aria-hidden="true"
+        >
           {/* Physical filler */}
           <div className="p-4 lg:pl-8 mr-120 2xl:mr-140">
-            <h3 className="font-semibold text-2xl mb-2">{album.displayName}</h3>
+            <h3 className="font-semibold text-2xl mb-2">
+              {album.displayName} <span className="text-sm opacity-50 align-middle">({album.year})</span>
+            </h3>
+            <AlbumPlaybackControls />
             <div className="grid grid-rows-2 2xl:grid-rows-none 2xl:grid-cols-2 gap-0 2xl:gap-20 w-full max-w-400">
               {trackGroups.map((trackGroup, index) => {
                 return (
@@ -84,7 +92,10 @@ export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
         {/* Stacked overlay */}
         <div className="w-full absolute z-3 top-0">
           <div className="p-4 lg:pl-8 mr-120 2xl:mr-140 opacity-75">
-            <h3 className="font-semibold text-2xl mb-2">{album.displayName}</h3>
+            <h3 className="font-semibold text-2xl mb-2">
+              {album.displayName} <span className="text-sm opacity-50 align-middle">({album.year})</span>
+            </h3>
+            <AlbumPlaybackControls />
             <div className="grid grid-rows-2 2xl:grid-rows-none 2xl:grid-cols-2 gap-0 2xl:gap-20 max-w-400">
               {trackGroups.map((trackGroup, index) => (
                 <div key={index}>
