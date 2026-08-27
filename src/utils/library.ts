@@ -14,6 +14,6 @@ export function createTrackGroups(tracks: Array<TrackDto>) {
   }
 
   return discs.length === 1
-    ? [tracks.splice(0, Math.ceil(tracks.length / 2)), tracks.splice(0, Math.ceil(tracks.length / 2))]
+    ? [tracks.slice(0, Math.ceil(tracks.length / 2)), tracks.slice(0, Math.ceil(tracks.length / 2))]
     : discs;
 }
