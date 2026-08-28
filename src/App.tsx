@@ -1,5 +1,6 @@
 import './index.css';
 import { AuthProvider } from './hooks/use-auth.tsx';
+import { PlaybackProvider } from './features/playback.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
@@ -49,14 +50,16 @@ function App() {
         backgroundRepeat: 'repeat',
       }}
     >
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <RouterProvider router={router} />
-          </TooltipProvider>
-        </AuthProvider>
-      </QueryClientProvider>
+      <PlaybackProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <RouterProvider router={router} />
+            </TooltipProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </PlaybackProvider>
     </div>
   );
 }

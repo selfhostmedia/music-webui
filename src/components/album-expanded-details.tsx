@@ -1,11 +1,9 @@
 import { AlbumFullImage } from './album-full-image';
+import { AlbumPlaybackControls } from './album-playback-controls';
 import { AlbumTrackList } from './album-track-list';
-import { Button } from './ui/button';
-import { ListEnd, ListStart, Play, PlayCircle } from 'lucide-react';
 import { createTrackGroups } from '@/utils/library';
 import { getContrastingTextColor } from '@/utils/color';
 import type { AlbumWithTracksDto } from '@/hooks/user/use-library';
-import { AlbumPlaybackControls } from './album-playback-controls';
 
 export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
   const selectedColor = album.coverImageMuted || '#000000';
