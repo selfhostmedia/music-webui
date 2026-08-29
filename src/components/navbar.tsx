@@ -10,6 +10,10 @@ const activeLinkClassName = 'bg-primary/20 font-semibold';
 const primaryLinks = [
   { to: '/albums', label: 'Albums' },
   { to: '/album-artists', label: 'Album Artists' },
+  { to: '/track-artists', label: 'Artists' },
+  { to: '/track-composers', label: 'Composers' },
+  { to: '/genres', label: 'Genres' },
+  { to: '/folders', label: 'Folders' },
   { to: '/tracks', label: 'Tracks' },
   { to: '/queue', label: 'Queue' },
 ];

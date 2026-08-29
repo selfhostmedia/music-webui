@@ -14,6 +14,8 @@ import GuestLayout from './layouts/guest-layout';
 import HomePage from './pages/home';
 import SignInPage from './pages/signin';
 import SignOutPage from './pages/signout';
+import TrackArtistsPage from './pages/track-artists.tsx';
+import TrackComposersPage from './pages/track-composers.tsx';
 import UserLayout from './layouts/user-layout';
 
 const router = createBrowserRouter(
@@ -28,6 +30,10 @@ const router = createBrowserRouter(
         <Route path="/albums/:albumId/:slug" element={<AlbumsPage />} />
         <Route path="/album-artists" element={<AlbumArtistsPage />} />
         <Route path="/album-artists/:artistId/:slug" element={<AlbumArtistsPage />} />
+        <Route path="/track-artists" element={<TrackArtistsPage />} />
+        <Route path="/track-artists/:artistId/:slug" element={<TrackArtistsPage />} />
+        <Route path="/track-composers" element={<TrackComposersPage />} />
+        <Route path="/track-composers/:composerId/:slug" element={<TrackComposersPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="signout" element={<SignOutPage />} />
       </Route>

@@ -30,6 +30,34 @@ export type ListAlbumArtistsWithTracksErrorCodes =
   | GenericErrorCodes
   | ListAlbumArtistsWithTracksEndpoint['responses']['400']['content']['application/json']['message'][number];
 
+type ListTrackArtistsEndpoint = paths['/api/user/list-track-artists']['get'];
+type ListTrackArtistsQueryDto = ListTrackArtistsEndpoint['parameters']['query'];
+type ListTrackArtistsResponseDto = ListTrackArtistsEndpoint['responses']['200']['content']['application/json'];
+export type ListTrackArtistsErrorCodes =
+  GenericErrorCodes | ListTrackArtistsEndpoint['responses']['400']['content']['application/json']['message'][number];
+
+type ListTrackArtistsWithTracksEndpoint = paths['/api/user/list-track-artists-with-tracks']['get'];
+type ListTrackArtistsWithTracksQueryDto = ListTrackArtistsWithTracksEndpoint['parameters']['query'];
+type ListTrackArtistsWithTracksResponseDto =
+  ListTrackArtistsWithTracksEndpoint['responses']['200']['content']['application/json'];
+export type ListTrackArtistsWithTracksErrorCodes =
+  | GenericErrorCodes
+  | ListTrackArtistsWithTracksEndpoint['responses']['400']['content']['application/json']['message'][number];
+
+type ListTrackComposersEndpoint = paths['/api/user/list-track-composers']['get'];
+type ListTrackComposersQueryDto = ListTrackComposersEndpoint['parameters']['query'];
+type ListTrackComposersResponseDto = ListTrackComposersEndpoint['responses']['200']['content']['application/json'];
+export type ListTrackComposersErrorCodes =
+  GenericErrorCodes | ListTrackComposersEndpoint['responses']['400']['content']['application/json']['message'][number];
+
+type ListTrackComposersWithTracksEndpoint = paths['/api/user/list-track-composers-with-tracks']['get'];
+type ListTrackComposersWithTracksQueryDto = ListTrackComposersWithTracksEndpoint['parameters']['query'];
+type ListTrackComposersWithTracksResponseDto =
+  ListTrackComposersWithTracksEndpoint['responses']['200']['content']['application/json'];
+export type ListTrackComposersWithTracksErrorCodes =
+  | GenericErrorCodes
+  | ListTrackComposersWithTracksEndpoint['responses']['400']['content']['application/json']['message'][number];
+
 type RetrieveAlbumEndpoint = paths['/api/user/retrieve-album']['get'];
 type RetrieveAlbumQueryDto = RetrieveAlbumEndpoint['parameters']['query'];
 export type RetrieveAlbumErrorCodes =
@@ -39,33 +67,54 @@ export type AlbumDto = ListAlbumsResponseDto['albums'][number];
 export type AlbumWithTracksDto = ListAlbumsWithTracksResponseDto['albums'][number];
 export type AlbumArtistDto = ListAlbumArtistsResponseDto['artists'][number];
 export type AlbumArtistWithTracksDto = ListAlbumArtistsWithTracksResponseDto['artists'][number];
+export type ArtistDto = ListTrackArtistsResponseDto['artists'][number];
+export type ArtistWithTracksDto = ListTrackArtistsWithTracksResponseDto['artists'][number];
+export type ComposerDto = ListTrackComposersResponseDto['composers'][number];
+export type ComposerWithTracksDto = ListTrackComposersWithTracksResponseDto['composers'][number];
 export type TrackDto = AlbumWithTracksDto['tracks'][number];
+
 export type AlbumArtistWithTracksData = {
   artists: AlbumArtistWithTracksDto[];
   total: number;
   offset: number;
 };
-
 type AlbumsData = {
   albums: AlbumDto[];
   total: number;
   offset: number;
 };
-
 type AlbumsWithTracksData = {
   albums: AlbumWithTracksDto[];
   total: number;
   offset: number;
 };
-
 type AlbumArtistsData = {
   artists: AlbumArtistDto[];
   total: number;
   offset: number;
 };
-
 type AlbumArtistsWithTracksData = {
   artists: AlbumArtistWithTracksDto[];
+  total: number;
+  offset: number;
+};
+export type ArtistsData = {
+  artists: ArtistDto[];
+  total: number;
+  offset: number;
+};
+export type ArtistsWithTracksData = {
+  artists: ArtistWithTracksDto[];
+  total: number;
+  offset: number;
+};
+export type ComposersWithTracksData = {
+  composers: ComposerWithTracksDto[];
+  total: number;
+  offset: number;
+};
+export type ComposersData = {
+  composers: ComposerDto[];
   total: number;
   offset: number;
 };
@@ -75,6 +124,10 @@ const ALBUMS_WITH_TRACKS_QUERY_KEY = ['albumsWithTracks'] as const;
 const ALBUM_QUERY_KEY = ['album'] as const;
 const ALBUM_ARTISTS_QUERY_KEY = ['albumArtists'] as const;
 const ALBUM_ARTISTS_WITH_TRACKS_QUERY_KEY = ['albumArtistsWithTracks'] as const;
+const TRACK_ARTISTS_QUERY_KEY = ['trackArtists'] as const;
+const TRACK_ARTISTS_WITH_TRACKS_QUERY_KEY = ['trackArtistsWithTracks'] as const;
+const TRACK_COMPOSERS_QUERY_KEY = ['composers'] as const;
+const TRACK_COMPOSERS_WITH_TRACKS_QUERY_KEY = ['composersWithTracks'] as const;
 
 function albumsWithTracksQueryKey(query?: ListAlbumsWithTracksQueryDto) {
   return [...ALBUMS_WITH_TRACKS_QUERY_KEY, query] as const;
@@ -94,6 +147,22 @@ function albumArtistsQueryKey(query?: ListAlbumArtistsQueryDto) {
 
 function albumArtistsWithTracksQueryKey(query?: ListAlbumArtistsWithTracksQueryDto) {
   return [...ALBUM_ARTISTS_WITH_TRACKS_QUERY_KEY, query] as const;
+}
+
+function trackArtistsQueryKey(query?: ListTrackArtistsQueryDto) {
+  return [...TRACK_ARTISTS_QUERY_KEY, query] as const;
+}
+
+function trackArtistsWithTracksQueryKey(query?: ListTrackArtistsWithTracksQueryDto) {
+  return [...TRACK_ARTISTS_WITH_TRACKS_QUERY_KEY, query] as const;
+}
+
+function trackComposersQueryKey(query?: ListTrackComposersQueryDto) {
+  return [...TRACK_COMPOSERS_QUERY_KEY, query] as const;
+}
+
+function trackComposersWithTracksQueryKey(query?: ListTrackComposersWithTracksQueryDto) {
+  return [...TRACK_COMPOSERS_WITH_TRACKS_QUERY_KEY, query] as const;
 }
 
 async function fetchAlbums(query?: ListAlbumsQueryDto): Promise<AlbumsData> {
@@ -197,6 +266,88 @@ async function fetchAlbumArtistsWithTracks(
   };
 }
 
+async function fetchTrackArtists(query?: ListTrackArtistsQueryDto): Promise<ArtistsData> {
+  const { data, error } = await api.get('/api/user/list-track-artists', {
+    params: {
+      query,
+      header: api.authHeader(),
+    },
+  });
+  if (error) {
+    throw new Error(getErrorMessage(error));
+  }
+  if (!data?.artists) {
+    throw new Error('No data received');
+  }
+  return {
+    artists: data.artists ?? [],
+    total: data.total ?? 0,
+    offset: data.offset ?? 0,
+  };
+}
+
+async function fetchTrackArtistsWithTracks(query?: ListTrackArtistsWithTracksQueryDto): Promise<ArtistsWithTracksData> {
+  const { data, error } = await api.get('/api/user/list-track-artists-with-tracks', {
+    params: {
+      query,
+      header: api.authHeader(),
+    },
+  });
+  if (error) {
+    throw new Error(getErrorMessage(error));
+  }
+  if (!data?.artists) {
+    throw new Error('No data received');
+  }
+  return {
+    artists: data.artists ?? [],
+    total: data.total ?? 0,
+    offset: data.offset ?? 0,
+  };
+}
+
+async function fetchTrackComposers(query?: ListTrackComposersQueryDto): Promise<ComposersData> {
+  const { data, error } = await api.get('/api/user/list-track-composers', {
+    params: {
+      query,
+      header: api.authHeader(),
+    },
+  });
+  if (error) {
+    throw new Error(getErrorMessage(error));
+  }
+  if (!data?.composers) {
+    throw new Error('No data received');
+  }
+  return {
+    composers: data.composers ?? [],
+    total: data.total ?? 0,
+    offset: data.offset ?? 0,
+  };
+}
+
+async function fetchTrackComposersWithTracks(
+  query?: ListTrackComposersWithTracksQueryDto,
+): Promise<ComposersWithTracksData> {
+  const { data, error } = await api.get('/api/user/list-track-composers-with-tracks', {
+    params: {
+      query,
+      header: api.authHeader(),
+    },
+  });
+  if (error) {
+    throw new Error(getErrorMessage(error));
+  }
+  if (!data?.composers) {
+    throw new Error('No data received');
+  }
+  return {
+    composers: data.composers ?? [],
+    total: data.total ?? 0,
+    offset: data.offset ?? 0,
+  };
+}
+
 function fetchAlbumsWithClient(queryClient: QueryClient, query?: ListAlbumsQueryDto) {
   return queryClient.fetchQuery({
     queryKey: albumsQueryKey(query),
@@ -229,6 +380,37 @@ function fetchAlbumArtistsWithTracksWithClient(queryClient: QueryClient, query?:
   return queryClient.fetchQuery({
     queryKey: albumArtistsWithTracksQueryKey(query),
     queryFn: () => fetchAlbumArtistsWithTracks(query),
+  });
+}
+
+function fetchTrackArtistsWithClient(queryClient: QueryClient, query?: ListTrackArtistsQueryDto) {
+  return queryClient.fetchQuery({
+    queryKey: trackArtistsQueryKey(query),
+    queryFn: () => fetchTrackArtists(query),
+  });
+}
+
+function fetchTrackArtistsWithTracksWithClient(queryClient: QueryClient, query?: ListTrackArtistsWithTracksQueryDto) {
+  return queryClient.fetchQuery({
+    queryKey: trackArtistsWithTracksQueryKey(query),
+    queryFn: () => fetchTrackArtistsWithTracks(query),
+  });
+}
+
+function fetchTrackComposersWithClient(queryClient: QueryClient, query?: ListTrackComposersQueryDto) {
+  return queryClient.fetchQuery({
+    queryKey: trackComposersQueryKey(query),
+    queryFn: () => fetchTrackComposers(query),
+  });
+}
+
+function fetchTrackComposersWithTracksWithClient(
+  queryClient: QueryClient,
+  query?: ListTrackComposersWithTracksQueryDto,
+) {
+  return queryClient.fetchQuery({
+    queryKey: trackComposersWithTracksQueryKey(query),
+    queryFn: () => fetchTrackComposersWithTracks(query),
   });
 }
 
@@ -270,6 +452,38 @@ export function useLibrary() {
   });
   const [isAlbumArtistsWithTracksLoading, setIsAlbumArtistsWithTracksLoading] = useState(false);
   const [albumArtistsWithTracksLoadingError, setAlbumArtistsWithTracksLoadingError] = useState<Error | null>(null);
+  // track artist list
+  const [trackArtists, setTrackArtists] = useState<ArtistsData>({
+    artists: [],
+    total: 0,
+    offset: 0,
+  });
+  const [isTrackArtistsLoading, setIsTrackArtistsLoading] = useState(false);
+  const [trackArtistsLoadingError, setTrackArtistsLoadingError] = useState<Error | null>(null);
+  // track artist with tracks list
+  const [trackArtistsWithTracks, setTrackArtistsWithTracks] = useState<ArtistsWithTracksData>({
+    artists: [],
+    total: 0,
+    offset: 0,
+  });
+  const [isTrackArtistsWithTracksLoading, setIsTrackArtistsWithTracksLoading] = useState(false);
+  const [trackArtistsWithTracksLoadingError, setTrackArtistsWithTracksLoadingError] = useState<Error | null>(null);
+  // track composer list
+  const [trackComposers, setTrackComposers] = useState<ComposersData>({
+    composers: [],
+    total: 0,
+    offset: 0,
+  });
+  const [isTrackComposersLoading, setIsTrackComposersLoading] = useState(false);
+  const [trackComposersLoadingError, setTrackComposersLoadingError] = useState<Error | null>(null);
+  // track composer list with tracks
+  const [trackComposersWithTracks, setTrackComposersWithTracks] = useState<ComposersWithTracksData>({
+    composers: [],
+    total: 0,
+    offset: 0,
+  });
+  const [isTrackComposersWithTracksLoading, setIsTrackComposersWithTracksLoading] = useState(false);
+  const [trackComposersWithTracksLoadingError, setTrackComposersWithTracksLoadingError] = useState<Error | null>(null);
 
   const listAlbums = useCallback(
     async (query?: ListAlbumsQueryDto) => {
@@ -350,6 +564,85 @@ export function useLibrary() {
     [queryClient],
   );
 
+  const listTrackArtists = useCallback(
+    async (query?: ListTrackArtistsQueryDto) => {
+      setIsTrackArtistsLoading(true);
+      setTrackArtistsLoadingError(null);
+      try {
+        const result = await fetchTrackArtistsWithClient(queryClient, query);
+        setTrackArtists(result);
+      } catch (error) {
+        setTrackArtistsLoadingError(error instanceof Error ? error : new Error('Failed to fetch track artists'));
+      } finally {
+        setIsTrackArtistsLoading(false);
+      }
+    },
+    [queryClient],
+  );
+
+  const listTrackArtistsWithTracks = useCallback(
+    async (query?: ListTrackArtistsWithTracksQueryDto) => {
+      setIsTrackArtistsWithTracksLoading(true);
+      setTrackArtistsWithTracksLoadingError(null);
+      try {
+        const result = await fetchTrackArtistsWithTracksWithClient(queryClient, query);
+        setTrackArtistsWithTracks(result);
+      } catch (error) {
+        setTrackArtistsWithTracksLoadingError(
+          error instanceof Error ? error : new Error('Failed to fetch track artists with tracks'),
+        );
+      } finally {
+        setIsTrackArtistsWithTracksLoading(false);
+      }
+    },
+    [queryClient],
+  );
+
+  const listTrackComposers = useCallback(
+    async (query?: ListTrackComposersQueryDto) => {
+      setIsTrackComposersLoading(true);
+      setTrackComposersLoadingError(null);
+      try {
+        const result = await fetchTrackComposersWithClient(queryClient, query);
+        setTrackComposers(result);
+      } catch (error) {
+        setTrackComposersLoadingError(error instanceof Error ? error : new Error('Failed to fetch composers'));
+      } finally {
+        setIsTrackComposersLoading(false);
+      }
+    },
+    [queryClient],
+  );
+
+  const listTrackComposersWithTracks = useCallback(
+    async (query?: ListTrackComposersWithTracksQueryDto) => {
+      setIsTrackComposersWithTracksLoading(true);
+      setTrackComposersWithTracksLoadingError(null);
+      try {
+        const result = await fetchTrackComposersWithTracksWithClient(queryClient, query);
+        setTrackComposersWithTracks(result);
+        // // set the composers too because the data is the same except for including tracks
+        queryClient.setQueryData<ComposersData>(trackComposersQueryKey(query), {
+          total: result.total,
+          offset: result.offset,
+          composers: result.composers.map((item: ComposerWithTracksDto) => {
+            return {
+              ...item,
+              tracks: undefined,
+            };
+          }),
+        });
+      } catch (error) {
+        setTrackComposersWithTracksLoadingError(
+          error instanceof Error ? error : new Error('Failed to fetch composers with tracks'),
+        );
+      } finally {
+        setIsTrackComposersWithTracksLoading(false);
+      }
+    },
+    [queryClient],
+  );
+
   const retrieveAlbum = useCallback(
     async (query: RetrieveAlbumQueryDto) => {
       try {
@@ -370,6 +663,10 @@ export function useLibrary() {
     listAlbumsWithTracks,
     listAlbumArtists,
     listAlbumArtistsWithTracks,
+    listTrackArtists,
+    listTrackArtistsWithTracks,
+    listTrackComposers,
+    listTrackComposersWithTracks,
     retrieveAlbum,
     albums: albums.albums,
     albumsTotal: albums.total,
@@ -394,5 +691,25 @@ export function useLibrary() {
     albumArtistsWithTracksOffset: albumArtistsWithTracks.offset,
     albumArtistsWithTracksLoading: isAlbumArtistsWithTracksLoading,
     albumArtistsWithTracksError: albumArtistsWithTracksLoadingError,
+    trackArtists: trackArtists.artists,
+    trackArtistsTotal: trackArtists.total,
+    trackArtistsOffset: trackArtists.offset,
+    trackArtistsLoading: isTrackArtistsLoading,
+    trackArtistsError: trackArtistsLoadingError,
+    trackArtistsWithTracks: trackArtistsWithTracks.artists,
+    trackArtistsWithTracksTotal: trackArtistsWithTracks.total,
+    trackArtistsWithTracksOffset: trackArtistsWithTracks.offset,
+    trackArtistsWithTracksLoading: isTrackArtistsWithTracksLoading,
+    trackArtistsWithTracksError: trackArtistsWithTracksLoadingError,
+    trackComposers: trackComposers.composers,
+    trackComposersTotal: trackComposers.total,
+    trackComposersOffset: trackComposers.offset,
+    trackComposersLoading: isTrackComposersLoading,
+    trackComposersError: trackComposersLoadingError,
+    trackComposersWithTracks: trackComposersWithTracks.composers,
+    trackComposersWithTracksTotal: trackComposersWithTracks.total,
+    trackComposersWithTracksOffset: trackComposersWithTracks.offset,
+    trackComposersWithTracksLoading: isTrackComposersWithTracksLoading,
+    trackComposersWithTracksError: trackComposersWithTracksLoadingError,
   };
 }

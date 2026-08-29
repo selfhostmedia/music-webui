@@ -1,17 +1,17 @@
-import { ArtistIconImage } from './artist-icon-image';
-import type { AlbumArtistWithTracksDto } from '@/hooks/user/use-library';
+import { ComposerIconImage } from './composer-icon-image';
+import type { ComposerWithTracksDto } from '@/hooks/user/use-library';
 
-export function ArtistCard({
-  artist,
+export function ComposerCard({
+  composer,
   isExpanded,
   onToggle,
 }: {
-  artist: AlbumArtistWithTracksDto;
+  composer: ComposerWithTracksDto;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
-  const selectedColor = artist.albums[0]?.coverImageMuted || '#000000';
-  const contrastingColor = artist.albums[0]?.coverImageDarkMuted || '#000000';
+  const selectedColor = composer.albums[0]?.coverImageMuted || '#000000';
+  const contrastingColor = composer.albums[0]?.coverImageDarkMuted || '#000000';
   return (
     <>
       <button
@@ -41,8 +41,7 @@ export function ArtistCard({
             className={[
               'w-54 lg:w-68',
               'h-54 lg:h-68',
-              'bg-accent rounded-lg p-2 shadow-sm shadow-foreground/50 dark:shadow-background',
-              'hover:bg-muted-foreground/50 transition-colors',
+              'rounded-lg p-2',
               isExpanded ? 'bg-muted-foreground/80 transition-colors' : '',
             ].join(' ')}
             style={{
@@ -54,15 +53,15 @@ export function ArtistCard({
                   )`,
             }}
           >
-            <ArtistIconImage
-              artistId={artist.id}
-              aria-label={`${artist.name}`}
+            <ComposerIconImage
+              artistId={composer.id}
+              aria-label={`${composer.name}`}
               className="w-50 h-50 lg:w-64 lg:h-64"
               size={200}
             />
           </div>
           <div className="p-2">
-            <h3 className="text-center text-sm text-foreground/80">{artist.name}</h3>
+            <h3 className="text-center text-sm text-foreground/80">{composer.name}</h3>
           </div>
         </div>
       </button>

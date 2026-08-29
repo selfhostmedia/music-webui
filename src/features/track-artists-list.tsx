@@ -8,15 +8,15 @@ import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useLibrary } from '@/hooks/user/use-library';
 import { useNavigate, useParams } from 'react-router-dom';
 
-export default function AlbumArtistsList() {
+export default function TrackArtistsList() {
   const navigate = useNavigate();
   const {
-    listAlbumArtistsWithTracks,
-    albumArtistsWithTracks,
-    albumArtistsWithTracksTotal,
-    albumArtistsWithTracksOffset,
-    albumArtistsWithTracksLoading,
-    albumArtistsWithTracksError,
+    listTrackArtistsWithTracks,
+    trackArtistsWithTracks,
+    trackArtistsWithTracksTotal,
+    trackArtistsWithTracksOffset,
+    trackArtistsWithTracksLoading,
+    trackArtistsWithTracksError,
   } = useLibrary();
   const isMobile = useIsMobile();
   const [columnSize, setColumnSize] = useState(0);
@@ -25,7 +25,7 @@ export default function AlbumArtistsList() {
   const expandedArtistId = artistId ? Number(artistId) : null;
   const expandedArtist =
     expandedArtistId !== null
-      ? (albumArtistsWithTracks.find((artist) => artist.id === expandedArtistId) ?? null)
+      ? (trackArtistsWithTracks.find((artist) => artist.id === expandedArtistId) ?? null)
       : null;
 
   useLayoutEffect(() => {
@@ -84,7 +84,7 @@ export default function AlbumArtistsList() {
       };
     }
     return undefined;
-  }, [albumArtistsWithTracks.length]);
+  }, [trackArtistsWithTracks.length]);
 
   function formatSlug(title: string) {
     return title
@@ -98,35 +98,35 @@ export default function AlbumArtistsList() {
 
   function toggleArtist(id: number) {
     if (expandedArtistId === id) {
-      navigate('/album-artists');
+      navigate('/track-artists');
     } else {
-      const artist = albumArtistsWithTracks.find((item) => item.id === id);
+      const artist = trackArtistsWithTracks.find((item) => item.id === id);
       if (!artist) {
         // eslint-disable-next-line no-console
         console.error(`Artist with id ${id} not found`);
         return;
       }
-      navigate(`/album-artists/${id}/${formatSlug(artist.name)}`);
+      navigate(`/track-artists/${id}/${formatSlug(artist.name)}`);
     }
   }
 
-  const clickedArtistIndex = albumArtistsWithTracks.findIndex((item) => item.id === expandedArtistId);
+  const clickedArtistIndex = trackArtistsWithTracks.findIndex((item) => item.id === expandedArtistId);
   const detailsInsertIndex =
     clickedArtistIndex >= 0 ? Math.ceil((clickedArtistIndex + 1) / columnSize) * columnSize - 1 : -1;
-  const insertingArtist = albumArtistsWithTracks[clickedArtistIndex];
+  const insertingArtist = trackArtistsWithTracks[clickedArtistIndex];
 
   useEffect(() => {
-    listAlbumArtistsWithTracks({
+    listTrackArtistsWithTracks({
       sortField: ArtistSortFieldEnum.artist,
       sortDirection: SortDirectionEnum.asc,
     });
-  }, [listAlbumArtistsWithTracks]);
+  }, [listTrackArtistsWithTracks]);
 
   return (
     <>
-      <title>Album artists // SHM</title>
-      {albumArtistsWithTracksLoading && <p>Loading...</p>}
-      {albumArtistsWithTracksError && <p>Error: {albumArtistsWithTracksError.message}</p>}
+      <title>Track Artists // SHM</title>
+      {trackArtistsWithTracksLoading && <p>Loading...</p>}
+      {trackArtistsWithTracksError && <p>Error: {trackArtistsWithTracksError.message}</p>}
       {isMobile && (
         <ul className="flex flex-col grow">
           {insertingArtist && (
@@ -137,7 +137,7 @@ export default function AlbumArtistsList() {
             </li>
           )}
           {!insertingArtist &&
-            albumArtistsWithTracks.map((item) => {
+            trackArtistsWithTracks.map((item) => {
               return (
                 <li className="w-full p-2" key={`mobile-album ${item.id}`}>
                   <AlbumArtistListItem
@@ -160,11 +160,11 @@ export default function AlbumArtistsList() {
             'gap-4 mx-4',
           ].join(' ')}
         >
-          {albumArtistsWithTracks.map((item, index) => {
+          {trackArtistsWithTracks.map((item, index) => {
             const isExpanded = expandedArtistId === item.id;
             const shouldInsertDetails = detailsInsertIndex === index;
             return (
-              <Fragment key={`album ${item.id}`}>
+              <Fragment key={`track-artist ${item.id}`}>
                 <li className="w-full h-full inline-block">
                   <ArtistCard artist={item} isExpanded={isExpanded} onToggle={() => toggleArtist(item.id)} />
                 </li>
@@ -181,9 +181,9 @@ export default function AlbumArtistsList() {
       {/* pagination */}
       <div>
         <p>
-          Showing {albumArtistsWithTracksOffset + 1}
-          to {Math.min(albumArtistsWithTracksOffset + albumArtistsWithTracks.length, albumArtistsWithTracksTotal)}
-          of {albumArtistsWithTracksTotal} album artists
+          Showing {trackArtistsWithTracksOffset + 1}
+          to {Math.min(trackArtistsWithTracksOffset + trackArtistsWithTracks.length, trackArtistsWithTracksTotal)}
+          of {trackArtistsWithTracksTotal} artists
         </p>
       </div>
     </>
