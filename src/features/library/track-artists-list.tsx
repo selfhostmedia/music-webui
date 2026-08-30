@@ -135,8 +135,13 @@ export default function TrackArtistsList() {
   }
 
   const clickedArtistIndex = data?.artists.findIndex((item) => item.id === expandedArtistId) ?? -1;
-  const detailsInsertIndex =
+  let detailsInsertIndex =
     clickedArtistIndex >= 0 ? Math.ceil((clickedArtistIndex + 1) / columnSize) * columnSize - 1 : -1;
+  if (data?.artists.length) {
+    if (detailsInsertIndex > data.artists.length) {
+      detailsInsertIndex = data.artists.length - 1;
+    }
+  }
   const insertingArtist = data?.artists[clickedArtistIndex];
 
   return (

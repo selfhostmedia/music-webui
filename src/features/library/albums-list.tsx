@@ -48,6 +48,8 @@ export default function AlbumsList() {
   const expandedAlbum =
     expandedAlbumId !== null ? (data?.albums.find((album) => album.id === expandedAlbumId) ?? null) : null;
 
+  console.log('expanded', expandedAlbumId, expandedAlbum);
+
   useLayoutEffect(() => {
     const list = listRef.current as HTMLElement | null;
     if (list) {
@@ -143,8 +145,13 @@ export default function AlbumsList() {
   }
 
   const clickedAlbumIndex = data?.albums.findIndex((item) => item.id === expandedAlbumId) ?? -1;
-  const detailsInsertIndex =
+  let detailsInsertIndex =
     clickedAlbumIndex >= 0 ? Math.ceil((clickedAlbumIndex + 1) / columnSize) * columnSize - 1 : -1;
+  if (data?.albums.length) {
+    if (detailsInsertIndex > data.albums.length) {
+      detailsInsertIndex = data.albums.length - 1;
+    }
+  }
   const insertingAlbum = data?.albums[clickedAlbumIndex];
 
   return (
@@ -197,6 +204,7 @@ export default function AlbumsList() {
           {data?.albums.map((item, index) => {
             const isExpanded = expandedAlbumId === item.id;
             const shouldInsertDetails = detailsInsertIndex === index;
+            console.log('rendering album', index, 'isExpanded', isExpanded, 'shouldInsertDetails', shouldInsertDetails);
             return (
               <Fragment key={`album ${item.id}`}>
                 <li className="w-full h-full inline-block">

@@ -133,8 +133,13 @@ export default function TrackGenresList() {
   }
 
   const clickedGenreIndex = data?.genres.findIndex((item) => item.id === expandedGenreId) ?? -1;
-  const detailsInsertIndex =
+  let detailsInsertIndex =
     clickedGenreIndex >= 0 ? Math.ceil((clickedGenreIndex + 1) / columnSize) * columnSize - 1 : -1;
+  if (data?.genres.length) {
+    if (detailsInsertIndex > data.genres.length) {
+      detailsInsertIndex = data.genres.length - 1;
+    }
+  }
   const insertingGenre = data?.genres[clickedGenreIndex];
 
   return (

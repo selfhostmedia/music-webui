@@ -137,8 +137,13 @@ export default function TrackComposersList() {
   }
 
   const clickedArtistIndex = data?.composers.findIndex((item) => item.id === expandedComposerId) ?? -1;
-  const detailsInsertIndex =
+  let detailsInsertIndex =
     clickedArtistIndex >= 0 ? Math.ceil((clickedArtistIndex + 1) / columnSize) * columnSize - 1 : -1;
+  if (data?.composers.length) {
+    if (detailsInsertIndex > data.composers.length) {
+      detailsInsertIndex = data.composers.length - 1;
+    }
+  }
   const insertingComposer = data?.composers[clickedArtistIndex];
 
   return (
