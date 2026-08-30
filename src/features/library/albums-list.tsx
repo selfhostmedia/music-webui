@@ -48,8 +48,6 @@ export default function AlbumsList() {
   const expandedAlbum =
     expandedAlbumId !== null ? (data?.albums.find((album) => album.id === expandedAlbumId) ?? null) : null;
 
-  console.log('expanded', expandedAlbumId, expandedAlbum);
-
   useLayoutEffect(() => {
     const list = listRef.current as HTMLElement | null;
     if (list) {
@@ -204,7 +202,6 @@ export default function AlbumsList() {
           {data?.albums.map((item, index) => {
             const isExpanded = expandedAlbumId === item.id;
             const shouldInsertDetails = detailsInsertIndex === index;
-            console.log('rendering album', index, 'isExpanded', isExpanded, 'shouldInsertDetails', shouldInsertDetails);
             return (
               <Fragment key={`album ${item.id}`}>
                 <li className="w-full h-full inline-block">

@@ -39,7 +39,6 @@ export default function AlbumArtistsList() {
   const expandedArtistId = artistId ? Number(artistId) : null;
   const expandedArtist =
     expandedArtistId !== null ? (data?.artists.find((artist) => artist.id === expandedArtistId) ?? null) : null;
-  console.log('expanded artist', expandedArtistId, expandedArtist);
 
   useLayoutEffect(() => {
     const list = listRef.current as HTMLElement | null;

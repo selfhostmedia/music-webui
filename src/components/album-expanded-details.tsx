@@ -9,9 +9,6 @@ export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
   const selectedColor = album.coverImageMuted || '#000000';
   const contrastingColor = album.coverImageDarkMuted || '#000000';
   const trackGroups = createTrackGroups(album.tracks);
-  if(!trackGroups?.length) {
-    console.log('something went wrong with track groups', 'album', album, 'track groups', trackGroups);
-  }
   const showDiscTitle = trackGroups[0]?.[0]?.discNumber !== trackGroups[trackGroups.length - 1]?.[0]?.discNumber;
   return (
     <>
