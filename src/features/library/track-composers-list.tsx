@@ -1,7 +1,7 @@
-import { AlbumArtistListItem } from '@/components/artist-list-item';
-import { AlbumArtistStandaloneDetails } from '@/components/artist-standalone-details';
-import { ArtistExpandedDetails } from '@/components/artist-expanded-details';
 import { ComposerCard } from '@/components/composer-card';
+import { ComposerExpandedDetails } from '@/components/composer-expanded-details';
+import { ComposerListItem } from '@/components/composer-list-item';
+import { ComposerStandaloneDetails } from '@/components/composer-standalone-details';
 import { Fragment, useLayoutEffect, useRef, useState } from 'react';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useListTrackComposersWithTracks } from '@/hooks/user/use-composers';
@@ -162,8 +162,8 @@ export default function TrackComposersList() {
           {insertingComposer && (
             <li className="album-details col-span-full flex flex-col grow  -mx-4">
               {expandedComposer && (
-                <AlbumArtistStandaloneDetails
-                  artist={expandedComposer}
+                <ComposerStandaloneDetails
+                  composer={expandedComposer}
                   onClose={() => toggleComposer(expandedComposer.id)}
                 />
               )}
@@ -173,8 +173,8 @@ export default function TrackComposersList() {
             data?.composers.map((item) => {
               return (
                 <li className="w-full p-2" key={`mobile-album ${item.id}`}>
-                  <AlbumArtistListItem
-                    artist={item}
+                  <ComposerListItem
+                    composer={item}
                     isExpanded={expandedComposerId === item.id}
                     onToggle={() => toggleComposer(item.id)}
                   />
@@ -203,7 +203,7 @@ export default function TrackComposersList() {
                 </li>
                 {shouldInsertDetails && (
                   <li className="album-details col-span-full -mx-4">
-                    {expandedComposer && <ArtistExpandedDetails artist={expandedComposer} />}
+                    {expandedComposer && <ComposerExpandedDetails composer={expandedComposer} />}
                   </li>
                 )}
               </Fragment>

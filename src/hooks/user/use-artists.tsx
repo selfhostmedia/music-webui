@@ -12,7 +12,7 @@ export type AlbumArtistWithTracksDto =
   ListAlbumArtistsWithTracksApi['responses']['200']['content']['application/json']['artists'][number];
 export type TrackArtistDto = ListTrackArtistsApi['responses']['200']['content']['application/json']['artists'][number];
 export type TrackArtistWithTracksDto =
-  ListTrackArtistsWithTracksApi['responses']['200']['content']['application/json']['artists'][number]; 
+  ListTrackArtistsWithTracksApi['responses']['200']['content']['application/json']['artists'][number];
 
 async function fetchAlbumArtists(query: ListAlbumArtistsApi['parameters']['query']) {
   const { data, error } = await api.get('/api/user/list-album-artists', {

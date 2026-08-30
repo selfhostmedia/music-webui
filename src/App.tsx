@@ -10,6 +10,7 @@ import AdminHomePage from './pages/admin/home.tsx';
 import AdminLayout from './layouts/admin-layout.tsx';
 import AlbumArtistsPage from './pages/album-artists.tsx';
 import AlbumsPage from './pages/albums';
+import FoldersPage from './pages/folders';
 import GuestLayout from './layouts/guest-layout';
 import HomePage from './pages/home';
 import SignInPage from './pages/signin';
@@ -31,6 +32,8 @@ const router = createBrowserRouter(
         <Route path="/albums/:albumId/:slug" element={<AlbumsPage />} />
         <Route path="/album-artists" element={<AlbumArtistsPage />} />
         <Route path="/album-artists/:artistId/:slug" element={<AlbumArtistsPage />} />
+        <Route path="/folders" element={<FoldersPage />} />
+        <Route path="/folders/:folderId/:slug*" element={<FoldersPage />} />
         <Route path="/track-artists" element={<TrackArtistsPage />} />
         <Route path="/track-artists/:artistId/:slug" element={<TrackArtistsPage />} />
         <Route path="/track-composers" element={<TrackComposersPage />} />

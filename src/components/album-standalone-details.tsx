@@ -4,11 +4,9 @@ import { ArrowLeftCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { createTrackGroups } from '@/utils/library';
 import { getContrastingTextColor } from '@/utils/color';
-import { useRef } from 'react';
 import type { AlbumWithTracksDto } from '@/hooks/user/use-albums';
 
 export function AlbumStandaloneDetails({ album, onClose }: { album: AlbumWithTracksDto; onClose: () => void }) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const selectedColor = album.coverImageMuted || '#000000';
   const contrastingColor = album.coverImageDarkMuted || '#000000';
   const trackGroups = createTrackGroups(album.tracks);
@@ -17,7 +15,6 @@ export function AlbumStandaloneDetails({ album, onClose }: { album: AlbumWithTra
   return (
     <div
       className="w-full flex flex-col grow bg-muted/50 pl-8 -mx-4"
-      ref={containerRef}
       style={{
         backgroundColor: selectedColor,
       }}
