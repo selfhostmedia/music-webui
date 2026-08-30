@@ -1,4 +1,4 @@
-import AlbumsList from '@/features/albums-list';
+import AlbumsList from '@/features/library/albums-list';
 
 export default function Home() {
   return (

@@ -1,5 +1,5 @@
 import { AlbumIconImage } from './album-icon-image';
-import type { AlbumDto } from '@/hooks/user/use-library';
+import type { AlbumDto } from '@/hooks/user/use-albums';
 
 export function AlbumListItem({
   album,

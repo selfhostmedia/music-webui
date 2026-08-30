@@ -3,13 +3,16 @@ import { AlbumPlaybackControls } from './album-playback-controls';
 import { AlbumTrackList } from './album-track-list';
 import { createTrackGroups } from '@/utils/library';
 import { getContrastingTextColor } from '@/utils/color';
-import type { AlbumWithTracksDto } from '@/hooks/user/use-library';
+import type { AlbumWithTracksDto } from '@/hooks/user/use-albums';
 
 export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
   const selectedColor = album.coverImageMuted || '#000000';
   const contrastingColor = album.coverImageDarkMuted || '#000000';
   const trackGroups = createTrackGroups(album.tracks);
-  const showDiscTitle = trackGroups[0][0]?.discNumber !== trackGroups[trackGroups.length - 1][0]?.discNumber;
+  if(!trackGroups?.length) {
+    console.log('something went wrong with track groups', 'album', album, 'track groups', trackGroups);
+  }
+  const showDiscTitle = trackGroups[0]?.[0]?.discNumber !== trackGroups[trackGroups.length - 1]?.[0]?.discNumber;
   return (
     <>
       <div
@@ -73,7 +76,7 @@ export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
               {album.displayName} <span className="text-sm opacity-50 align-middle">({album.year})</span>
             </h3>
             <AlbumPlaybackControls />
-            <div className="grid grid-rows-2 2xl:grid-rows-none 2xl:grid-cols-2 gap-0 2xl:gap-20 w-full max-w-400">
+            <div className="lg:grid lg:grid-rows-2 2xl:grid-rows-none 2xl:grid-cols-2 gap-0 2xl:gap-20 max-w-400">
               {trackGroups.map((trackGroup, index) => {
                 return (
                   <div key={index}>
@@ -94,7 +97,7 @@ export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
               {album.displayName} <span className="text-sm opacity-50 align-middle">({album.year})</span>
             </h3>
             <AlbumPlaybackControls />
-            <div className="grid grid-rows-2 2xl:grid-rows-none 2xl:grid-cols-2 gap-0 2xl:gap-20 max-w-400">
+            <div className="lg:grid lg:grid-rows-2 2xl:grid-rows-none 2xl:grid-cols-2 gap-0 2xl:gap-20 max-w-400">
               {trackGroups.map((trackGroup, index) => (
                 <div key={index}>
                   {showDiscTitle && (

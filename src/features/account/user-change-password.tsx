@@ -16,7 +16,10 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod/v3';
-import type { UpdatePasswordBodyDto, UpdatePasswordErrorCodes } from '@/hooks/user/use-accounts';
+import type { paths } from '@/types/api-schema';
+
+type UpdatePasswordEndpoint = paths['/api/user/update-password']['post'];
+type UpdatePasswordBodyDto = UpdatePasswordEndpoint['requestBody']['content']['application/json'];
 
 type FormData = UpdatePasswordBodyDto & {
   confirmPassword: string;
@@ -26,24 +29,24 @@ const schema = z
   .object({
     newPassword: z
       .string()
-      .refine((val) => val.length > 0, {
+      .refine((value) => value.length > 0, {
         message: 'Password is required',
       })
-      .refine((val) => val.length >= 1, {
+      .refine((value) => value.length >= 1, {
         message: 'Password is too short',
       })
-      .refine((val) => val.length <= 255, {
+      .refine((value) => value.length <= 255, {
         message: 'Password is too long',
       }),
     confirmPassword: z
       .string()
-      .refine((val) => val.length > 0, {
+      .refine((value) => value.length > 0, {
         message: 'Confirm password is required',
       })
-      .refine((val) => val.length >= 1, {
+      .refine((value) => value.length >= 1, {
         message: 'Confirm password is too short',
       })
-      .refine((val) => val.length <= 255, {
+      .refine((value) => value.length <= 255, {
         message: 'Confirm password is too long',
       }),
   })
@@ -70,9 +73,7 @@ export function UserChangePasswordForm() {
     }
     await updatePassword(
       {
-        body: {
-          newPassword: formData.newPassword,
-        },
+        newPassword: formData.newPassword,
       },
       {
         onSuccess: () => {
@@ -80,19 +81,21 @@ export function UserChangePasswordForm() {
           toast.success('Password changed successfully. You will need to log in again with the new password.');
         },
         onError: (error) => {
-          const message = error.message as UpdatePasswordErrorCodes;
-          switch (message) {
-            case 'invalid-password-error':
-              setError('newPassword', { type: 'manual', message: 'The specified password is invalid.' });
-              break;
-            case 'invalid-password-length-error':
-              setError('newPassword', { type: 'manual', message: 'The new password length is invalid.' });
-              break;
-            default:
-              // eslint-disable-next-line no-console
-              console.error('Unexpected error occurred while changing password:', error);
-              toast.error('An internal server error occurred. Please try again later.');
-              break;
+          for (let i = 0; i < error.messages.length; i += 1) {
+            const message = error.messages[i];
+            switch (message) {
+              case 'invalid-password-error':
+                setError('newPassword', { type: 'manual', message: 'The specified password is invalid.' });
+                break;
+              case 'invalid-password-length-error':
+                setError('newPassword', { type: 'manual', message: 'The new password length is invalid.' });
+                break;
+              default:
+                // eslint-disable-next-line no-console
+                console.error('Unexpected error occurred while changing password:', error);
+                toast.error('An internal server error occurred. Please try again later.');
+                break;
+            }
           }
         },
       },

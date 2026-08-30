@@ -2,31 +2,44 @@ import { AlbumArtistListItem } from '@/components/artist-list-item';
 import { AlbumArtistStandaloneDetails } from '@/components/artist-standalone-details';
 import { ArtistCard } from '@/components/artist-card';
 import { ArtistExpandedDetails } from '@/components/artist-expanded-details';
-import { ArtistSortFieldEnum, SortDirectionEnum } from '@/types/api-schema';
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Fragment, useLayoutEffect, useRef, useState } from 'react';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { useLibrary } from '@/hooks/user/use-library';
+import { useListAlbumArtistsWithTracks } from '@/hooks/user/use-artists';
 import { useNavigate, useParams } from 'react-router-dom';
+
+type QueryParameters = NonNullable<Parameters<typeof useListAlbumArtistsWithTracks>[0]>;
+
+const errorMessages: Record<string, string> = {
+  'invalid-added-after-error': 'The added-after date is invalid',
+  'invalid-added-before-error': 'The added-before date is invalid',
+  'invalid-filter-error': 'The filter is invalid',
+  'invalid-filter-length-error': 'The filter length is invalid',
+  'invalid-genre-error': 'The genre is invalid',
+  'invalid-genre-length-error': 'The genre length is invalid',
+  'invalid-limit-error': 'The limit is invalid',
+  'invalid-limit-range-error': 'The limit is out of range',
+  'invalid-offset-error': 'The offset is invalid',
+  'invalid-offset-range-error': 'The offset is out of range',
+  'invalid-sort-field-error': 'The sort field is invalid',
+  'invalid-sort-order-error': 'The sort order is invalid',
+  'invalid-year-error': 'The year is invalid',
+};
 
 export default function AlbumArtistsList() {
   const navigate = useNavigate();
-  const {
-    listAlbumArtistsWithTracks,
-    albumArtistsWithTracks,
-    albumArtistsWithTracksTotal,
-    albumArtistsWithTracksOffset,
-    albumArtistsWithTracksLoading,
-    albumArtistsWithTracksError,
-  } = useLibrary();
+  const [query] = useState<QueryParameters>({
+    offset: 0,
+    limit: 100_000,
+  });
+  const { data, isPending, error } = useListAlbumArtistsWithTracks(query);
   const isMobile = useIsMobile();
   const [columnSize, setColumnSize] = useState(0);
   const listRef = useRef(null);
   const { artistId } = useParams<{ artistId: string }>();
   const expandedArtistId = artistId ? Number(artistId) : null;
   const expandedArtist =
-    expandedArtistId !== null
-      ? (albumArtistsWithTracks.find((artist) => artist.id === expandedArtistId) ?? null)
-      : null;
+    expandedArtistId !== null ? (data?.artists.find((artist) => artist.id === expandedArtistId) ?? null) : null;
+  console.log('expanded artist', expandedArtistId, expandedArtist);
 
   useLayoutEffect(() => {
     const list = listRef.current as HTMLElement | null;
@@ -80,11 +93,11 @@ export default function AlbumArtistsList() {
       window.addEventListener('resize', measureColumns);
       return () => {
         observer.disconnect();
-        // window.removeEventListener('resize', measureColumns);
+        window.removeEventListener('resize', measureColumns);
       };
     }
     return undefined;
-  }, [albumArtistsWithTracks.length]);
+  }, [data?.artists.length]);
 
   function formatSlug(title: string) {
     return title
@@ -100,7 +113,7 @@ export default function AlbumArtistsList() {
     if (expandedArtistId === id) {
       navigate('/album-artists');
     } else {
-      const artist = albumArtistsWithTracks.find((item) => item.id === id);
+      const artist = data?.artists.find((item) => item.id === id);
       if (!artist) {
         // eslint-disable-next-line no-console
         console.error(`Artist with id ${id} not found`);
@@ -110,23 +123,34 @@ export default function AlbumArtistsList() {
     }
   }
 
-  const clickedArtistIndex = albumArtistsWithTracks.findIndex((item) => item.id === expandedArtistId);
+  function getErrorMessages() {
+    if (!error) {
+      return [];
+    }
+    const messages: string[] = [];
+    for (let i = 0; i < error.messages.length; i += 1) {
+      const message = error.messages[i];
+      messages.push(errorMessages[message] ?? message);
+    }
+    return messages;
+  }
+
+  const clickedArtistIndex = data?.artists.findIndex((item) => item.id === expandedArtistId) ?? -1;
   const detailsInsertIndex =
     clickedArtistIndex >= 0 ? Math.ceil((clickedArtistIndex + 1) / columnSize) * columnSize - 1 : -1;
-  const insertingArtist = albumArtistsWithTracks[clickedArtistIndex];
-
-  useEffect(() => {
-    listAlbumArtistsWithTracks({
-      sortField: ArtistSortFieldEnum.artist,
-      sortDirection: SortDirectionEnum.asc,
-    });
-  }, [listAlbumArtistsWithTracks]);
+  const insertingArtist = data?.artists[clickedArtistIndex];
 
   return (
     <>
       <title>Album artists // SHM</title>
-      {albumArtistsWithTracksLoading && <p>Loading...</p>}
-      {albumArtistsWithTracksError && <p>Error: {albumArtistsWithTracksError.message}</p>}
+      {isPending && <p>Loading...</p>}
+      {error && (
+        <ul>
+          {getErrorMessages()?.map((message, index) => (
+            <li key={index}>{message}</li>
+          ))}
+        </ul>
+      )}
       {isMobile && (
         <ul className="flex flex-col grow">
           {insertingArtist && (
@@ -137,7 +161,7 @@ export default function AlbumArtistsList() {
             </li>
           )}
           {!insertingArtist &&
-            albumArtistsWithTracks.map((item) => {
+            data?.artists.map((item) => {
               return (
                 <li className="w-full p-2" key={`mobile-album ${item.id}`}>
                   <AlbumArtistListItem
@@ -160,7 +184,7 @@ export default function AlbumArtistsList() {
             'gap-4 mx-4',
           ].join(' ')}
         >
-          {albumArtistsWithTracks.map((item, index) => {
+          {data?.artists.map((item, index) => {
             const isExpanded = expandedArtistId === item.id;
             const shouldInsertDetails = detailsInsertIndex === index;
             return (
@@ -178,14 +202,6 @@ export default function AlbumArtistsList() {
           })}
         </ul>
       )}
-      {/* pagination */}
-      <div>
-        <p>
-          Showing {albumArtistsWithTracksOffset + 1}
-          to {Math.min(albumArtistsWithTracksOffset + albumArtistsWithTracks.length, albumArtistsWithTracksTotal)}
-          of {albumArtistsWithTracksTotal} album artists
-        </p>
-      </div>
     </>
   );
 }

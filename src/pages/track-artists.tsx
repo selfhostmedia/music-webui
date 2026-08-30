@@ -1,4 +1,4 @@
-import TrackArtistsList from '@/features/track-artists-list';
+import TrackArtistsList from '@/features/library/track-artists-list';
 
 export default function TrackArtistsPage() {
   return (

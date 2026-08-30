@@ -1,6 +1,6 @@
 import { TrackPlaybackControls } from './track-playback-controls';
 import { secondsToMinutesAndSeconds } from '@/utils/format';
-import type { AlbumWithTracksDto } from '@/hooks/user/use-library';
+import type { AlbumWithTracksDto } from '@/hooks/user/use-albums';
 
 type TrackDto = AlbumWithTracksDto['tracks'][number];
 

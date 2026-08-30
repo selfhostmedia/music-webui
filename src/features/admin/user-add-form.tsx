@@ -1,17 +1,20 @@
 import { Button } from '@/components/ui/button';
 import { Controller, useForm } from 'react-hook-form';
-import { type CreateAccountBodyDto, type CreateAccountErrorCodes, useAccounts } from '@/hooks/admin/use-accounts';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { FormValidationError } from '@/components/form-validation-error';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
-import { UserRoleEnum } from '@/types/api-schema';
+import { UserRoleEnum, type paths } from '@/types/api-schema';
 import { toast } from 'sonner';
+import { useAccounts } from '@/hooks/admin/use-accounts';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod/v3';
+
+type CreateEndpoint = paths['/api/admin/create-account']['post'];
+type CreateAccountBodyDto = CreateEndpoint['requestBody']['content']['application/json'];
 
 type FormData = CreateAccountBodyDto & {
   confirmPassword: string;
@@ -21,35 +24,35 @@ const schema = z
   .object({
     username: z
       .string()
-      .refine((val) => val.length > 0, {
+      .refine((value) => value.length > 0, {
         message: 'Username is required',
       })
-      .refine((val) => val.length >= 1, {
+      .refine((value) => value.length >= 1, {
         message: 'Username is too short',
       })
-      .refine((val) => val.length <= 255, {
+      .refine((value) => value.length <= 255, {
         message: 'Username is too long',
       }),
     password: z
       .string()
-      .refine((val) => val.length > 0, {
+      .refine((value) => value.length > 0, {
         message: 'Password is required',
       })
-      .refine((val) => val.length >= 1, {
+      .refine((value) => value.length >= 1, {
         message: 'Password is too short',
       })
-      .refine((val) => val.length <= 255, {
+      .refine((value) => value.length <= 255, {
         message: 'Password is too long',
       }),
     confirmPassword: z
       .string()
-      .refine((val) => val.length > 0, {
+      .refine((value) => value.length > 0, {
         message: 'Confirm password is required',
       })
-      .refine((val) => val.length >= 1, {
+      .refine((value) => value.length >= 1, {
         message: 'Confirm password is too short',
       })
-      .refine((val) => val.length <= 255, {
+      .refine((value) => value.length <= 255, {
         message: 'Confirm password is too long',
       }),
     roles: z.array(z.nativeEnum(UserRoleEnum)).min(1, { message: 'At least one role must be selected.' }),
@@ -77,11 +80,9 @@ export function UserAddForm({ className }: { className?: string }) {
   const onSubmit = handleSubmit(async (formData: FormData) => {
     await createAccount(
       {
-        body: {
-          username: formData.username,
-          password: formData.password,
-          roles: formData.roles,
-        },
+        username: formData.username,
+        password: formData.password,
+        roles: formData.roles,
       },
       {
         onSuccess: () => {
@@ -89,28 +90,30 @@ export function UserAddForm({ className }: { className?: string }) {
           toast.success('Account created successfully. The user will need to log in with the new password.');
         },
         onError: (error) => {
-          const message = error.message as CreateAccountErrorCodes;
-          switch (message) {
-            case 'invalid-username-not-unique-error':
-              setError('username', { type: 'manual', message: 'User already exists.' });
-              break;
-            case 'invalid-role-error':
-              setError('roles', { type: 'manual', message: 'Invalid role specified.' });
-              break;
-            case 'invalid-user-role-error':
-              setError('roles', { type: 'manual', message: 'At least one role must be selected.' });
-              break;
-            case 'invalid-password-error':
-              setError('password', { type: 'manual', message: 'Invalid password specified.' });
-              break;
-            case 'invalid-password-length-error':
-              setError('password', { type: 'manual', message: 'Password length is invalid.' });
-              break;
-            default:
-              // eslint-disable-next-line no-console
-              console.error('Unexpected error occurred while creating account:', error);
-              toast.error('An internal server error occurred. Please try again later.');
-              break;
+          for (let i = 0; i < error.messages.length; i += 1) {
+            const message = error.messages[i];
+            switch (message) {
+              case 'invalid-username-not-unique-error':
+                setError('username', { type: 'manual', message: 'User already exists.' });
+                break;
+              case 'invalid-role-error':
+                setError('roles', { type: 'manual', message: 'Invalid role specified.' });
+                break;
+              case 'invalid-user-role-error':
+                setError('roles', { type: 'manual', message: 'At least one role must be selected.' });
+                break;
+              case 'invalid-password-error':
+                setError('password', { type: 'manual', message: 'Invalid password specified.' });
+                break;
+              case 'invalid-password-length-error':
+                setError('password', { type: 'manual', message: 'Password length is invalid.' });
+                break;
+              default:
+                // eslint-disable-next-line no-console
+                console.error('Unexpected error occurred while creating account:', error);
+                toast.error('An internal server error occurred. Please try again later.');
+                break;
+            }
           }
         },
       },

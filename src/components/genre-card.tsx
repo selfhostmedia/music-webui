@@ -1,17 +1,17 @@
-import { ComposerIconImage } from './composer-icon-image';
-import type { TrackComposerWithTracksDto } from '@/hooks/user/use-composers';
+import { GenreIconImage } from './genre-icon-image';
+import type { TrackGenreWithTracksDto } from '@/hooks/user/use-genres';
 
-export function ComposerCard({
-  composer,
+export function GenreCard({
+  genre,
   isExpanded,
   onToggle,
 }: {
-  composer: TrackComposerWithTracksDto;
+  genre: TrackGenreWithTracksDto;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
-  const selectedColor = composer.albums[0]?.coverImageMuted || '#000000';
-  const contrastingColor = composer.albums[0]?.coverImageDarkMuted || '#000000';
+  const selectedColor = genre.albums[0]?.coverImageMuted || '#000000';
+  const contrastingColor = genre.albums[0]?.coverImageDarkMuted || '#000000';
   return (
     <>
       <button
@@ -41,7 +41,8 @@ export function ComposerCard({
             className={[
               'w-54 lg:w-68',
               'h-54 lg:h-68',
-              'rounded-lg p-2',
+              'bg-accent rounded-lg p-2 shadow-sm shadow-foreground/50 dark:shadow-background',
+              'hover:bg-muted-foreground/50 transition-colors',
               isExpanded ? 'bg-muted-foreground/80 transition-colors' : '',
             ].join(' ')}
             style={{
@@ -53,15 +54,15 @@ export function ComposerCard({
                   )`,
             }}
           >
-            <ComposerIconImage
-              artistId={composer.id}
-              aria-label={`${composer.name}`}
+            <GenreIconImage
+              genreId={genre.id}
+              aria-label={`${genre.name}`}
               className="w-50 h-50 lg:w-64 lg:h-64"
               size={200}
             />
           </div>
           <div className="p-2">
-            <h3 className="text-center text-sm text-foreground/80">{composer.name}</h3>
+            <h3 className="text-center text-sm text-foreground/80">{genre.name}</h3>
           </div>
         </div>
       </button>

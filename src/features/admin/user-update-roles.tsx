@@ -1,9 +1,4 @@
-import {
-  type AccountDto,
-  type UpdateRolesBodyDto,
-  type UpdateRolesErrorCodes,
-  useAccounts,
-} from '@/hooks/admin/use-accounts';
+import { type AccountDto, useAccounts } from '@/hooks/admin/use-accounts';
 import { Button } from '@/components/ui/button';
 import { Controller, useForm } from 'react-hook-form';
 import {
@@ -17,7 +12,7 @@ import {
 import { FormValidationError } from '@/components/form-validation-error';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { UserRoleEnum } from '@/types/api-schema';
+import { UserRoleEnum, type paths } from '@/types/api-schema';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,6 +21,9 @@ import z from 'zod/v3';
 const schema = z.object({
   roles: z.array(z.nativeEnum(UserRoleEnum)).min(1, { message: 'At least one role must be selected.' }),
 });
+
+type UpdateEndpoint = paths['/api/admin/update-user-roles']['patch'];
+type UpdateRolesBodyDto = UpdateEndpoint['requestBody']['content']['application/json'];
 
 export function UserUpdateRolesForm({ user, className }: { user: AccountDto; className?: string }) {
   const [open, setOpen] = useState(false);
@@ -58,31 +56,33 @@ export function UserUpdateRolesForm({ user, className }: { user: AccountDto; cla
           toast.success('Roles updated successfully. The user will need to log in with the new permissions.');
         },
         onError: (error) => {
-          const message = error.message as UpdateRolesErrorCodes;
-          switch (message) {
-            case 'account-only-admin-error':
-              setError('roles', {
-                type: 'manual',
-                message: 'You must create another administrator before removing this permission.',
-              });
-              break;
-            case 'account-not-found-error':
-              setError('roles', {
-                type: 'manual',
-                message: 'The specified account does not exist.',
-              });
-              break;
-            case 'invalid-user-role-error':
-              setError('roles', {
-                type: 'manual',
-                message: 'An invalid role was specified.',
-              });
-              break;
-            default:
-              // eslint-disable-next-line no-console
-              console.error('Unexpected error occurred while updating roles:', error);
-              toast.error('An internal server error occurred. Please try again later.');
-              break;
+          for (let i = 0; i < error.messages.length; i += 1) {
+            const message = error.messages[i];
+            switch (message) {
+              case 'account-only-admin-error':
+                setError('roles', {
+                  type: 'manual',
+                  message: 'You must create another administrator before removing this permission.',
+                });
+                break;
+              case 'account-not-found-error':
+                setError('roles', {
+                  type: 'manual',
+                  message: 'The specified account does not exist.',
+                });
+                break;
+              case 'invalid-user-role-error':
+                setError('roles', {
+                  type: 'manual',
+                  message: 'An invalid role was specified.',
+                });
+                break;
+              default:
+                // eslint-disable-next-line no-console
+                console.error('Unexpected error occurred while updating roles:', error);
+                toast.error('An internal server error occurred. Please try again later.');
+                break;
+            }
           }
         },
       },

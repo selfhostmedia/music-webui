@@ -17,7 +17,7 @@ import { useAccounts } from '@/hooks/admin/use-accounts';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 
 export function UserTable() {
-  const { accounts, isLoadingAccounts } = useAccounts();
+  const { accounts: data, isLoadingAccounts } = useAccounts();
   const isMobile = useIsMobile();
 
   const cellFiller = (opacity: number) => <span className={`bg-foreground/${opacity} h-8 w-full block`} />;
@@ -47,7 +47,7 @@ export function UserTable() {
       {/* Mobile card view */}
       {isMobile && (
         <div role="list" aria-label="User accounts">
-          {(isLoadingAccounts ? dummyRows : accounts).map((account, index) => {
+          {(isLoadingAccounts ? dummyRows : data?.accounts || []).map((account, index) => {
             const opacity = index % 2 === 0 ? 20 : 10;
             return (
               <DataCard
@@ -99,7 +99,7 @@ export function UserTable() {
             <DataTableHeaderCell>Actions</DataTableHeaderCell>
           </DataTableHeader>
           <DataTableBody>
-            {(isLoadingAccounts ? dummyRows : accounts).map((account, index) => {
+            {(isLoadingAccounts ? dummyRows : data?.accounts || []).map((account, index) => {
               const opacity = index % 2 === 0 ? 20 : 10;
               return (
                 <DataTableRow

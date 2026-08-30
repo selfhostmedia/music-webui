@@ -1,9 +1,4 @@
-import {
-  type AccountDto,
-  type ResetPasswordBodyDto,
-  type ResetPasswordErrorCodes,
-  useAccounts,
-} from '@/hooks/admin/use-accounts';
+import { type AccountDto, useAccounts } from '@/hooks/admin/use-accounts';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -21,6 +16,10 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod/v3';
+import type { paths } from '@/types/api-schema';
+
+type ResetPasswordEndpoint = paths['/api/admin/reset-user-password']['post'];
+type ResetPasswordBodyDto = ResetPasswordEndpoint['requestBody']['content']['application/json'];
 
 type FormData = ResetPasswordBodyDto & {
   confirmPassword: string;
@@ -30,24 +29,24 @@ const schema = z
   .object({
     newPassword: z
       .string()
-      .refine((val) => val.length > 0, {
+      .refine((value) => value.length > 0, {
         message: 'Password is required',
       })
-      .refine((val) => val.length >= 1, {
+      .refine((value) => value.length >= 1, {
         message: 'Password is too short',
       })
-      .refine((val) => val.length <= 255, {
+      .refine((value) => value.length <= 255, {
         message: 'Password is too long',
       }),
     confirmPassword: z
       .string()
-      .refine((val) => val.length > 0, {
+      .refine((value) => value.length > 0, {
         message: 'Confirm password is required',
       })
-      .refine((val) => val.length >= 1, {
+      .refine((value) => value.length >= 1, {
         message: 'Confirm password is too short',
       })
-      .refine((val) => val.length <= 255, {
+      .refine((value) => value.length <= 255, {
         message: 'Confirm password is too long',
       }),
   })
@@ -83,22 +82,24 @@ export function UserResetPasswordForm({ user, className }: { user: AccountDto; c
           toast.success('Password reset successfully. The user will need to log in again with the new password.');
         },
         onError: (error) => {
-          const message = error.message as ResetPasswordErrorCodes;
-          switch (message) {
-            case 'account-not-found-error':
-              toast.error('The specified account does not exist.');
-              break;
-            case 'invalid-password-error':
-              setError('newPassword', { type: 'manual', message: 'The specified password is invalid.' });
-              break;
-            case 'invalid-password-length-error':
-              setError('newPassword', { type: 'manual', message: 'The new password length is invalid.' });
-              break;
-            default:
-              // eslint-disable-next-line no-console
-              console.error('Unexpected error occurred while resetting password:', error);
-              toast.error('An internal server error occurred. Please try again later.');
-              break;
+          for (let i = 0; i < error.messages.length; i += 1) {
+            const message = error.messages[i];
+            switch (message) {
+              case 'account-not-found-error':
+                toast.error('The specified account does not exist.');
+                break;
+              case 'invalid-password-error':
+                setError('newPassword', { type: 'manual', message: 'The specified password is invalid.' });
+                break;
+              case 'invalid-password-length-error':
+                setError('newPassword', { type: 'manual', message: 'The new password length is invalid.' });
+                break;
+              default:
+                // eslint-disable-next-line no-console
+                console.error('Unexpected error occurred while resetting password:', error);
+                toast.error('An internal server error occurred. Please try again later.');
+                break;
+            }
           }
         },
       },

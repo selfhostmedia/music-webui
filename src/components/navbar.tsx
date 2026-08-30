@@ -12,7 +12,7 @@ const primaryLinks = [
   { to: '/album-artists', label: 'Album Artists' },
   { to: '/track-artists', label: 'Artists' },
   { to: '/track-composers', label: 'Composers' },
-  { to: '/genres', label: 'Genres' },
+  { to: '/track-genres', label: 'Genres' },
   { to: '/folders', label: 'Folders' },
   { to: '/tracks', label: 'Tracks' },
   { to: '/queue', label: 'Queue' },

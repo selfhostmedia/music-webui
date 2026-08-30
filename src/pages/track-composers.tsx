@@ -1,4 +1,4 @@
-import TrackComposersList from '@/features/track-composers-list';
+import TrackComposersList from '@/features/library/track-composers-list';
 
 export default function ComposersPage() {
   return (

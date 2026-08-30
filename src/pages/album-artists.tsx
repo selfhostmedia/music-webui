@@ -1,4 +1,4 @@
-import AlbumArtistsList from '@/features/album-artists-list';
+import AlbumArtistsList from '@/features/library/album-artists-list';
 
 export default function AlbumArtistsPage() {
   return (

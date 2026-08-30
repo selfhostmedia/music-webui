@@ -1,23 +1,19 @@
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
-import api, { type GenericErrorCodes, getErrorMessage } from '@/lib/api';
+import api, { TypedApiError } from '@/lib/api';
 import type { paths } from 'src/types/api-schema';
 
-type ListIndexerLogsEndpoint = paths['/api/user/list-indexer-logs']['get'];
-type ListIndexerLogsQueryDto = ListIndexerLogsEndpoint['parameters']['query'];
-type ListIndexerLogsResponseDto = ListIndexerLogsEndpoint['responses']['200']['content']['application/json'];
+type ListEndpoint = paths['/api/user/list-indexer-logs']['get'];
 
-export type IndexerLogDto = ListIndexerLogsResponseDto['logs'][number];
-export type ListIndexerLogsErrorCodes =
-  GenericErrorCodes | ListIndexerLogsEndpoint['responses']['400']['content']['application/json']['message'][number];
+export type IndexerLogDto = ListEndpoint['responses']['200']['content']['application/json']['logs'][number];
 
 const INDEXER_QUERY_KEY = ['user-indexer-logs'] as const;
 
-function indexerQueryKey(query?: ListIndexerLogsQueryDto) {
+function indexerQueryKey(query?: ListEndpoint['parameters']['query']) {
   return [...INDEXER_QUERY_KEY, query] as const;
 }
 
-async function fetchIndexerLogs(query?: ListIndexerLogsQueryDto): Promise<IndexerLogDto[]> {
+async function fetchIndexerLogs(query?: ListEndpoint['parameters']['query']): Promise<IndexerLogDto[]> {
   const { data, error } = await api.get('/api/user/list-indexer-logs', {
     params: {
       query,
@@ -26,7 +22,10 @@ async function fetchIndexerLogs(query?: ListIndexerLogsQueryDto): Promise<Indexe
   });
 
   if (error) {
-    throw new Error(getErrorMessage(error));
+    throw new TypedApiError<
+      | ListEndpoint['responses']['400']['content']['application/json']['message']
+      | ListEndpoint['responses']['404']['content']['application/json']['message']
+    >(error.message, error.error);
   }
   if (!data?.logs) {
     throw new Error('No data received');
@@ -34,8 +33,14 @@ async function fetchIndexerLogs(query?: ListIndexerLogsQueryDto): Promise<Indexe
   return data.logs;
 }
 
-function fetchIndexerLogsWithClient(queryClient: QueryClient, query?: ListIndexerLogsQueryDto) {
-  return queryClient.fetchQuery({
+function fetchIndexerLogsWithClient(queryClient: QueryClient, query?: ListEndpoint['parameters']['query']) {
+  return queryClient.fetchQuery<
+    IndexerLogDto[],
+    TypedApiError<
+      | ListEndpoint['responses']['400']['content']['application/json']['message']
+      | ListEndpoint['responses']['404']['content']['application/json']['message']
+    >
+  >({
     queryKey: indexerQueryKey(query),
     queryFn: () => fetchIndexerLogs(query),
   });
@@ -48,7 +53,7 @@ export function useIndexer() {
   const [logsLoadingError, setLogsLoadingError] = useState<Error | null>(null);
 
   const listIndexerLogs = useCallback(
-    async (query?: ListIndexerLogsQueryDto) => {
+    async (query?: ListEndpoint['parameters']['query']) => {
       setIsLogsLoading(true);
       setLogsLoadingError(null);
       try {

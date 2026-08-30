@@ -1,5 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import type { TrackDto } from '@/hooks/user/use-library';
+import type { AlbumWithTracksDto } from '@/hooks/user/use-albums';
+
+type TrackDto = AlbumWithTracksDto['tracks'][number];
 
 type PlaybackContextValue = {
   queue: TrackDto[];

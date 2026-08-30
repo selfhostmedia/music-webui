@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import api, { ApiError, type ErrorResponse, type GenericErrorCodes, getErrorMessage } from '@/lib/api';
+import api, { TypedApiError } from '@/lib/api';
 import type { paths } from '@/types/api-schema';
 
 type ListEndpoint = paths['/api/admin/list-accounts']['get'];
@@ -10,69 +10,23 @@ type ResetPasswordEndpoint = paths['/api/admin/reset-user-password']['post'];
 type UpdateRolesEndpoint = paths['/api/admin/update-user-roles']['patch'];
 
 export type AccountDto = ListEndpoint['responses']['200']['content']['application/json']['accounts'][number];
-export type CreateAccountBodyDto = CreateEndpoint['requestBody']['content']['application/json'];
-export type CreateAccountErrorCodes =
-  GenericErrorCodes | CreateEndpoint['responses']['400']['content']['application/json']['message'][number];
-export type DeleteAccountQueryDto = DeleteEndpoint['parameters']['query'];
-export type DeleteAccountErrorCodes =
-  | GenericErrorCodes
-  | DeleteEndpoint['responses']['400']['content']['application/json']['message'][number]
-  | DeleteEndpoint['responses']['404']['content']['application/json']['message'][number];
-export type RegenerateSessionKeyQueryDto = RegenerateSessionKeyEndpoint['parameters']['query'];
-export type RegenerateSessionKeyErrorCodes =
-  | GenericErrorCodes
-  | RegenerateSessionKeyEndpoint['responses']['404']['content']['application/json']['message'][number];
-export type ResetPasswordQueryDto = ResetPasswordEndpoint['parameters']['query'];
-export type ResetPasswordBodyDto = ResetPasswordEndpoint['requestBody']['content']['application/json'];
-export type ResetPasswordErrorCodes =
-  | GenericErrorCodes
-  | ResetPasswordEndpoint['responses']['400']['content']['application/json']['message'][number]
-  | ResetPasswordEndpoint['responses']['404']['content']['application/json']['message'][number];
-export type UpdateRolesQueryDto = UpdateRolesEndpoint['parameters']['query'];
-export type UpdateRolesBodyDto = UpdateRolesEndpoint['requestBody']['content']['application/json'];
-export type UpdateRolesErrorCodes =
-  | GenericErrorCodes
-  | UpdateRolesEndpoint['responses']['400']['content']['application/json']['message'][number]
-  | UpdateRolesEndpoint['responses']['404']['content']['application/json']['message'][number];
-
-type CreateAccountVariables = {
-  body: CreateAccountBodyDto;
-};
-type DeleteAccountVariables = {
-  query: DeleteAccountQueryDto;
-};
-type UpdateRolesVariables = {
-  query: UpdateRolesQueryDto;
-  body: UpdateRolesBodyDto;
-};
-type ResetPasswordVariables = {
-  query: ResetPasswordQueryDto;
-  body: ResetPasswordBodyDto;
-};
 
 const ACCOUNTS_QUERY_KEY = ['accounts'] as const;
 
-async function fetchAccounts(): Promise<AccountDto[]> {
+async function fetchAccounts(): Promise<ListEndpoint['responses']['200']['content']['application/json']> {
   const { data, error } = await api.get('/api/admin/list-accounts', {
     params: { header: api.authHeader() },
   });
   if (error) {
-    throw new Error(getErrorMessage(error));
-  }
-  if (!data) {
-    throw new Error('Failed to fetch accounts');
-  }
-  if (!data.success) {
-    const errorPayload = data as unknown as ErrorResponse<GenericErrorCodes>;
-    throw new ApiError<GenericErrorCodes>(errorPayload);
+    throw new Error(error);
   }
   if (!data?.accounts) {
-    throw new Error(getErrorMessage(data, 'No accounts data received'));
+    throw new Error('No accounts data received');
   }
-  return data.accounts;
+  return data;
 }
 
-async function createAccountRequest({ body }: CreateAccountVariables) {
+async function createAccountRequest(body: CreateEndpoint['requestBody']['content']['application/json']) {
   const { data, error } = await api.post('/api/admin/create-account', {
     params: {
       header: api.authHeader(),
@@ -80,19 +34,18 @@ async function createAccountRequest({ body }: CreateAccountVariables) {
     body,
   });
   if (error) {
-    throw new Error(getErrorMessage(error));
+    throw new TypedApiError<CreateEndpoint['responses']['400']['content']['application/json']['message']>(
+      error.message,
+      error.error,
+    );
   }
-  if (!data) {
+  if (!data?.success) {
     throw new Error('Failed to create account');
-  }
-  if (!data.success) {
-    const errorPayload = data as unknown as ErrorResponse<CreateAccountErrorCodes>;
-    throw new ApiError<CreateAccountErrorCodes>(errorPayload);
   }
   return data;
 }
 
-async function regenerateUserSessionKey({ query }: { query: RegenerateSessionKeyQueryDto }) {
+async function regenerateUserSessionKey(query: RegenerateSessionKeyEndpoint['parameters']['query']) {
   const { data, error } = await api.post('/api/admin/regenerate-user-session-key', {
     params: {
       header: api.authHeader(),
@@ -100,19 +53,18 @@ async function regenerateUserSessionKey({ query }: { query: RegenerateSessionKey
     },
   });
   if (error) {
-    throw new Error(getErrorMessage(error));
-  }
-  if (!data) {
-    throw new Error('Failed to regenerate session key for user');
+    throw new TypedApiError<RegenerateSessionKeyEndpoint['responses']['404']['content']['application/json']['message']>(
+      error.message,
+      error.error,
+    );
   }
   if (!data?.success) {
-    const errorPayload = data as unknown as ErrorResponse<RegenerateSessionKeyErrorCodes>;
-    throw new ApiError<RegenerateSessionKeyErrorCodes>(errorPayload);
+    throw new Error('Failed to regenerate session key for user');
   }
-  return true;
+  return data;
 }
 
-async function deleteAccountRequest({ query }: DeleteAccountVariables) {
+async function deleteAccountRequest(query: DeleteEndpoint['parameters']['query']) {
   const { data, error } = await api.delete('/api/admin/delete-account', {
     params: {
       header: api.authHeader(),
@@ -120,14 +72,21 @@ async function deleteAccountRequest({ query }: DeleteAccountVariables) {
     },
   });
   if (error) {
-    throw new Error(getErrorMessage(error));
+    throw new TypedApiError<
+      | DeleteEndpoint['responses']['400']['content']['application/json']['message']
+      | DeleteEndpoint['responses']['404']['content']['application/json']['message']
+    >(error.message, error.error);
   }
   if (!data?.success) {
-    const errorPayload = data as unknown as ErrorResponse<DeleteAccountErrorCodes>;
-    throw new ApiError<DeleteAccountErrorCodes>(errorPayload);
+    throw new Error('Failed to delete account');
   }
-  return true;
+  return data;
 }
+
+type UpdateRolesVariables = {
+  query: UpdateRolesEndpoint['parameters']['query'];
+  body: UpdateRolesEndpoint['requestBody']['content']['application/json'];
+};
 
 async function updateRolesRequest({ query, body }: UpdateRolesVariables) {
   const { data, error } = await api.patch('/api/admin/update-user-roles', {
@@ -138,44 +97,46 @@ async function updateRolesRequest({ query, body }: UpdateRolesVariables) {
     body,
   });
   if (error) {
-    if (Array.isArray(error.message)) {
-      throw new Error(error.message.join(', '));
-    }
-    throw new Error(getErrorMessage(error));
+    throw new TypedApiError<
+      | UpdateRolesEndpoint['responses']['400']['content']['application/json']['message']
+      | UpdateRolesEndpoint['responses']['404']['content']['application/json']['message']
+    >(error.message, error.error);
   }
   if (!data?.success) {
-    const errorPayload = data as unknown as ErrorResponse<UpdateRolesErrorCodes>;
-    throw new ApiError<UpdateRolesErrorCodes>(errorPayload);
+    throw new Error('Failed to update user roles');
   }
-  return true;
+  return data;
 }
 
+type ResetPasswordVariables = {
+  query: ResetPasswordEndpoint['parameters']['query'];
+  body: ResetPasswordEndpoint['requestBody']['content']['application/json'];
+};
+
 async function resetPasswordRequest({ query, body }: ResetPasswordVariables) {
-  const response = await api.post('/api/admin/reset-user-password', {
+  const { data, error } = await api.post('/api/admin/reset-user-password', {
     params: {
       header: api.authHeader(),
       query,
     },
     body,
   });
-  const { data, error } = response;
   if (error) {
-    if (Array.isArray(error.message)) {
-      throw new Error(error.message.join(', '));
-    }
-    throw new Error(getErrorMessage(error));
+    throw new TypedApiError<
+      | ResetPasswordEndpoint['responses']['400']['content']['application/json']['message']
+      | ResetPasswordEndpoint['responses']['404']['content']['application/json']['message']
+    >(error.message, error.error);
   }
   if (!data?.success) {
-    const errorPayload = data as unknown as ErrorResponse<ResetPasswordErrorCodes>;
-    throw new ApiError<ResetPasswordErrorCodes>(errorPayload);
+    throw new Error('Failed to reset user password');
   }
-  return true;
+  return data;
 }
 
 export function useAccounts() {
   const queryClient = useQueryClient();
 
-  const accountsQuery = useQuery({
+  const accountsQuery = useQuery<ListEndpoint['responses']['200']['content']['application/json']>({
     queryKey: ACCOUNTS_QUERY_KEY,
     queryFn: fetchAccounts,
   });
@@ -184,27 +145,56 @@ export function useAccounts() {
     queryClient.invalidateQueries({ queryKey: ACCOUNTS_QUERY_KEY });
   };
 
-  const createAccount = useMutation({
+  const createAccount = useMutation<
+    CreateEndpoint['responses']['201']['content']['application/json'],
+    TypedApiError<CreateEndpoint['responses']['400']['content']['application/json']['message'][number]>,
+    CreateEndpoint['requestBody']['content']['application/json']
+  >({
     mutationFn: createAccountRequest,
     onSuccess: invalidateAccounts,
   });
 
-  const deleteAccount = useMutation({
+  const deleteAccount = useMutation<
+    DeleteEndpoint['responses']['200']['content']['application/json'],
+    TypedApiError<
+      | DeleteEndpoint['responses']['400']['content']['application/json']['message'][number]
+      | DeleteEndpoint['responses']['404']['content']['application/json']['message'][number]
+    >,
+    DeleteEndpoint['parameters']['query']
+  >({
     mutationFn: deleteAccountRequest,
     onSuccess: invalidateAccounts,
   });
 
-  const regenerateSessionKey = useMutation({
+  const regenerateSessionKey = useMutation<
+    RegenerateSessionKeyEndpoint['responses']['200']['content']['application/json'],
+    TypedApiError<RegenerateSessionKeyEndpoint['responses']['404']['content']['application/json']['message'][number]>,
+    RegenerateSessionKeyEndpoint['parameters']['query']
+  >({
     mutationFn: regenerateUserSessionKey,
     onSuccess: invalidateAccounts,
   });
 
-  const updateRoles = useMutation({
+  const updateRoles = useMutation<
+    UpdateRolesEndpoint['responses']['200']['content']['application/json'],
+    TypedApiError<
+      | UpdateRolesEndpoint['responses']['400']['content']['application/json']['message'][number]
+      | UpdateRolesEndpoint['responses']['404']['content']['application/json']['message'][number]
+    >,
+    UpdateRolesVariables
+  >({
     mutationFn: updateRolesRequest,
     onSuccess: invalidateAccounts,
   });
 
-  const resetPassword = useMutation({
+  const resetPassword = useMutation<
+    ResetPasswordEndpoint['responses']['200']['content']['application/json'],
+    TypedApiError<
+      | ResetPasswordEndpoint['responses']['400']['content']['application/json']['message'][number]
+      | ResetPasswordEndpoint['responses']['404']['content']['application/json']['message'][number]
+    >,
+    ResetPasswordVariables
+  >({
     mutationFn: resetPasswordRequest,
     onSuccess: invalidateAccounts,
   });
@@ -216,7 +206,7 @@ export function useAccounts() {
     regenerateSessionKey: regenerateSessionKey.mutateAsync,
     resetPassword: resetPassword.mutateAsync,
     updateRoles: updateRoles.mutateAsync,
-    accounts: accountsQuery.data ?? [],
+    accounts: accountsQuery.data,
     isDeleting: deleteAccount.isPending,
     isLoadingAccounts: accountsQuery.isLoading,
     isRegeneratingSessionKey: regenerateSessionKey.isPending,

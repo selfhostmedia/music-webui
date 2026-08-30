@@ -1,5 +1,5 @@
 import { ArtistIconImage } from './artist-icon-image';
-import type { AlbumArtistWithTracksDto } from '@/hooks/user/use-library';
+import type { AlbumArtistWithTracksDto } from '@/hooks/user/use-artists';
 
 export function ArtistCard({
   artist,

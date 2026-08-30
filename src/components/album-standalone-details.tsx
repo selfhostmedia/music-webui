@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { createTrackGroups } from '@/utils/library';
 import { getContrastingTextColor } from '@/utils/color';
 import { useRef } from 'react';
-import type { AlbumWithTracksDto } from '@/hooks/user/use-library';
+import type { AlbumWithTracksDto } from '@/hooks/user/use-albums';
 
 export function AlbumStandaloneDetails({ album, onClose }: { album: AlbumWithTracksDto; onClose: () => void }) {
   const containerRef = useRef<HTMLDivElement | null>(null);

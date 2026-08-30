@@ -101,7 +101,7 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        /** Cover images for albums */
+        /** Cover images for composers */
         get: operations["UserComposerCoverController_get"];
         put?: never;
         post?: never;
@@ -146,6 +146,23 @@ export type paths = {
          * @description Ends a user session and invalidates the associated JWT token.
          */
         delete: operations["UserEndSessionController_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user/genre-cover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cover images for genres */
+        get: operations["UserGenreCoverController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -223,6 +240,46 @@ export type paths = {
          * @description Retrieves a list of album artists for the user with their tracks for the user based on the provided query parameters.
          */
         get: operations["UserListAlbumArtistsWithTracksController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user/list-track-genres": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List genres
+         * @description Retrieves a list of genres for the user based on the provided query parameters.
+         */
+        get: operations["UserListTrackGenresController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user/list-track-genres-with-tracks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List genres
+         * @description Retrieves a list of genres for the user based on the provided query parameters.
+         */
+        get: operations["UserListTrackGenresWithTracksController_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1533,6 +1590,104 @@ export type components = {
              * @default invalid-added-after-error
              */
             message: components["schemas"]["UserListTrackArtistsBadRequestErrorMessage"][];
+        };
+        /** @enum {string} */
+        GenreSortFieldEnum: GenreSortFieldEnum;
+        LibraryGenreDto: {
+            /** @description The internally-generated unique ID of the genre */
+            id: number;
+            /** @description The name of the genre. */
+            name: string;
+        };
+        UserListTrackGenresResponseDto: {
+            /**
+             * Format: constant
+             * @description The success being "true" indicates that the request completed.
+             * @default true
+             */
+            success: boolean;
+            /** @description The list of genres that match the query parameters, which may be limited by pagination. */
+            genres: components["schemas"]["LibraryGenreDto"][];
+            /**
+             * @description The offset of the first genre in the genres array, which may be greater than 0 if
+             *     pagination is applied.
+             */
+            offset: number;
+            /**
+             * @description The total number of genres that match the query parameters, which may be greater
+             *     than the number of genres returned in the genres array if pagination is applied.
+             */
+            total: number;
+        };
+        /**
+         * @description The error message(s) that occurred during the validation of the request data or additional requirements
+         *     applied during the execution of the request
+         * @enum {string}
+         */
+        UserListTrackGenresBadRequestErrorMessages: UserListTrackGenresBadRequestErrorMessages;
+        UserListTrackGenresBadRequestResponseDto: {
+            /** @description General description of the error class */
+            error: string;
+            /**
+             * @description The success being "false" indicates that the request failed to complete.
+             * @default false
+             */
+            success: boolean;
+            /**
+             * @description The error message(s) that occurred during the validation of the request data or additional requirements
+             *     applied during the execution of the request
+             * @default invalid-limit-error
+             */
+            message: components["schemas"]["UserListTrackGenresBadRequestErrorMessages"][];
+        };
+        LibraryGenreWithTracksDto: {
+            /** @description The list of albums including tracks for the genre */
+            albums: components["schemas"]["LibraryAlbumWithTracksDto"][];
+            /** @description The internally-generated unique ID of the genre */
+            id: number;
+            /** @description The name of the genre. */
+            name: string;
+        };
+        UserListTrackGenresWithTracksResponseDto: {
+            /**
+             * Format: constant
+             * @description The success being "true" indicates that the request completed.
+             * @default true
+             */
+            success: boolean;
+            /** @description The list of genres that match the query parameters, which may be limited by pagination. */
+            genres: components["schemas"]["LibraryGenreWithTracksDto"][];
+            /**
+             * @description The offset of the first genre in the genres array, which may be greater than 0 if
+             *     pagination is applied.
+             */
+            offset: number;
+            /**
+             * @description The total number of genres that match the query parameters, which may be greater
+             *     than the number of genres returned in the genres array if pagination is applied.
+             */
+            total: number;
+        };
+        /**
+         * @description The error message(s) that occurred during the validation of the request data or additional requirements
+         *     applied during the execution of the request
+         * @enum {string}
+         */
+        UserListTrackGenresWithTracksBadRequestErrorMessages: UserListTrackGenresWithTracksBadRequestErrorMessages;
+        UserListTrackGenresWithTracksBadRequestResponseDto: {
+            /** @description General description of the error class */
+            error: string;
+            /**
+             * @description The success being "false" indicates that the request failed to complete.
+             * @default false
+             */
+            success: boolean;
+            /**
+             * @description The error message(s) that occurred during the validation of the request data or additional requirements
+             *     applied during the execution of the request
+             * @default invalid-limit-error
+             */
+            message: components["schemas"]["UserListTrackGenresWithTracksBadRequestErrorMessages"][];
         };
         UserListTrackArtistsResponseDto: {
             /**
@@ -5532,7 +5687,7 @@ export interface operations {
     UserComposerCoverController_get: {
         parameters: {
             query: {
-                /** @description The ID of the album */
+                /** @description The ID of the composer */
                 id: number;
                 /** @description The width/height size of the image in pixels */
                 size: number;
@@ -5638,6 +5793,34 @@ export interface operations {
             };
         };
     };
+    UserGenreCoverController_get: {
+        parameters: {
+            query: {
+                /** @description The ID of the genre */
+                id: number;
+                /** @description The width/height size of the image in pixels */
+                size: number;
+            };
+            header: {
+                Authorization: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/jpeg": string;
+                    "image/png": string;
+                    "image/webp": string;
+                };
+            };
+        };
+    };
     UserListAlbumsController_get: {
         parameters: {
             query?: {
@@ -5678,28 +5861,9 @@ export interface operations {
                  *     the date of release.  The date must be in ISO 8601 format (YYYY-MM-DD).
                  */
                 releasedBefore?: string;
-                /**
-                 * @description Optional filter for the direction to sort the results by, which will sort the results in either
-                 *     ascending or descending order based on the field specified in the sortField parameter.  The
-                 *     direction must be one of the following values:
-                 *
-                 *     - asc
-                 *     - desc
-                 */
+                /** @description Optional filter for the direction to sort the results by. */
                 sortDirection?: components["schemas"]["SortDirectionEnum"];
-                /**
-                 * @description Optional filter for the field to sort by, which will do an exact match against the field associated
-                 *     with an album.  The field must be one of the following values:
-                 *
-                 *     - album
-                 *     - artist
-                 *     - album_artist
-                 *     - composer
-                 *     - genre
-                 *     - year
-                 *     - date_added
-                 *     - rating
-                 */
+                /** @description Optional filter for the field to sort results by. */
                 sortField?: components["schemas"]["AlbumSortFieldEnum"];
                 /**
                  * @description Optional filter for the year of the album, which will do an exact match against the year associated
@@ -5791,28 +5955,9 @@ export interface operations {
                  *     the date of release.  The date must be in ISO 8601 format (YYYY-MM-DD).
                  */
                 releasedBefore?: string;
-                /**
-                 * @description Optional filter for the direction to sort the results by, which will sort the results in either
-                 *     ascending or descending order based on the field specified in the sortField parameter.  The
-                 *     direction must be one of the following values:
-                 *
-                 *     - asc
-                 *     - desc
-                 */
+                /** @description Optional filter for the direction to sort the results by. */
                 sortDirection?: components["schemas"]["SortDirectionEnum"];
-                /**
-                 * @description Optional filter for the field to sort by, which will do an exact match against the field associated
-                 *     with an album.  The field must be one of the following values:
-                 *
-                 *     - album
-                 *     - artist
-                 *     - album_artist
-                 *     - composer
-                 *     - genre
-                 *     - year
-                 *     - date_added
-                 *     - rating
-                 */
+                /** @description Optional filter for the field to sort results by. */
                 sortField?: components["schemas"]["AlbumSortFieldEnum"];
                 /**
                  * @description Optional filter for the year of the album, which will do an exact match against the year associated
@@ -5884,28 +6029,9 @@ export interface operations {
                  *     genres associated with an artist.
                  */
                 genre?: string[];
-                /**
-                 * @description Optional filter for the direction to sort the results by, which will sort the results in either
-                 *     ascending or descending order based on the field specified in the sortField parameter.  The
-                 *     direction must be one of the following values:
-                 *
-                 *     - asc
-                 *     - desc
-                 */
+                /** @description Optional filter for the direction to sort the results by. */
                 sortDirection?: components["schemas"]["SortDirectionEnum"];
-                /**
-                 * @description Optional filter for the field to sort by, which will do an exact match against the field associated
-                 *     with an artist.  The field must be one of the following values:
-                 *
-                 *     - album
-                 *     - artist
-                 *     - album_artist
-                 *     - composer
-                 *     - genre
-                 *     - year
-                 *     - date_added
-                 *     - rating
-                 */
+                /** @description Optional filter for the field to sort results by. */
                 sortField?: components["schemas"]["ArtistSortFieldEnum"];
                 /**
                  * @description Optional search filter that will do a case-insensitive partial-match against the artist
@@ -5962,28 +6088,9 @@ export interface operations {
                  *     genres associated with an artist.
                  */
                 genre?: string[];
-                /**
-                 * @description Optional filter for the direction to sort the results by, which will sort the results in either
-                 *     ascending or descending order based on the field specified in the sortField parameter.  The
-                 *     direction must be one of the following values:
-                 *
-                 *     - asc
-                 *     - desc
-                 */
+                /** @description Optional filter for the direction to sort the results by. */
                 sortDirection?: components["schemas"]["SortDirectionEnum"];
-                /**
-                 * @description Optional filter for the field to sort by, which will do an exact match against the field associated
-                 *     with an artist.  The field must be one of the following values:
-                 *
-                 *     - album
-                 *     - artist
-                 *     - album_artist
-                 *     - composer
-                 *     - genre
-                 *     - year
-                 *     - date_added
-                 *     - rating
-                 */
+                /** @description Optional filter for the field to sort results by. */
                 sortField?: components["schemas"]["ArtistSortFieldEnum"];
                 /**
                  * @description Optional search filter that will do a case-insensitive partial-match against the artist
@@ -6020,6 +6127,84 @@ export interface operations {
             };
         };
     };
+    UserListTrackGenresController_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+                /** @description Optional filter for the direction to sort the results by. */
+                sortDirection?: components["schemas"]["SortDirectionEnum"];
+                /** @description Optional filter for the field to sort results by. */
+                sortField?: components["schemas"]["GenreSortFieldEnum"];
+            };
+            header: {
+                /** @description Bearer token for authentication */
+                Authorization: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved the list of genres for the user. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserListTrackGenresResponseDto"];
+                };
+            };
+            /** @description The request was invalid or missing required parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserListTrackGenresBadRequestResponseDto"];
+                };
+            };
+        };
+    };
+    UserListTrackGenresWithTracksController_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+                /** @description Optional filter for the direction to sort the results by. */
+                sortDirection?: components["schemas"]["SortDirectionEnum"];
+                /** @description Optional filter for the field to sort results by. */
+                sortField?: components["schemas"]["GenreSortFieldEnum"];
+            };
+            header: {
+                /** @description Bearer token for authentication */
+                Authorization: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved the list of genres for the user. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserListTrackGenresWithTracksResponseDto"];
+                };
+            };
+            /** @description The request was invalid or missing required parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserListTrackGenresWithTracksBadRequestResponseDto"];
+                };
+            };
+        };
+    };
     UserListTrackArtistsController_get: {
         parameters: {
             query?: {
@@ -6040,28 +6225,9 @@ export interface operations {
                  *     genres associated with an artist.
                  */
                 genre?: string[];
-                /**
-                 * @description Optional filter for the direction to sort the results by, which will sort the results in either
-                 *     ascending or descending order based on the field specified in the sortField parameter.  The
-                 *     direction must be one of the following values:
-                 *
-                 *     - asc
-                 *     - desc
-                 */
+                /** @description Optional filter for the direction to sort the results by. */
                 sortDirection?: components["schemas"]["SortDirectionEnum"];
-                /**
-                 * @description Optional filter for the field to sort by, which will do an exact match against the field associated
-                 *     with an artist.  The field must be one of the following values:
-                 *
-                 *     - album
-                 *     - artist
-                 *     - album_artist
-                 *     - composer
-                 *     - genre
-                 *     - year
-                 *     - date_added
-                 *     - rating
-                 */
+                /** @description Optional filter for the field to sort results by. */
                 sortField?: components["schemas"]["ArtistSortFieldEnum"];
                 /**
                  * @description Optional search filter that will do a case-insensitive partial-match against the artist
@@ -6118,28 +6284,9 @@ export interface operations {
                  *     genres associated with an artist.
                  */
                 genre?: string[];
-                /**
-                 * @description Optional filter for the direction to sort the results by, which will sort the results in either
-                 *     ascending or descending order based on the field specified in the sortField parameter.  The
-                 *     direction must be one of the following values:
-                 *
-                 *     - asc
-                 *     - desc
-                 */
+                /** @description Optional filter for the direction to sort the results by. */
                 sortDirection?: components["schemas"]["SortDirectionEnum"];
-                /**
-                 * @description Optional filter for the field to sort by, which will do an exact match against the field associated
-                 *     with an artist.  The field must be one of the following values:
-                 *
-                 *     - album
-                 *     - artist
-                 *     - album_artist
-                 *     - composer
-                 *     - genre
-                 *     - year
-                 *     - date_added
-                 *     - rating
-                 */
+                /** @description Optional filter for the field to sort results by. */
                 sortField?: components["schemas"]["ArtistSortFieldEnum"];
                 /**
                  * @description Optional search filter that will do a case-insensitive partial-match against the artist
@@ -6196,28 +6343,9 @@ export interface operations {
                  *     genres associated with a composer.
                  */
                 genre?: string[];
-                /**
-                 * @description Optional filter for the direction to sort the results by, which will sort the results in either
-                 *     ascending or descending order based on the field specified in the sortField parameter.  The
-                 *     direction must be one of the following values:
-                 *
-                 *     - asc
-                 *     - desc
-                 */
+                /** @description Optional filter for the direction to sort the results by. */
                 sortDirection?: components["schemas"]["SortDirectionEnum"];
-                /**
-                 * @description Optional filter for the field to sort by, which will do an exact match against the field associated
-                 *     with an album.  The field must be one of the following values:
-                 *
-                 *     - album
-                 *     - artist
-                 *     - album_artist
-                 *     - composer
-                 *     - genre
-                 *     - year
-                 *     - date_added
-                 *     - rating
-                 */
+                /** @description Optional filter for the field to sort results by. */
                 sortField?: components["schemas"]["ComposerSortFieldEnum"];
                 /**
                  * @description Optional search filter that will do a case-insensitive partial-match against the composer
@@ -6274,28 +6402,9 @@ export interface operations {
                  *     genres associated with a composer.
                  */
                 genre?: string[];
-                /**
-                 * @description Optional filter for the direction to sort the results by, which will sort the results in either
-                 *     ascending or descending order based on the field specified in the sortField parameter.  The
-                 *     direction must be one of the following values:
-                 *
-                 *     - asc
-                 *     - desc
-                 */
+                /** @description Optional filter for the direction to sort the results by. */
                 sortDirection?: components["schemas"]["SortDirectionEnum"];
-                /**
-                 * @description Optional filter for the field to sort by, which will do an exact match against the field associated
-                 *     with an album.  The field must be one of the following values:
-                 *
-                 *     - album
-                 *     - artist
-                 *     - album_artist
-                 *     - composer
-                 *     - genre
-                 *     - year
-                 *     - date_added
-                 *     - rating
-                 */
+                /** @description Optional filter for the field to sort results by. */
                 sortField?: components["schemas"]["ComposerSortFieldEnum"];
                 /**
                  * @description Optional search filter that will do a case-insensitive partial-match against the composer
@@ -6488,14 +6597,6 @@ export interface operations {
         responses: {
             /** @description Session key regenerated successfully */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserRegenerateSessionKeyResponseDto"];
-                };
-            };
-            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7529,8 +7630,12 @@ export enum UserListAlbumsBadRequestErrorMessages {
     invalid_filter_length_error = "invalid-filter-length-error",
     invalid_genre_error = "invalid-genre-error",
     invalid_genre_length_error = "invalid-genre-length-error",
+    invalid_limit_error = "invalid-limit-error",
+    invalid_limit_range_error = "invalid-limit-range-error",
     invalid_max_rating_error = "invalid-max-rating-error",
     invalid_min_rating_error = "invalid-min-rating-error",
+    invalid_offset_error = "invalid-offset-error",
+    invalid_offset_range_error = "invalid-offset-range-error",
     invalid_released_after_error = "invalid-released-after-error",
     invalid_released_before_error = "invalid-released-before-error",
     invalid_sort_field_error = "invalid-sort-field-error",
@@ -7548,8 +7653,12 @@ export enum UserListAlbumsWithTracksBadRequestErrorMessages {
     invalid_filter_length_error = "invalid-filter-length-error",
     invalid_genre_error = "invalid-genre-error",
     invalid_genre_length_error = "invalid-genre-length-error",
+    invalid_limit_error = "invalid-limit-error",
+    invalid_limit_range_error = "invalid-limit-range-error",
     invalid_max_rating_error = "invalid-max-rating-error",
     invalid_min_rating_error = "invalid-min-rating-error",
+    invalid_offset_error = "invalid-offset-error",
+    invalid_offset_range_error = "invalid-offset-range-error",
     invalid_released_after_error = "invalid-released-after-error",
     invalid_released_before_error = "invalid-released-before-error",
     invalid_sort_field_error = "invalid-sort-field-error",
@@ -7567,6 +7676,29 @@ export enum UserListTrackArtistsBadRequestErrorMessage {
     invalid_filter_length_error = "invalid-filter-length-error",
     invalid_genre_error = "invalid-genre-error",
     invalid_genre_length_error = "invalid-genre-length-error",
+    invalid_limit_error = "invalid-limit-error",
+    invalid_limit_range_error = "invalid-limit-range-error",
+    invalid_offset_error = "invalid-offset-error",
+    invalid_offset_range_error = "invalid-offset-range-error",
+    invalid_sort_field_error = "invalid-sort-field-error",
+    invalid_sort_order_error = "invalid-sort-order-error"
+}
+export enum GenreSortFieldEnum {
+    genre = "genre"
+}
+export enum UserListTrackGenresBadRequestErrorMessages {
+    invalid_limit_error = "invalid-limit-error",
+    invalid_limit_range_error = "invalid-limit-range-error",
+    invalid_offset_error = "invalid-offset-error",
+    invalid_offset_range_error = "invalid-offset-range-error",
+    invalid_sort_field_error = "invalid-sort-field-error",
+    invalid_sort_order_error = "invalid-sort-order-error"
+}
+export enum UserListTrackGenresWithTracksBadRequestErrorMessages {
+    invalid_limit_error = "invalid-limit-error",
+    invalid_limit_range_error = "invalid-limit-range-error",
+    invalid_offset_error = "invalid-offset-error",
+    invalid_offset_range_error = "invalid-offset-range-error",
     invalid_sort_field_error = "invalid-sort-field-error",
     invalid_sort_order_error = "invalid-sort-order-error"
 }
@@ -7581,6 +7713,10 @@ export enum UserListTrackComposersBadRequestErrorMessages {
     invalid_filter_length_error = "invalid-filter-length-error",
     invalid_genre_error = "invalid-genre-error",
     invalid_genre_length_error = "invalid-genre-length-error",
+    invalid_limit_error = "invalid-limit-error",
+    invalid_limit_range_error = "invalid-limit-range-error",
+    invalid_offset_error = "invalid-offset-error",
+    invalid_offset_range_error = "invalid-offset-range-error",
     invalid_sort_field_error = "invalid-sort-field-error",
     invalid_sort_order_error = "invalid-sort-order-error"
 }

@@ -1,12 +1,12 @@
 import { ArtistIconImage } from './artist-icon-image';
-import type { AlbumArtistDto } from '@/hooks/user/use-artists';
+import type { TrackGenreDto } from '@/hooks/user/use-genres';
 
-export function AlbumArtistListItem({
-  artist,
+export function GenreListItem({
+  genre,
   isExpanded,
   onToggle,
 }: {
-  artist: AlbumArtistDto;
+  genre: TrackGenreDto;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
@@ -26,9 +26,9 @@ export function AlbumArtistListItem({
             isExpanded ? 'bg-muted-foreground/80 transition-colors' : '',
           ].join(' ')}
         >
-          <ArtistIconImage artistId={artist.id} aria-label={`${artist.name}`} className="w-30 h-30 mr-2" size={100} />
+          <ArtistIconImage artistId={genre.id} aria-label={`${genre.name}`} className="w-30 h-30 mr-2" size={100} />
           <div>
-            <h3 className="text-foreground/80">{artist.name}</h3>
+            <h3 className="text-foreground/80">{genre.name}</h3>
           </div>
         </div>
       </button>
