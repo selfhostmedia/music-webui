@@ -3,6 +3,7 @@ import { AlbumExpandedDetails } from '@/components/album-expanded-details';
 import { AlbumListItem } from '@/components/album-list-item';
 import { AlbumStandaloneDetails } from '@/components/album-standalone-details';
 import { Fragment, useLayoutEffect, useRef, useState } from 'react';
+import { formatSlug } from '@/utils/format';
 import { useAlbumsWithTracks } from '@/hooks/user/use-albums';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -105,16 +106,6 @@ export default function AlbumsList() {
     }
     return undefined;
   }, [data?.albums.length]);
-
-  function formatSlug(title: string) {
-    return title
-      .toLowerCase()
-      .normalize('NFC')
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^\p{L}\p{N}-]+/gu, '')
-      .replace(/-+/g, '-');
-  }
 
   function toggleAlbum(id: number) {
     if (expandedAlbumId === id) {

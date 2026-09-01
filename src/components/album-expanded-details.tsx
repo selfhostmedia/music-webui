@@ -3,13 +3,18 @@ import { AlbumPlaybackControls } from './album-playback-controls';
 import { AlbumTrackList } from './album-track-list';
 import { createTrackGroups } from '@/utils/library';
 import { getContrastingTextColor } from '@/utils/color';
+import { useRef } from 'react';
 import type { AlbumWithTracksDto } from '@/hooks/user/use-albums';
 
 export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const selectedColor = album.coverImageMuted || '#000000';
   const contrastingColor = album.coverImageDarkMuted || '#000000';
   const trackGroups = createTrackGroups(album.tracks);
   const showDiscTitle = trackGroups[0]?.[0]?.discNumber !== trackGroups[trackGroups.length - 1]?.[0]?.discNumber;
+  if (containerRef.current) {
+    containerRef.current?.scrollIntoView();
+  }
   return (
     <>
       <div
@@ -89,7 +94,7 @@ export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
         </div>
         {/* Stacked overlay */}
         <div className="w-full absolute z-3 top-0">
-          <div className="p-4 lg:pl-8 mr-120 2xl:mr-140 opacity-75">
+          <div className="p-4 lg:pl-8 mr-120 2xl:mr-140 opacity-75" ref={containerRef}>
             <h3 className="font-semibold text-2xl mb-2">
               {album.displayName} <span className="text-sm opacity-50 align-middle">({album.year})</span>
             </h3>

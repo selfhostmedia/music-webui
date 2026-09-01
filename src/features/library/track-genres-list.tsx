@@ -3,6 +3,7 @@ import { GenreCard } from '@/components/genre-card';
 import { GenreExpandedDetails } from '@/components/genre-expanded-details';
 import { GenreListItem } from '@/components/genre-list-item';
 import { GenreStandaloneDetails } from '@/components/genre-standalone-details';
+import { formatSlug } from '@/utils/format';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useListTrackGenresWithTracks } from '@/hooks/user/use-genres';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -95,16 +96,6 @@ export default function TrackGenresList() {
     }
     return undefined;
   }, [data?.genres.length]);
-
-  function formatSlug(title: string) {
-    return title
-      .toLowerCase()
-      .normalize('NFC')
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^\p{L}\p{N}-]+/gu, '')
-      .replace(/-+/g, '-');
-  }
 
   function toggleGenre(id: number) {
     if (expandedGenreId === id) {

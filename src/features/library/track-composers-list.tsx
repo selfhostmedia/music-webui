@@ -3,6 +3,7 @@ import { ComposerExpandedDetails } from '@/components/composer-expanded-details'
 import { ComposerListItem } from '@/components/composer-list-item';
 import { ComposerStandaloneDetails } from '@/components/composer-standalone-details';
 import { Fragment, useLayoutEffect, useRef, useState } from 'react';
+import { formatSlug } from '@/utils/format';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useListTrackComposersWithTracks } from '@/hooks/user/use-composers';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -99,16 +100,6 @@ export default function TrackComposersList() {
     }
     return undefined;
   }, [data?.composers.length]);
-
-  function formatSlug(title: string) {
-    return title
-      .toLowerCase()
-      .normalize('NFC')
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^\p{L}\p{N}-]+/gu, '')
-      .replace(/-+/g, '-');
-  }
 
   function toggleComposer(id: number) {
     if (expandedComposerId === id) {

@@ -39,3 +39,13 @@ export function secondsToMinutesAndSeconds(seconds: number): string {
   const remainingSeconds = Math.floor(seconds % 60);
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
+
+export function formatSlug(title: string) {
+  return title
+    .toLowerCase()
+    .normalize('NFC')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\p{L}\p{N}-]+/gu, '')
+    .replace(/-+/g, '-');
+}

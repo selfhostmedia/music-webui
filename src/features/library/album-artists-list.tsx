@@ -3,6 +3,7 @@ import { AlbumArtistStandaloneDetails } from '@/components/artist-standalone-det
 import { ArtistCard } from '@/components/artist-card';
 import { ArtistExpandedDetails } from '@/components/artist-expanded-details';
 import { Fragment, useLayoutEffect, useRef, useState } from 'react';
+import { formatSlug } from '@/utils/format';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useListAlbumArtistsWithTracks } from '@/hooks/user/use-artists';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -97,16 +98,6 @@ export default function AlbumArtistsList() {
     }
     return undefined;
   }, [data?.artists.length]);
-
-  function formatSlug(title: string) {
-    return title
-      .toLowerCase()
-      .normalize('NFC')
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^\p{L}\p{N}-]+/gu, '')
-      .replace(/-+/g, '-');
-  }
 
   function toggleArtist(id: number) {
     if (expandedArtistId === id) {

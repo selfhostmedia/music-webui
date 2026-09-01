@@ -18,6 +18,7 @@ import SignOutPage from './pages/signout';
 import TrackArtistsPage from './pages/track-artists.tsx';
 import TrackComposersPage from './pages/track-composers.tsx';
 import TrackGenresPage from './pages/track-genres.tsx';
+import TracksPage from './pages/tracks.tsx';
 import UserLayout from './layouts/user-layout';
 
 const router = createBrowserRouter(
@@ -40,6 +41,7 @@ const router = createBrowserRouter(
         <Route path="/track-composers/:composerId/:slug" element={<TrackComposersPage />} />
         <Route path="/track-genres" element={<TrackGenresPage />} />
         <Route path="/track-genres/:genreId/:slug" element={<TrackGenresPage />} />
+        <Route path="/tracks" element={<TracksPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="signout" element={<SignOutPage />} />
       </Route>
