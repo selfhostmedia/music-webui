@@ -37,7 +37,7 @@ test.describe('account preferences', () => {
       await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
       jwtToken = jwtToken || pom.jwtToken;
       await pom.navigateToAccount();
-      await expect(page.getByRole('heading', { name: 'Account preferences' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'General preferences' })).toBeVisible();
     });
   });
 
