@@ -13,6 +13,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { usePreferences } from '@/hooks/use-preferences';
 import type { PreferenceNavigationLink } from '@/hooks/use-preferences';
@@ -83,6 +84,11 @@ export const secondaryLinks: NavigationItem[] = [
 
 export function AppSidebar() {
   const { preferences } = usePreferences();
+  const { setOpenMobile } = useSidebar();
+
+  const closeMobileSidebar = () => {
+    setOpenMobile(false);
+  };
 
   const showLink = (label: NavigationLabel) => {
     return preferences.navigation[label as PreferenceNavigationLink];
@@ -108,7 +114,12 @@ export function AppSidebar() {
                 .map(({ to, label, icon: Icon }) => (
                   <SidebarMenuItem key={to}>
                     <SidebarMenuButton asChild tooltip={label}>
-                      <NavLink to={to} className={({ isActive }) => (isActive ? 'bg-primary/20 font-semibold' : '')}>
+                      <NavLink
+                        to={to}
+                        aria-label={label}
+                        onClick={closeMobileSidebar}
+                        className={({ isActive }) => (isActive ? 'bg-primary/20 font-semibold' : '')}
+                      >
                         <Icon />
                         <span>{label}</span>
                       </NavLink>
@@ -123,7 +134,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <NavLink to="/account">
+              <NavLink to="/account" aria-label="Account" onClick={closeMobileSidebar}>
                 <User />
                 <span>Account</span>
               </NavLink>
@@ -131,7 +142,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <NavLink to="/admin">
+              <NavLink to="/admin" aria-label="Admin" onClick={closeMobileSidebar}>
                 <Settings />
                 <span>Admin</span>
               </NavLink>
@@ -139,7 +150,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <NavLink to="/signout">
+              <NavLink to="/signout" aria-label="Sign out" onClick={closeMobileSidebar}>
                 <LogOut />
                 <span>Sign out</span>
               </NavLink>
