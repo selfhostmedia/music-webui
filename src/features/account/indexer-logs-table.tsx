@@ -11,10 +11,11 @@ import {
 import { DownloadIcon, LogsIcon, RefreshCcwIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { formatDateToRelative } from '@/utils/format';
+import { memo } from 'react';
 import { useIndexer } from '@/hooks/user/use-indexer';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 
-export function IndexerLogsTable() {
+export const IndexerLogsTable = memo(() => {
   const { indexerLogsLoading, indexerLogs, listIndexerLogs } = useIndexer();
   const isMobile = useIsMobile();
 
@@ -213,4 +214,4 @@ export function IndexerLogsTable() {
       )}
     </>
   );
-}
+});

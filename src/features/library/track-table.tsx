@@ -1,3 +1,4 @@
+import { type Artist, type Composer, type Genre, type TrackWithContent, useLibrary } from './library';
 import { Button } from '@/components/ui/button';
 import { Check, Square } from 'lucide-react';
 import {
@@ -7,25 +8,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Fragment, startTransition, useMemo, useState } from 'react';
 import { Link } from 'react-router';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
-import { type TrackDto, useListTracks } from '@/hooks/user/use-tracks';
-import { TrackPlaybackControls } from '@/components/track-playback-controls';
-import { formatNumber, formatSlug, secondsToMinutesAndSeconds } from '@/utils/format';
+import { PaginationControls } from '@/components/pagination-controls';
+import { PlaybackControls } from '@/components/playback-controls';
+import { TrackListItem } from '@/components/track-list-item';
+import { formatSlug, secondsToMinutesAndSeconds } from '@/utils/format';
+import { startTransition, useMemo, useState } from 'react';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { useListFolders } from '@/hooks/user/use-folders';
+import { usePreferences } from '@/hooks/use-preferences';
 import DataTable, { type TableColumn, type TableStyles } from 'react-data-table-component';
-
-type QueryParameters = NonNullable<Parameters<typeof useListFolders>[0]>;
 
 const customStyles: TableStyles = {
   table: {
@@ -75,56 +66,56 @@ const customStyles: TableStyles = {
   },
 };
 
-export default function TracksList() {
-  const [query] = useState<QueryParameters>();
-  const { data, isPending } = useListTracks(query);
+export default function TracksTable() {
+  const { tracks } = useLibrary();
   const isMobile = useIsMobile();
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
-  const [quantity, setQuantity] = useState<number>(100);
+  const { preferences } = usePreferences();
+  const { pageSize } = preferences;
   const [page, setPage] = useState(1);
 
-  const allColumns = useMemo<TableColumn<TrackDto>[]>(
+  const allColumns = useMemo<TableColumn<TrackWithContent>[]>(
     () => [
       {
         name: 'Disc',
         width: '50px',
         right: true,
         grow: 0,
-        selector: (row: TrackDto) => row.discNumber,
-        format: (row: TrackDto) => <span className="text-xs text-foreground/80">{row.discNumber}</span>,
+        selector: (row: TrackWithContent) => row.discNumber,
+        format: (row: TrackWithContent) => <span className="text-xs text-foreground/80">{row.discNumber}</span>,
       },
       {
         name: 'Track',
         width: '60px',
         right: true,
         grow: 0,
-        selector: (row: TrackDto) => row.trackNumber,
-        format: (row: TrackDto) => <span className="text-xs text-foreground/80">{row.trackNumber}</span>,
+        selector: (row: TrackWithContent) => row.trackNumber,
+        format: (row: TrackWithContent) => <span className="text-xs text-foreground/80">{row.trackNumber}</span>,
       },
       {
         name: 'Time',
         width: '50px',
         right: true,
         grow: 0,
-        selector: (row: TrackDto) => row.duration,
-        format: (row: TrackDto) => (
+        selector: (row: TrackWithContent) => row.duration,
+        format: (row: TrackWithContent) => (
           <span className="text-xs text-foreground/80">{secondsToMinutesAndSeconds(row.duration)}</span>
         ),
       },
       {
         name: 'Title',
         grow: 2,
-        selector: (row: TrackDto) => row.title,
-        format: (row: TrackDto) => <span className="text-xs text-foreground/80">{row.title}</span>,
+        selector: (row: TrackWithContent) => row.title,
+        format: (row: TrackWithContent) => <span className="text-xs text-foreground/80">{row.title}</span>,
       },
       {
         name: 'Album',
         grow: 2,
-        selector: (row: TrackDto) => row.albumTitle,
-        format: (row: TrackDto) => (
-          <Link to={`/albums/${row.albumId}/${formatSlug(row.albumTitle)}`}>
+        selector: (row: TrackWithContent) => row.album.title,
+        format: (row: TrackWithContent) => (
+          <Link to={`/albums/${row.album.id}/${formatSlug(row.album.title)}`}>
             <Button variant="link" className="p-0 text-xs text-foreground/80">
-              {row.albumTitle}
+              {row.album.title}
             </Button>
           </Link>
         ),
@@ -132,10 +123,10 @@ export default function TracksList() {
       {
         name: 'Album Artists',
         grow: 1,
-        selector: (row: TrackDto) => row.albumArtists.map((albumArtist) => albumArtist.name).join(', '),
-        format: (row: TrackDto) => (
+        selector: (row: TrackWithContent) => row.album.artists.map((albumArtist) => albumArtist.name).join(', '),
+        format: (row: TrackWithContent) => (
           <ul className="list-none p-0 m-0">
-            {row.albumArtists.map((artist) => (
+            {row.album.artists.map((artist: Artist) => (
               <li key={`track-artist-${artist.id}`} className="inline-block mr-3 last-of-type:mr-0">
                 <Link to={`/album-artists/${artist.id}/${formatSlug(artist.name)}`}>
                   <Button variant="link" className="p-0 text-xs text-foreground/80">
@@ -150,10 +141,10 @@ export default function TracksList() {
       {
         name: 'Genres',
         grow: 2,
-        selector: (row: TrackDto) => row.genres.map((genre) => genre.name).join(', '),
-        format: (row: TrackDto) => (
+        selector: (row: TrackWithContent) => row.genres.map((genre) => genre.name).join(', '),
+        format: (row: TrackWithContent) => (
           <ul className="list-none p-0 m-0">
-            {row.genres.map((genre) => (
+            {row.genres.map((genre: Genre) => (
               <li key={`track-genre-${genre.id}`} className="inline-block mr-3 last-of-type:mr-0">
                 <Link to={`/track-genres/${genre.id}/${formatSlug(genre.name)}`}>
                   <Button variant="link" className="p-0 text-xs text-foreground/80">
@@ -168,10 +159,10 @@ export default function TracksList() {
       {
         name: 'Artists',
         grow: 2,
-        selector: (row: TrackDto) => row.artists.map((artist) => artist.name).join(', '),
-        format: (row: TrackDto) => (
+        selector: (row: TrackWithContent) => row.artists.map((artist) => artist.name).join(', '),
+        format: (row: TrackWithContent) => (
           <ul className="list-none p-0 m-0">
-            {row.artists.map((artist) => (
+            {row.artists.map((artist: Artist) => (
               <li key={`track-artist-${artist.id}`} className="inline-block mr-3 last-of-type:mr-0">
                 <Link to={`/track-artists/${artist.id}/${formatSlug(artist.name)}`}>
                   <Button variant="link" className="p-0 text-xs text-foreground/80">
@@ -186,10 +177,10 @@ export default function TracksList() {
       {
         name: 'Composers',
         grow: 2,
-        selector: (row: TrackDto) => row.composers.map((composer) => composer.name).join(', '),
-        format: (row: TrackDto) => (
+        selector: (row: TrackWithContent) => row.composers.map((composer) => composer.name).join(', '),
+        format: (row: TrackWithContent) => (
           <ul className="list-none p-0 m-0">
-            {row.composers.map((composer) => (
+            {row.composers.map((composer: Composer) => (
               <li key={`track-composer-${composer.id}`} className="inline-block mr-3 last-of-type:mr-0">
                 <Link to={`/track-composers/${composer.id}/${formatSlug(composer.name)}`}>
                   <Button variant="link" className="p-0 text-xs text-foreground/80">
@@ -204,12 +195,10 @@ export default function TracksList() {
       {
         name: '',
         grow: 2,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        selector: (row: TrackDto) => '',
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        format: (row: TrackDto) => (
+        selector: () => '',
+        format: (row: TrackWithContent) => (
           <div className="text-xs text-foreground/80">
-            <TrackPlaybackControls />
+            <PlaybackControls track={row} />
           </div>
         ),
       },
@@ -240,54 +229,32 @@ export default function TracksList() {
     });
   };
 
-  const toggleQuantity = (num: number) => {
-    setQuantity(num);
-  };
-
-  const quantities = useMemo(() => [100, 200, 500, 1000, 2000, 100_000], []);
-  const pageCount = Math.max(1, Math.ceil((data?.tracks?.length ?? 0) / quantity));
-
   const visibleData = useMemo(() => {
-    const start = (page - 1) * quantity;
-    const end = start + quantity;
-    return data?.tracks.slice(start, end) || [];
-  }, [data?.tracks, page, quantity]);
-
-  const pageNumbers = useMemo(() => {
-    const pages = new Set<number>([1, page, page - 1, page + 1, pageCount]);
-
-    return [...pages].filter((pageNumber) => pageNumber >= 1 && pageNumber <= pageCount).sort((a, b) => a - b);
-  }, [page, pageCount]);
-
-  const goToPage = (nextPage: number) => {
-    setPage(Math.min(Math.max(nextPage, 1), pageCount));
-  };
+    if (pageSize) {
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      return tracks.slice(start, end) || [];
+    }
+    return tracks;
+  }, [tracks, page, pageSize]);
 
   return (
     <>
       <title>Tracks // SHM</title>
-
-      {isPending && <p>Loading...</p>}
-
       {isMobile && (
         <ul className="flex grow flex-col">
-          {data?.tracks?.map((item) => (
+          {visibleData?.map((item) => (
             <li className="w-full p-2" key={item.filePath}>
-              {/* Mobile row */}
+              <TrackListItem track={item} />
             </li>
           ))}
         </ul>
       )}
-
       {!isMobile && (
         <div className="p-4">
           <menu className="mb-4 flex justify-end">
             <DropdownMenu>
-              <DropdownMenuTrigger className="mr-4">
-                <Button variant="outline" size="sm">
-                  Columns
-                </Button>
-              </DropdownMenuTrigger>
+              <DropdownMenuTrigger className="mr-4">Columns</DropdownMenuTrigger>
               <DropdownMenuContent className="w-40" align="start">
                 <DropdownMenuGroup>
                   {columns.map((column, index) => (
@@ -299,24 +266,7 @@ export default function TracksList() {
                       }}
                     >
                       {column.omit ? <Square /> : <Check />}
-                      {column.name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button variant="outline" size="sm">
-                  Rows
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-40" align="start">
-                <DropdownMenuGroup>
-                  {quantities.map((num, index) => (
-                    <DropdownMenuItem key={index} onSelect={() => toggleQuantity(num)}>
-                      {formatNumber(num)}
+                      {column.name || 'Play actions'}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
@@ -330,59 +280,7 @@ export default function TracksList() {
             }
           `}</style>
           <DataTable dense columns={columns} data={visibleData} customStyles={customStyles} />
-          <div className="m-4">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    aria-disabled={page === 1}
-                    className={page === 1 ? 'pointer-events-none opacity-50' : undefined}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      goToPage(page - 1);
-                    }}
-                  />
-                </PaginationItem>
-                {pageNumbers.map((pageNumber, index) => {
-                  const previousPage = pageNumbers[index - 1];
-                  return (
-                    <Fragment key={pageNumber}>
-                      {previousPage && pageNumber - previousPage > 1 && (
-                        <PaginationItem>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      )}
-
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#"
-                          isActive={pageNumber === page}
-                          onClick={(event) => {
-                            event.preventDefault();
-                            goToPage(pageNumber);
-                          }}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    </Fragment>
-                  );
-                })}
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    aria-disabled={page === pageCount}
-                    className={page === pageCount ? 'pointer-events-none opacity-50' : undefined}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      goToPage(page + 1);
-                    }}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
+          <PaginationControls page={page} setPage={setPage} items={tracks?.length ?? 0} />
         </div>
       )}
     </>

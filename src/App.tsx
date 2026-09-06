@@ -1,7 +1,9 @@
 import './index.css';
 import { AuthProvider } from './hooks/use-auth.tsx';
-import { PlaybackProvider } from './features/library/playback.tsx';
+import { LibraryProvider } from './features/library/library.tsx';
+import { PreferencesProvider } from './hooks/use-preferences.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueueProvider } from './features/library/queue.tsx';
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from './components/ui/tooltip';
@@ -13,6 +15,7 @@ import AlbumsPage from './pages/albums';
 import FoldersPage from './pages/folders';
 import GuestLayout from './layouts/guest-layout';
 import HomePage from './pages/home';
+import QueuePage from './pages/queue.tsx';
 import SignInPage from './pages/signin';
 import SignOutPage from './pages/signout';
 import TrackArtistsPage from './pages/track-artists.tsx';
@@ -35,6 +38,7 @@ const router = createBrowserRouter(
         <Route path="/album-artists/:artistId/:slug" element={<AlbumArtistsPage />} />
         <Route path="/folders" element={<FoldersPage />} />
         <Route path="/folders/:folderId/:slug*" element={<FoldersPage />} />
+        <Route path="/queue" element={<QueuePage />} />
         <Route path="/track-artists" element={<TrackArtistsPage />} />
         <Route path="/track-artists/:artistId/:slug" element={<TrackArtistsPage />} />
         <Route path="/track-composers" element={<TrackComposersPage />} />
@@ -52,30 +56,25 @@ const router = createBrowserRouter(
   ),
 );
 
-function App() {
+export default function App() {
   const queryClient = new QueryClient();
 
   return (
-    <div
-      className="w-full min-w-32 min-h-screen overflow-auto"
-      style={{
-        backgroundColor: 'var(--background)',
-        backgroundImage: 'var(--background-image)',
-        backgroundRepeat: 'repeat',
-      }}
-    >
-      <PlaybackProvider>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <TooltipProvider>
-              <Toaster />
-              <RouterProvider router={router} />
-            </TooltipProvider>
-          </AuthProvider>
-        </QueryClientProvider>
-      </PlaybackProvider>
+    <div className="w-full min-w-32 min-h-screen overflow-auto select-none">
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <PreferencesProvider>
+            <LibraryProvider>
+              <QueueProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <RouterProvider router={router} />
+                </TooltipProvider>
+              </QueueProvider>
+            </LibraryProvider>
+          </PreferencesProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     </div>
   );
 }
-
-export default App;

@@ -1,12 +1,12 @@
 import { ComposerIconImage } from './composer-icon-image';
-import type { TrackComposerWithTracksDto } from '@/hooks/user/use-composers';
+import type { ComposerWithContents } from '@/features/library/library';
 
 export function ComposerCard({
   composer,
   isExpanded,
   onToggle,
 }: {
-  composer: TrackComposerWithTracksDto;
+  composer: ComposerWithContents;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
@@ -54,10 +54,10 @@ export function ComposerCard({
             }}
           >
             <ComposerIconImage
-              artistId={composer.id}
+              composerId={composer.id}
               aria-label={`${composer.name}`}
               className="w-50 h-50 lg:w-64 lg:h-64"
-              size={200}
+              size={600}
             />
           </div>
           <div className="p-2">

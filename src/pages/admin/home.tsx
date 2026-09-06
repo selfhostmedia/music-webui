@@ -9,34 +9,35 @@ const AdminHomePage = () => {
   return (
     <>
       <title>Server Administration // SHM</title>
-      <h1 className="text-2xl font-bold mb-4">Administration</h1>
-      {/* System management */}
-      <section className="mb-8">
-        <h2 className="font-semibold mb-2">System</h2>
-        <div className="flex flex-row space-x-2">
-          <SystemRotateSessionMasterKeyForm />
-          <div className="h-4 ml-4">
-            <IndexerToggle className="mt-1.5" />
+      <div className="p-4">
+        {/* System management */}
+        <section className="mb-8">
+          <h2 className="font-semibold mb-2">System</h2>
+          <div className="flex flex-row space-x-2">
+            <SystemRotateSessionMasterKeyForm />
+            <div className="h-4 ml-4">
+              <IndexerToggle className="mt-1.5" />
+            </div>
           </div>
-        </div>
-      </section>
-      {/* User and permission management */}
-      <section className="mb-8">
-        <h2 className="font-semibold mb-2">Users</h2>
-        <UserAddForm className="mb-4" />
-        <UserTable />
-      </section>
-      {/* Root path management */}
-      <section className="mb-8">
-        <h2 className="font-semibold mb-2">Library management</h2>
-        <RootPathAddForm />
-        <RootPathTable />
-      </section>
-      {/* Indexer logs */}
-      <section>
-        <h2 className="font-semibold mb-2">Indexer logs</h2>
-        <IndexerLogsTable />
-      </section>
+        </section>
+        {/* User and permission management */}
+        <section className="mb-8">
+          <h2 className="font-semibold mb-2">Users</h2>
+          <UserAddForm className="mb-4" />
+          <UserTable />
+        </section>
+        {/* Root path management */}
+        <section className="mb-8">
+          <h2 className="font-semibold mb-2">Library management</h2>
+          <RootPathAddForm />
+          <RootPathTable />
+        </section>
+        {/* Indexer logs */}
+        <section>
+          <h2 className="font-semibold mb-2">Indexer logs</h2>
+          <IndexerLogsTable />
+        </section>
+      </div>
     </>
   );
 };

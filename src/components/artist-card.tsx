@@ -1,12 +1,12 @@
 import { ArtistIconImage } from './artist-icon-image';
-import type { AlbumArtistWithTracksDto } from '@/hooks/user/use-artists';
+import type { ArtistWithContents } from '@/features/library/library';
 
 export function ArtistCard({
   artist,
   isExpanded,
   onToggle,
 }: {
-  artist: AlbumArtistWithTracksDto;
+  artist: ArtistWithContents;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
@@ -58,7 +58,7 @@ export function ArtistCard({
               artistId={artist.id}
               aria-label={`${artist.name}`}
               className="w-50 h-50 lg:w-64 lg:h-64"
-              size={200}
+              size={600}
             />
           </div>
           <div className="p-2">

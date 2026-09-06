@@ -1,14 +1,12 @@
 import { AlbumStandaloneDetails } from './album-standalone-details';
-import type { AlbumArtistWithTracksDto } from '@/hooks/user/use-artists';
+import type { ArtistWithContents } from '@/features/library/library';
 
-export function AlbumArtistStandaloneDetails({
-  artist,
-  onClose,
-}: {
-  artist: AlbumArtistWithTracksDto;
-  onClose: () => void;
-}) {
-  return artist.albums.map((album) => {
-    return <AlbumStandaloneDetails album={album} onClose={onClose} />;
+export function AlbumArtistStandaloneDetails({ artist, onClose }: { artist: ArtistWithContents; onClose: () => void }) {
+  return artist.albums.map((album, index) => {
+    return (
+      <>
+        <AlbumStandaloneDetails album={album} showArtistHeader={index === 0} onClose={onClose} />
+      </>
+    );
   });
 }

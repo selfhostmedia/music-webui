@@ -1,22 +1,54 @@
+import { type Album, createTrackGroups } from '@/features/library/library';
 import { AlbumFullImage } from './album-full-image';
-import { AlbumPlaybackControls } from './album-playback-controls';
 import { AlbumTrackList } from './album-track-list';
-import { createTrackGroups } from '@/utils/library';
+import { PlaybackControls } from './playback-controls';
 import { getContrastingTextColor } from '@/utils/color';
 import { useRef } from 'react';
-import type { AlbumWithTracksDto } from '@/hooks/user/use-albums';
 
-export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
+export function AlbumExpandedDetails({
+  album,
+  showArtistHeader,
+  autoScroll,
+}: {
+  album: Album;
+  showArtistHeader?: boolean;
+  autoScroll?: boolean;
+}) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const selectedColor = album.coverImageMuted || '#000000';
   const contrastingColor = album.coverImageDarkMuted || '#000000';
   const trackGroups = createTrackGroups(album.tracks);
   const showDiscTitle = trackGroups[0]?.[0]?.discNumber !== trackGroups[trackGroups.length - 1]?.[0]?.discNumber;
-  if (containerRef.current) {
-    containerRef.current?.scrollIntoView();
+
+  if (autoScroll && containerRef) {
+    const element = containerRef.current;
+    if (element) {
+      const rect = element.getBoundingClientRect();
+      const isVisible =
+        rect.top >= 0 && rect.left >= 0 && rect.bottom <= window.innerHeight && rect.right <= window.innerWidth;
+      if (!isVisible) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        });
+      }
+    }
   }
+
   return (
     <>
+      {showArtistHeader && (
+        <div
+          className="p-2 bg-muted/50"
+          style={{
+            backgroundColor: contrastingColor,
+          }}
+        >
+          <h3 className="text-3xl ml-2 text-foreground/80" style={{ color: contrastingColor, mixBlendMode: 'screen' }}>
+            {album.artists.map((artist) => artist.name).join(', ')}
+          </h3>
+        </div>
+      )}
       <div
         className="relative w-full min-h-120 bg-muted/50"
         style={{
@@ -74,10 +106,12 @@ export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
         >
           {/* Physical filler */}
           <div className="p-4 lg:pl-8 mr-120 2xl:mr-140">
-            <h3 className="font-semibold text-2xl mb-2">
-              {album.displayName} <span className="text-sm opacity-50 align-middle">({album.year})</span>
-            </h3>
-            <AlbumPlaybackControls />
+            <div className="mb-2">
+              <h3 className="font-semibold text-2xl">
+                {album.title} <span className="text-sm opacity-50 align-middle">({album.year})</span>
+              </h3>
+              <PlaybackControls album={album} textLabels={true} />
+            </div>
             <div className="lg:grid lg:grid-rows-2 2xl:grid-rows-none 2xl:grid-cols-2 gap-0 2xl:gap-20 max-w-400">
               {trackGroups.map((trackGroup, index) => {
                 return (
@@ -95,10 +129,12 @@ export function AlbumExpandedDetails({ album }: { album: AlbumWithTracksDto }) {
         {/* Stacked overlay */}
         <div className="w-full absolute z-3 top-0">
           <div className="p-4 lg:pl-8 mr-120 2xl:mr-140 opacity-75" ref={containerRef}>
-            <h3 className="font-semibold text-2xl mb-2">
-              {album.displayName} <span className="text-sm opacity-50 align-middle">({album.year})</span>
-            </h3>
-            <AlbumPlaybackControls />
+            <div className="mb-2">
+              <h3 className="font-semibold text-2xl">
+                {album.title} <span className="text-sm opacity-50 align-middle">({album.year})</span>
+              </h3>
+              <PlaybackControls album={album} textLabels={true} />
+            </div>
             <div className="lg:grid lg:grid-rows-2 2xl:grid-rows-none 2xl:grid-cols-2 gap-0 2xl:gap-20 max-w-400">
               {trackGroups.map((trackGroup, index) => (
                 <div key={index}>

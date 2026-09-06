@@ -1,12 +1,12 @@
 import { GenreIconImage } from './genre-icon-image';
-import type { TrackGenreWithTracksDto } from '@/hooks/user/use-genres';
+import type { GenreWithContents } from '@/features/library/library';
 
 export function GenreCard({
   genre,
   isExpanded,
   onToggle,
 }: {
-  genre: TrackGenreWithTracksDto;
+  genre: GenreWithContents;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
@@ -58,7 +58,7 @@ export function GenreCard({
               genreId={genre.id}
               aria-label={`${genre.name}`}
               className="w-50 h-50 lg:w-64 lg:h-64"
-              size={200}
+              size={600}
             />
           </div>
           <div className="p-2">

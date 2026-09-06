@@ -1,10 +1,8 @@
-import { TrackPlaybackControls } from './track-playback-controls';
+import { PlaybackControls } from './playback-controls';
 import { secondsToMinutesAndSeconds } from '@/utils/format';
-import type { AlbumWithTracksDto } from '@/hooks/user/use-albums';
+import type { Track } from '@/features/library/library';
 
-type TrackDto = AlbumWithTracksDto['tracks'][number];
-
-export function AlbumTrackList({ tracks }: { tracks: TrackDto[] }) {
+export function AlbumTrackList({ tracks }: { tracks: Track[] }) {
   return (
     <ol>
       {tracks.map((track) => (
@@ -15,9 +13,9 @@ export function AlbumTrackList({ tracks }: { tracks: TrackDto[] }) {
           <span className="text-foreground/90">
             {track.trackNumber}. {track.title}
           </span>
-          <div>
+          <div className="flex flex-row">
             <span className="opacity-50 text-sm pt-0.5">{secondsToMinutesAndSeconds(track.duration)}</span>
-            <TrackPlaybackControls />
+            <PlaybackControls track={track} />
           </div>
         </li>
       ))}

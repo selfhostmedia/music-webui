@@ -1,12 +1,12 @@
 import { AlbumIconImage } from './album-icon-image';
-import type { TrackComposerDto } from '@/hooks/user/use-composers';
+import type { Composer } from '@/features/library/library';
 
 export function ComposerListItem({
   composer,
   isExpanded,
   onToggle,
 }: {
-  composer: TrackComposerDto;
+  composer: Composer;
   isExpanded: boolean;
   onToggle: () => void;
 }) {

@@ -1,12 +1,12 @@
 import { AlbumIconImage } from './album-icon-image';
-import type { AlbumDto } from '@/hooks/user/use-albums';
+import type { Album } from '@/features/library/library';
 
 export function AlbumListItem({
   album,
   isExpanded,
   onToggle,
 }: {
-  album: AlbumDto;
+  album: Album;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
@@ -28,13 +28,13 @@ export function AlbumListItem({
         >
           <AlbumIconImage
             albumId={album.id}
-            aria-label={`${album.displayName} by ${album.albumArtists}`}
+            aria-label={`${album.title} by ${album.artists.map((artist) => artist.name).join(', ')}`}
             className="w-30 h-30 mr-2"
             size={100}
           />
           <div>
-            <h3 className="text-foreground/80">{album.displayName}</h3>
-            <p className="text-sm text-foreground/60">{album.albumArtists}</p>
+            <h3 className="text-foreground/80">{album.title}</h3>
+            <p className="text-sm text-foreground/60">{album.artists.map((artist) => artist.name).join(', ')}</p>
           </div>
         </div>
       </button>

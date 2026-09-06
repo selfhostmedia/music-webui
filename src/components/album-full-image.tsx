@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react';
-import api from '@/lib/api';
-
 type AlbumImageProps = {
   albumId: number;
   size: number;
@@ -8,44 +5,13 @@ type AlbumImageProps = {
   ariaHidden?: string;
 } & React.HTMLAttributes<HTMLDivElement>;
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export function AlbumFullImage({ albumId, size, className, ariaHidden }: AlbumImageProps) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchImage() {
-      setImageUrl(null);
-      const { data, error } = await api.get('/api/user/album-cover', {
-        params: {
-          query: {
-            id: albumId,
-            size,
-          },
-          header: api.authHeader(),
-        },
-        parseAs: 'blob',
-      });
-      if (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching album cover image:', error);
-        return;
-      }
-      if (data) {
-        const nextUrl = URL.createObjectURL(data);
-        setImageUrl(nextUrl);
-      }
-    }
-
-    fetchImage();
-  }, [albumId]);
-
-  if (!imageUrl) {
-    return <></>;
-  }
-
   return (
     <img
       className={`object-cover ${className ?? ''}`}
-      src={imageUrl}
+      src={`${baseUrl}/api/guest/album-cover?id=${albumId}&size=${size}`}
       alt={`Album cover for album ID ${albumId}`}
       {...(ariaHidden ? { 'aria-hidden': 'true' } : {})}
     />

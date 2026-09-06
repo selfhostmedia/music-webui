@@ -1,14 +1,21 @@
 import { AlbumStandaloneDetails } from './album-standalone-details';
-import type { TrackComposerWithTracksDto } from '@/hooks/user/use-composers';
+import { PlaybackControls } from './playback-controls';
+import type { ComposerWithContents } from '@/features/library/library';
 
 export function ComposerStandaloneDetails({
   composer,
   onClose,
 }: {
-  composer: TrackComposerWithTracksDto;
+  composer: ComposerWithContents;
   onClose: () => void;
 }) {
-  return composer.albums.map((album) => {
-    return <AlbumStandaloneDetails album={album} onClose={onClose} />;
-  });
+  return (
+    <>
+      <h3 className="text-foreground/80">{composer.name}</h3>
+      <PlaybackControls composer={composer} textLabels={true} />
+      {composer.albums.map((album) => {
+        return <AlbumStandaloneDetails album={album} onClose={onClose} />;
+      })}
+    </>
+  );
 }

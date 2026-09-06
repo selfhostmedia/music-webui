@@ -1,12 +1,12 @@
 import { ArtistIconImage } from './artist-icon-image';
-import type { AlbumArtistDto } from '@/hooks/user/use-artists';
+import type { ArtistWithContents } from '@/features/library/library';
 
 export function AlbumArtistListItem({
   artist,
   isExpanded,
   onToggle,
 }: {
-  artist: AlbumArtistDto;
+  artist: ArtistWithContents;
   isExpanded: boolean;
   onToggle: () => void;
 }) {

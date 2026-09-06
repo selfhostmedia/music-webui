@@ -1,12 +1,12 @@
 import { ArtistIconImage } from './artist-icon-image';
-import type { TrackGenreDto } from '@/hooks/user/use-genres';
+import type { Genre } from '@/features/library/library';
 
 export function GenreListItem({
   genre,
   isExpanded,
   onToggle,
 }: {
-  genre: TrackGenreDto;
+  genre: Genre;
   isExpanded: boolean;
   onToggle: () => void;
 }) {

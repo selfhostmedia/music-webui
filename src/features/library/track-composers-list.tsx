@@ -2,46 +2,27 @@ import { ComposerCard } from '@/components/composer-card';
 import { ComposerExpandedDetails } from '@/components/composer-expanded-details';
 import { ComposerListItem } from '@/components/composer-list-item';
 import { ComposerStandaloneDetails } from '@/components/composer-standalone-details';
-import { Fragment, useLayoutEffect, useRef, useState } from 'react';
+import { Fragment, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { PaginationControls } from '@/components/pagination-controls';
 import { formatSlug } from '@/utils/format';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { useListTrackComposersWithTracks } from '@/hooks/user/use-composers';
+import { useLibrary } from './library';
 import { useNavigate, useParams } from 'react-router-dom';
-
-type QueryParameters = NonNullable<Parameters<typeof useListTrackComposersWithTracks>[0]>;
-
-const errorMessages: Record<string, string> = {
-  'invalid-added-after-error': 'The added-after date is invalid',
-  'invalid-added-before-error': 'The added-before date is invalid',
-  'invalid-filter-error': 'The filter is invalid',
-  'invalid-filter-length-error': 'The filter length is invalid',
-  'invalid-genre-error': 'The genre is invalid',
-  'invalid-genre-length-error': 'The genre length is invalid',
-  'invalid-limit-error': 'The limit is invalid',
-  'invalid-limit-range-error': 'The limit is out of range',
-  'invalid-offset-error': 'The offset is invalid',
-  'invalid-offset-range-error': 'The offset is out of range',
-  'invalid-sort-field-error': 'The sort field is invalid',
-  'invalid-sort-order-error': 'The sort order is invalid',
-  'invalid-year-error': 'The year is invalid',
-};
+import { usePreferences } from '@/hooks/use-preferences';
 
 export default function TrackComposersList() {
   const navigate = useNavigate();
-  const [query] = useState<QueryParameters>({
-    offset: 0,
-    limit: 100_000,
-  });
-  const { data, isPending, error } = useListTrackComposersWithTracks(query);
+  const { composers } = useLibrary();
   const isMobile = useIsMobile();
   const [columnSize, setColumnSize] = useState(0);
+  const { preferences } = usePreferences();
+  const { pageSize } = preferences;
+  const [page, setPage] = useState(1);
   const listRef = useRef(null);
   const { composerId } = useParams<{ composerId: string }>();
   const expandedComposerId = composerId ? Number(composerId) : null;
   const expandedComposer =
-    expandedComposerId !== null
-      ? (data?.composers.find((composer) => composer.id === expandedComposerId) ?? null)
-      : null;
+    expandedComposerId !== null ? (composers.find((composer) => composer.id === expandedComposerId) ?? null) : null;
 
   useLayoutEffect(() => {
     const list = listRef.current as HTMLElement | null;
@@ -99,13 +80,13 @@ export default function TrackComposersList() {
       };
     }
     return undefined;
-  }, [data?.composers.length]);
+  }, [composers.length]);
 
   function toggleComposer(id: number) {
     if (expandedComposerId === id) {
       navigate('/track-composers');
     } else {
-      const composer = data?.composers.find((item) => item.id === id);
+      const composer = composers.find((item) => item.id === id);
       if (!composer) {
         // eslint-disable-next-line no-console
         console.error(`Composer with id ${id} not found`);
@@ -115,39 +96,28 @@ export default function TrackComposersList() {
     }
   }
 
-  function getErrorMessages() {
-    if (!error) {
-      return [];
+  const visibleData = useMemo(() => {
+    if (pageSize) {
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      return composers.slice(start, end) || [];
     }
-    const messages: string[] = [];
-    for (let i = 0; i < error.messages.length; i += 1) {
-      const message = error.messages[i];
-      messages.push(errorMessages[message] ?? message);
-    }
-    return messages;
-  }
+    return composers;
+  }, [composers, page, pageSize]);
 
-  const clickedArtistIndex = data?.composers.findIndex((item) => item.id === expandedComposerId) ?? -1;
+  const clickedArtistIndex = visibleData.findIndex((item) => item.id === expandedComposerId) ?? -1;
+  const insertingComposer = visibleData[clickedArtistIndex];
   let detailsInsertIndex =
     clickedArtistIndex >= 0 ? Math.ceil((clickedArtistIndex + 1) / columnSize) * columnSize - 1 : -1;
-  if (data?.composers.length) {
-    if (detailsInsertIndex > data.composers.length) {
-      detailsInsertIndex = data.composers.length - 1;
+  if (visibleData.length) {
+    if (detailsInsertIndex > visibleData.length) {
+      detailsInsertIndex = visibleData.length - 1;
     }
   }
-  const insertingComposer = data?.composers[clickedArtistIndex];
 
   return (
     <>
       <title>Composers // SHM</title>
-      {isPending && <p>Loading...</p>}
-      {error && (
-        <ul>
-          {getErrorMessages()?.map((message, index) => (
-            <li key={index}>{message}</li>
-          ))}
-        </ul>
-      )}
       {isMobile && (
         <ul className="flex flex-col grow">
           {insertingComposer && (
@@ -161,7 +131,7 @@ export default function TrackComposersList() {
             </li>
           )}
           {!insertingComposer &&
-            data?.composers.map((item) => {
+            visibleData.map((item) => {
               return (
                 <li className="w-full p-2" key={`mobile-album ${item.id}`}>
                   <ComposerListItem
@@ -184,12 +154,12 @@ export default function TrackComposersList() {
             'gap-4 mx-4',
           ].join(' ')}
         >
-          {data?.composers.map((item, index) => {
+          {visibleData.map((item, index) => {
             const isExpanded = expandedComposerId === item.id;
             const shouldInsertDetails = detailsInsertIndex === index;
             return (
               <Fragment key={`composer ${item.id}`}>
-                <li className="w-full h-full inline-block">
+                <li className="w-full h-full inline-flex align-middle justify-center">
                   <ComposerCard composer={item} isExpanded={isExpanded} onToggle={() => toggleComposer(item.id)} />
                 </li>
                 {shouldInsertDetails && (
@@ -202,6 +172,7 @@ export default function TrackComposersList() {
           })}
         </ul>
       )}
+      <PaginationControls page={page} setPage={setPage} items={composers?.length ?? 0} />
     </>
   );
 }

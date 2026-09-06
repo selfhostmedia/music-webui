@@ -2,44 +2,27 @@ import { AlbumArtistListItem } from '@/components/artist-list-item';
 import { AlbumArtistStandaloneDetails } from '@/components/artist-standalone-details';
 import { ArtistCard } from '@/components/artist-card';
 import { ArtistExpandedDetails } from '@/components/artist-expanded-details';
-import { Fragment, useLayoutEffect, useRef, useState } from 'react';
+import { Fragment, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { PaginationControls } from '@/components/pagination-controls';
 import { formatSlug } from '@/utils/format';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { useListAlbumArtistsWithTracks } from '@/hooks/user/use-artists';
+import { useLibrary } from './library';
 import { useNavigate, useParams } from 'react-router-dom';
-
-type QueryParameters = NonNullable<Parameters<typeof useListAlbumArtistsWithTracks>[0]>;
-
-const errorMessages: Record<string, string> = {
-  'invalid-added-after-error': 'The added-after date is invalid',
-  'invalid-added-before-error': 'The added-before date is invalid',
-  'invalid-filter-error': 'The filter is invalid',
-  'invalid-filter-length-error': 'The filter length is invalid',
-  'invalid-genre-error': 'The genre is invalid',
-  'invalid-genre-length-error': 'The genre length is invalid',
-  'invalid-limit-error': 'The limit is invalid',
-  'invalid-limit-range-error': 'The limit is out of range',
-  'invalid-offset-error': 'The offset is invalid',
-  'invalid-offset-range-error': 'The offset is out of range',
-  'invalid-sort-field-error': 'The sort field is invalid',
-  'invalid-sort-order-error': 'The sort order is invalid',
-  'invalid-year-error': 'The year is invalid',
-};
+import { usePreferences } from '@/hooks/use-preferences';
 
 export default function AlbumArtistsList() {
   const navigate = useNavigate();
-  const [query] = useState<QueryParameters>({
-    offset: 0,
-    limit: 100_000,
-  });
-  const { data, isPending, error } = useListAlbumArtistsWithTracks(query);
+  const { albumArtists } = useLibrary();
   const isMobile = useIsMobile();
   const [columnSize, setColumnSize] = useState(0);
+  const { preferences } = usePreferences();
+  const { pageSize } = preferences;
+  const [page, setPage] = useState(1);
   const listRef = useRef(null);
   const { artistId } = useParams<{ artistId: string }>();
   const expandedArtistId = artistId ? Number(artistId) : null;
   const expandedArtist =
-    expandedArtistId !== null ? (data?.artists.find((artist) => artist.id === expandedArtistId) ?? null) : null;
+    expandedArtistId !== null ? (albumArtists.find((artist) => artist.id === expandedArtistId) ?? null) : null;
 
   useLayoutEffect(() => {
     const list = listRef.current as HTMLElement | null;
@@ -97,13 +80,13 @@ export default function AlbumArtistsList() {
       };
     }
     return undefined;
-  }, [data?.artists.length]);
+  }, [albumArtists.length]);
 
   function toggleArtist(id: number) {
     if (expandedArtistId === id) {
       navigate('/album-artists');
     } else {
-      const artist = data?.artists.find((item) => item.id === id);
+      const artist = albumArtists.find((item) => item.id === id);
       if (!artist) {
         // eslint-disable-next-line no-console
         console.error(`Artist with id ${id} not found`);
@@ -113,39 +96,28 @@ export default function AlbumArtistsList() {
     }
   }
 
-  function getErrorMessages() {
-    if (!error) {
-      return [];
+  const visibleData = useMemo(() => {
+    if (pageSize) {
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      return albumArtists.slice(start, end) || [];
     }
-    const messages: string[] = [];
-    for (let i = 0; i < error.messages.length; i += 1) {
-      const message = error.messages[i];
-      messages.push(errorMessages[message] ?? message);
-    }
-    return messages;
-  }
+    return albumArtists;
+  }, [albumArtists, page, preferences.pageSize]);
 
-  const clickedArtistIndex = data?.artists.findIndex((item) => item.id === expandedArtistId) ?? -1;
+  const clickedArtistIndex = visibleData.findIndex((item) => item.id === expandedArtistId) ?? -1;
+  const insertingArtist = visibleData[clickedArtistIndex];
   let detailsInsertIndex =
     clickedArtistIndex >= 0 ? Math.ceil((clickedArtistIndex + 1) / columnSize) * columnSize - 1 : -1;
-  if (data?.artists.length) {
-    if (detailsInsertIndex > data.artists.length) {
-      detailsInsertIndex = data.artists.length - 1;
+  if (visibleData.length) {
+    if (detailsInsertIndex > visibleData.length) {
+      detailsInsertIndex = visibleData.length - 1;
     }
   }
-  const insertingArtist = data?.artists[clickedArtistIndex];
 
   return (
     <>
       <title>Album artists // SHM</title>
-      {isPending && <p>Loading...</p>}
-      {error && (
-        <ul>
-          {getErrorMessages()?.map((message, index) => (
-            <li key={index}>{message}</li>
-          ))}
-        </ul>
-      )}
       {isMobile && (
         <ul className="flex flex-col grow">
           {insertingArtist && (
@@ -156,9 +128,9 @@ export default function AlbumArtistsList() {
             </li>
           )}
           {!insertingArtist &&
-            data?.artists.map((item) => {
+            visibleData.map((item, index) => {
               return (
-                <li className="w-full p-2" key={`mobile-album ${item.id}`}>
+                <li className="w-full p-2" key={`mobile-album-artist ${item.id}-${index}`}>
                   <AlbumArtistListItem
                     artist={item}
                     isExpanded={expandedArtistId === item.id}
@@ -170,32 +142,35 @@ export default function AlbumArtistsList() {
         </ul>
       )}
       {!isMobile && (
-        <ul
-          ref={listRef}
-          className={[
-            'grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))]',
-            'md:grid-cols-[repeat(auto-fill,minmax(14rem,1fr))]',
-            'lg:grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] ',
-            'gap-4 mx-4',
-          ].join(' ')}
-        >
-          {data?.artists.map((item, index) => {
-            const isExpanded = expandedArtistId === item.id;
-            const shouldInsertDetails = detailsInsertIndex === index;
-            return (
-              <Fragment key={`album ${item.id}`}>
-                <li className="w-full h-full inline-block">
-                  <ArtistCard artist={item} isExpanded={isExpanded} onToggle={() => toggleArtist(item.id)} />
-                </li>
-                {shouldInsertDetails && (
-                  <li className="album-details col-span-full -mx-4">
-                    {expandedArtist && <ArtistExpandedDetails artist={expandedArtist} />}
+        <>
+          <ul
+            ref={listRef}
+            className={[
+              'grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))]',
+              'md:grid-cols-[repeat(auto-fill,minmax(14rem,1fr))]',
+              'lg:grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] ',
+              'gap-4 mx-4',
+            ].join(' ')}
+          >
+            {visibleData.map((item, index) => {
+              const isExpanded = expandedArtistId === item.id;
+              const shouldInsertDetails = detailsInsertIndex === index;
+              return (
+                <Fragment key={`album-artist ${item.id}-${index}`}>
+                  <li className="w-full h-full inline-flex align-middle justify-center">
+                    <ArtistCard artist={item} isExpanded={isExpanded} onToggle={() => toggleArtist(item.id)} />
                   </li>
-                )}
-              </Fragment>
-            );
-          })}
-        </ul>
+                  {shouldInsertDetails && (
+                    <li className="album-details col-span-full -mx-4">
+                      {expandedArtist && <ArtistExpandedDetails artist={expandedArtist} />}
+                    </li>
+                  )}
+                </Fragment>
+              );
+            })}
+          </ul>
+          <PaginationControls page={page} setPage={setPage} items={albumArtists?.length ?? 0} />
+        </>
       )}
     </>
   );

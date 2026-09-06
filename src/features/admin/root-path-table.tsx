@@ -11,10 +11,11 @@ import { RootPathDeleteForm } from './root-path-delete-form';
 import { RootPathUpdateForm } from './root-path-update-form';
 import { Separator } from '@/components/ui/separator';
 import { formatNumber, formatSize } from '@/utils/format';
+import { memo } from 'react';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useRootPaths } from '@/hooks/admin/use-root-paths';
 
-export function RootPathTable() {
+export const RootPathTable = memo(() => {
   const { rootPaths: data, isLoading } = useRootPaths();
   const isMobile = useIsMobile();
 
@@ -131,4 +132,4 @@ export function RootPathTable() {
       )}
     </>
   );
-}
+});

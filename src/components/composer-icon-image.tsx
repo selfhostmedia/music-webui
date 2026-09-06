@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import api from '@/lib/api';
 
 type ComposerImageProps = {
-  artistId: number;
+  composerId: number;
   size: number;
 } & React.HTMLAttributes<HTMLDivElement>;
 
-export function ComposerIconImage({ artistId, size, style, ...props }: ComposerImageProps) {
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+export function ComposerIconImage({ composerId, size, style, ...props }: ComposerImageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const objectUrlRef = useRef<string | null>(null);
-
   const [isVisible, setIsVisible] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -42,49 +42,19 @@ export function ComposerIconImage({ artistId, size, style, ...props }: ComposerI
         objectUrlRef.current = null;
       }
       setImageUrl(null);
-      return;
+      return undefined;
     }
-
-    let cancelled = false;
-
-    async function fetchImage() {
-      const { data, error } = await api.get('/api/user/composer-cover', {
-        params: {
-          query: {
-            id: artistId,
-            size,
-          },
-          header: api.authHeader(),
-        },
-        parseAs: 'blob',
-      });
-      if (cancelled) {
-        return;
-      }
-      if (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching artist cover image:', error);
-        return;
-      }
-      if (data) {
-        const nextUrl = URL.createObjectURL(data);
-        objectUrlRef.current = nextUrl;
-        setImageUrl(nextUrl);
-      }
-    }
-
-    fetchImage();
-
-    // eslint-disable-next-line consistent-return
+    const nextUrl = `${baseUrl}/api/guest/composer-cover?id=${composerId}&size=${size}`;
+    objectUrlRef.current = nextUrl;
+    setImageUrl(nextUrl);
     return () => {
-      cancelled = true;
       if (objectUrlRef.current) {
         URL.revokeObjectURL(objectUrlRef.current);
         objectUrlRef.current = null;
       }
       setImageUrl(null);
     };
-  }, [artistId, isVisible]);
+  }, [composerId, size, isVisible]);
 
   return (
     <div

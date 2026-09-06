@@ -40,15 +40,15 @@ export type paths = {
     patch?: never;
     trace?: never;
   };
-  '/api/user/album-cover': {
+  '/api/guest/album-cover': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Cover images for albums */
-    get: operations['UserAlbumCoverController_get'];
+    /** Cover images for albums, this route is guest-accessible for better browser handling */
+    get: operations['GuestAlbumCoverController_get'];
     put?: never;
     post?: never;
     delete?: never;
@@ -57,15 +57,15 @@ export type paths = {
     patch?: never;
     trace?: never;
   };
-  '/api/user/artist-cover': {
+  '/api/guest/artist-cover': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Cover images for artists */
-    get: operations['UserArtistCoverController_get'];
+    /** Cover images for artists.  This route is guest-accessible for better browser-handling. */
+    get: operations['GuestArtistCoverController_get'];
     put?: never;
     post?: never;
     delete?: never;
@@ -74,15 +74,54 @@ export type paths = {
     patch?: never;
     trace?: never;
   };
-  '/api/user/composer-cover': {
+  '/api/guest/composer-cover': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Cover images for composers */
-    get: operations['UserComposerCoverController_get'];
+    /** Cover images for composers.  This route is guest-accessible for better browser-handling. */
+    get: operations['GuestComposerCoverController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/guest/genre-cover': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Cover images for genres */
+    get: operations['GuestGenreCoverController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/guest/stream-file': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Streams audio files.  This route is guest-accessible for better browser handling.
+     * @description Downloads audio files from the music library to the client.  This is used to stream audio files for playback or to download for offline usage.  The audio files are streamed in their original format, and the client is responsible for decoding and playing the audio.  Synology implements transcoding for certain formats, but this is not supported in this server.
+     *
+     *     The request must be authenticated using a valid Synology session ID and device ID cookie for the user, which can be obtained by signing in via the `entry.cgi` endpoint, a two-step process requesting the encryption public key from `/certs` and then  submitting credentials encrypted with it.
+     */
+    get: operations['GuestStreamFileController_get'];
     put?: never;
     post?: never;
     delete?: never;
@@ -163,23 +202,6 @@ export type paths = {
      * @description Returns the folder and file structure of the library.
      */
     get: operations['UserFolderStructureController_get'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/user/genre-cover': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Cover images for genres */
-    get: operations['UserGenreCoverController_get'];
     put?: never;
     post?: never;
     delete?: never;
@@ -1221,6 +1243,27 @@ export type components = {
        */
       message: components['schemas']['InternalServerErrorEnum'][];
     };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    GuestStreamFileNotFoundErrorMessage: GuestStreamFileNotFoundErrorMessage;
+    GuestStreamFileNotFoundResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default file-not-found-error
+       */
+      message: components['schemas']['GuestStreamFileNotFoundErrorMessage'][];
+    };
     UserCreateRootPathBodyDto: {
       /** @description The fully-qualified path to set for the root path */
       rootPath: string;
@@ -1382,21 +1425,32 @@ export type components = {
        */
       message: components['schemas']['UserListTrackArtistsBadRequestErrorMessage'][];
     };
-    LibraryTrackDto: {
-      /** @description The internally-generated unique ID of the track */
+    LibraryComposerDto: {
+      /**
+       * Format: date-time
+       * @description The date the composer was added to the library
+       */
+      createdAt: string;
+      /** @description The internally-generated unique ID of the composer */
       id: number;
-      /**
-       * @description The list of artists for the track, if it is a comma-delimited string then it will be parsed into
-       *     an array each containing one name.  This data is very inconsistently-formatted even in official-ish
-       *     sources like MusicBrainz so it may end up with multiple artists in a single string.
-       */
-      artists: string[];
-      /**
-       * @description The list of composers for the track, if it is a comma-delimited string then it will be parsed into
-       *     an array each containing one name.  This data is very inconsistently-formatted even in official-ish
-       *     sources like MusicBrainz so it may end up with multiple composers in a single string.
-       */
-      composers: string[];
+      /** @description The name of the composer. */
+      name: string;
+    };
+    LibraryGenreDto: {
+      /** @description The internally-generated unique ID of the genre */
+      id: number;
+      /** @description The name of the genre. */
+      name: string;
+    };
+    LibraryAlbumTrackDto: {
+      /** @description The list of artists for the track. */
+      artists: components['schemas']['LibraryArtistDto'][];
+      /** @description The list of composers for the track. */
+      composers: components['schemas']['LibraryComposerDto'][];
+      /** @description The list of genres for the track. */
+      genres: components['schemas']['LibraryGenreDto'][];
+      /** @description The comment or description associated with the track. */
+      comment: string;
       /**
        * @description The disc number of the track on the album or disc if there are multiple discs.  If this field is not
        *     specified it is assumed to be a single-disc album.
@@ -1404,17 +1458,29 @@ export type components = {
       discNumber: number;
       /** @description The duration of the track in seconds. */
       duration: number;
+      /** @description The bitrate of the audio file for the track, in Kb/s. */
+      fileBitRate: number;
+      /** @description The number of audio channels in the file for the track, such as 2 for stereo or 1 for mono. */
+      fileChannels: number;
+      /** @description The frequency or sample rate of the audio file for the track, in Hz. */
+      fileFrequency: number;
+      /** @description The file path of the file for the track. */
+      filePath: string;
+      /** @description The size of the file in bytes */
+      fileSize: number;
       /**
-       * @description The list of genres for the track, if it is a comma-delimited string then it will be parsed into
-       *     an array each containing one name.
+       * @description The type of the file for the track, such as MP3, FLAC, etc.
+       * @enum {string}
        */
-      genres: string[];
-      /** @description The track number of the track on the album or disc if there are multiple discs. */
-      trackNumber: number;
+      fileType: LibraryAlbumTrackDtoFileType;
+      /** @description The internally-generated unique ID of the track */
+      id: number;
       /** @description The rating of the track which is a value between 0 and 5 inclusive applied to the track. */
       rating: number;
       /** @description The title of the track, which is usually the name of the song or piece of music. */
       title: string;
+      /** @description The track number of the track on the album or disc if there are multiple discs. */
+      trackNumber: number;
       /**
        * @description The year of release of the track, often the same as the album except in "greatest hits"
        *     and compilations.
@@ -1422,12 +1488,12 @@ export type components = {
       year: number;
     };
     LibraryAlbumWithTracksDto: {
-      /** @description The list of tracks for the album */
-      tracks: components['schemas']['LibraryTrackDto'][];
       /** @description The artist for the album, which is all the album artists in a comma-delimited list */
-      albumArtists: string[];
-      albumComposers: string[];
-      albumGenres: string[];
+      artists: components['schemas']['LibraryArtistDto'][];
+      composers: components['schemas']['LibraryComposerDto'][];
+      genres: components['schemas']['LibraryGenreDto'][];
+      /** @description The list of tracks for the album */
+      tracks: components['schemas']['LibraryAlbumTrackDto'][];
       /** @description A color detected in the cover art image */
       coverImageLightVibrant?: string;
       /** @description A color detected in the cover art image */
@@ -1445,26 +1511,15 @@ export type components = {
        * @description The date the album was added to the library
        */
       createdAt: string;
-      /**
-       * @description The display name of the artist, which is used for sorting and display consistency when albums
-       *     have a different artist name than the album artist name.  For example, a compilation album may have
-       *     multiple artists but the album artist is "Various Artists" and the display artist is "Various".
-       */
-      displayArtist: string[];
-      /**
-       * @description The name or title of the album, this would usually come from an official source such as MusicBrainz
-       *     or Discogs.
-       */
-      displayName: string;
       /** @description The internally-generated unique ID of the album */
       id: number;
       /** @description The aggregate rating for the album, which is a value between 0 and 5 inclusive applied to tracks. */
       rating: number;
       /**
-       * @description The name of the album used for sorting and display consistency, eg "Greatest Hits" but the display
-       *     name is "Greatest Hits (Remastered)".
+       * @description The name or title of the album, this would usually come from an official source such as MusicBrainz
+       *     or Discogs.
        */
-      sortName: string;
+      title: string;
       /** @description The year the album was released. */
       year: number;
     };
@@ -1520,9 +1575,9 @@ export type components = {
     AlbumSortFieldEnum: AlbumSortFieldEnum;
     LibraryAlbumDto: {
       /** @description The artist for the album, which is all the album artists in a comma-delimited list */
-      albumArtists: string[];
-      albumComposers: string[];
-      albumGenres: string[];
+      artists: components['schemas']['LibraryArtistDto'][];
+      composers: components['schemas']['LibraryComposerDto'][];
+      genres: components['schemas']['LibraryGenreDto'][];
       /** @description A color detected in the cover art image */
       coverImageLightVibrant?: string;
       /** @description A color detected in the cover art image */
@@ -1540,26 +1595,15 @@ export type components = {
        * @description The date the album was added to the library
        */
       createdAt: string;
-      /**
-       * @description The display name of the artist, which is used for sorting and display consistency when albums
-       *     have a different artist name than the album artist name.  For example, a compilation album may have
-       *     multiple artists but the album artist is "Various Artists" and the display artist is "Various".
-       */
-      displayArtist: string[];
-      /**
-       * @description The name or title of the album, this would usually come from an official source such as MusicBrainz
-       *     or Discogs.
-       */
-      displayName: string;
       /** @description The internally-generated unique ID of the album */
       id: number;
       /** @description The aggregate rating for the album, which is a value between 0 and 5 inclusive applied to tracks. */
       rating: number;
       /**
-       * @description The name of the album used for sorting and display consistency, eg "Greatest Hits" but the display
-       *     name is "Greatest Hits (Remastered)".
+       * @description The name or title of the album, this would usually come from an official source such as MusicBrainz
+       *     or Discogs.
        */
-      sortName: string;
+      title: string;
       /** @description The year the album was released. */
       year: number;
     };
@@ -1809,17 +1853,6 @@ export type components = {
     };
     /** @enum {string} */
     ComposerSortFieldEnum: ComposerSortFieldEnum;
-    LibraryComposerDto: {
-      /**
-       * Format: date-time
-       * @description The date the composer was added to the library
-       */
-      createdAt: string;
-      /** @description The internally-generated unique ID of the composer */
-      id: number;
-      /** @description The name of the composer. */
-      name: string;
-    };
     UserListTrackComposersResponseDto: {
       /**
        * Format: constant
@@ -1911,12 +1944,6 @@ export type components = {
     };
     /** @enum {string} */
     GenreSortFieldEnum: GenreSortFieldEnum;
-    LibraryGenreDto: {
-      /** @description The internally-generated unique ID of the genre */
-      id: number;
-      /** @description The name of the genre. */
-      name: string;
-    };
     UserListTrackGenresResponseDto: {
       /**
        * Format: constant
@@ -2009,8 +2036,8 @@ export type components = {
     };
     /** @enum {string} */
     TrackSortFieldEnum: TrackSortFieldEnum;
-    LibraryTrackExtendedDto: {
-      /** @description The list of artists for the album to which the track belongs. */
+    LibraryTrackDto: {
+      /** @description The list of artists for the track. */
       albumArtists: components['schemas']['LibraryArtistDto'][];
       /** @description The list of artists for the track. */
       artists: components['schemas']['LibraryArtistDto'][];
@@ -2018,13 +2045,20 @@ export type components = {
       composers: components['schemas']['LibraryComposerDto'][];
       /** @description The list of genres for the track. */
       genres: components['schemas']['LibraryGenreDto'][];
-      /** @description The unique ID of the album to which the track belongs. */
+      /** @description The title of the album to which the track belongs. */
       albumId: number;
       /** @description The title of the album to which the track belongs. */
       albumTitle: string;
       /** @description The comment or description associated with the track. */
       comment: string;
-      /** @description The bitrate of the audio file for the track, in kbps. */
+      /**
+       * @description The disc number of the track on the album or disc if there are multiple discs.  If this field is not
+       *     specified it is assumed to be a single-disc album.
+       */
+      discNumber: number;
+      /** @description The duration of the track in seconds. */
+      duration: number;
+      /** @description The bitrate of the audio file for the track, in Kb/s. */
       fileBitRate: number;
       /** @description The number of audio channels in the file for the track, such as 2 for stereo or 1 for mono. */
       fileChannels: number;
@@ -2038,22 +2072,15 @@ export type components = {
        * @description The type of the file for the track, such as MP3, FLAC, etc.
        * @enum {string}
        */
-      fileType: LibraryTrackExtendedDtoFileType;
+      fileType: LibraryTrackDtoFileType;
       /** @description The internally-generated unique ID of the track */
       id: number;
-      /**
-       * @description The disc number of the track on the album or disc if there are multiple discs.  If this field is not
-       *     specified it is assumed to be a single-disc album.
-       */
-      discNumber: number;
-      /** @description The duration of the track in seconds. */
-      duration: number;
-      /** @description The track number of the track on the album or disc if there are multiple discs. */
-      trackNumber: number;
       /** @description The rating of the track which is a value between 0 and 5 inclusive applied to the track. */
       rating: number;
       /** @description The title of the track, which is usually the name of the song or piece of music. */
       title: string;
+      /** @description The track number of the track on the album or disc if there are multiple discs. */
+      trackNumber: number;
       /**
        * @description The year of release of the track, often the same as the album except in "greatest hits"
        *     and compilations.
@@ -2068,7 +2095,7 @@ export type components = {
        */
       success: boolean;
       /** @description The list of tracks that match the query parameters, which may be limited by pagination. */
-      tracks: components['schemas']['LibraryTrackExtendedDto'][];
+      tracks: components['schemas']['LibraryTrackDto'][];
       /**
        * @description The offset of the first track in the tracks array, which may be greater than 0 if
        *     pagination is applied.
@@ -5740,7 +5767,7 @@ export interface operations {
       };
     };
   };
-  UserAlbumCoverController_get: {
+  GuestAlbumCoverController_get: {
     parameters: {
       query: {
         /** @description The ID of the album */
@@ -5748,9 +5775,7 @@ export interface operations {
         /** @description The width/height size of the image in pixels */
         size: number;
       };
-      header: {
-        Authorization: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -5768,7 +5793,7 @@ export interface operations {
       };
     };
   };
-  UserArtistCoverController_get: {
+  GuestArtistCoverController_get: {
     parameters: {
       query: {
         /** @description The ID of the artist */
@@ -5776,9 +5801,7 @@ export interface operations {
         /** @description The width/height size of the image in pixels */
         size: number;
       };
-      header: {
-        Authorization: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -5796,7 +5819,7 @@ export interface operations {
       };
     };
   };
-  UserComposerCoverController_get: {
+  GuestComposerCoverController_get: {
     parameters: {
       query: {
         /** @description The ID of the composer */
@@ -5804,9 +5827,7 @@ export interface operations {
         /** @description The width/height size of the image in pixels */
         size: number;
       };
-      header: {
-        Authorization: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -5820,6 +5841,63 @@ export interface operations {
           'image/jpeg': string;
           'image/png': string;
           'image/webp': string;
+        };
+      };
+    };
+  };
+  GuestGenreCoverController_get: {
+    parameters: {
+      query: {
+        /** @description The ID of the genre */
+        id: number;
+        /** @description The width/height size of the image in pixels */
+        size: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'image/jpeg': string;
+          'image/png': string;
+          'image/webp': string;
+        };
+      };
+    };
+  };
+  GuestStreamFileController_get: {
+    parameters: {
+      query: {
+        /** @description The ID of the file */
+        id: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': string;
+        };
+      };
+      /** @description The requested file was not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GuestStreamFileNotFoundResponseDto'];
         };
       };
     };
@@ -5960,34 +6038,6 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['UserFolderStructureResponseDto'];
-        };
-      };
-    };
-  };
-  UserGenreCoverController_get: {
-    parameters: {
-      query: {
-        /** @description The ID of the genre */
-        id: number;
-        /** @description The width/height size of the image in pixels */
-        size: number;
-      };
-      header: {
-        Authorization: string;
-      };
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'image/jpeg': string;
-          'image/png': string;
-          'image/webp': string;
         };
       };
     };
@@ -7923,6 +7973,9 @@ export enum GuestCreateSessionBadRequestErrorMessageEnum {
 export enum InternalServerErrorEnum {
   internal_server_error = 'internal-server-error',
 }
+export enum GuestStreamFileNotFoundErrorMessage {
+  file_not_found_error = 'file-not-found-error',
+}
 export enum UserCreateRootPathBadRequestErrorMessageEnum {
   root_path_does_not_exist_error = 'root-path-does-not-exist-error',
   duplicate_root_path_error = 'duplicate-root-path-error',
@@ -7954,6 +8007,12 @@ export enum UserListTrackArtistsBadRequestErrorMessage {
   invalid_offset_range_error = 'invalid-offset-range-error',
   invalid_sort_field_error = 'invalid-sort-field-error',
   invalid_sort_order_error = 'invalid-sort-order-error',
+}
+export enum LibraryAlbumTrackDtoFileType {
+  flac = 'flac',
+  m4a = 'm4a',
+  mp3 = 'mp3',
+  ogg = 'ogg',
 }
 export enum AlbumSortFieldEnum {
   album = 'album',
@@ -8068,7 +8127,7 @@ export enum TrackSortFieldEnum {
   title = 'title',
   year = 'year',
 }
-export enum LibraryTrackExtendedDtoFileType {
+export enum LibraryTrackDtoFileType {
   flac = 'flac',
   m4a = 'm4a',
   mp3 = 'mp3',

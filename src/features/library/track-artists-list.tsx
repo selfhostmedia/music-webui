@@ -2,44 +2,27 @@ import { AlbumArtistListItem } from '@/components/artist-list-item';
 import { AlbumArtistStandaloneDetails } from '@/components/artist-standalone-details';
 import { ArtistCard } from '@/components/artist-card';
 import { ArtistExpandedDetails } from '@/components/artist-expanded-details';
-import { Fragment, useLayoutEffect, useRef, useState } from 'react';
+import { Fragment, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { PaginationControls } from '@/components/pagination-controls';
 import { formatSlug } from '@/utils/format';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { useListTrackArtistsWithTracks } from '@/hooks/user/use-artists';
+import { useLibrary } from './library';
 import { useNavigate, useParams } from 'react-router-dom';
+import { usePreferences } from '@/hooks/use-preferences';
 
-type QueryParameters = NonNullable<Parameters<typeof useListTrackArtistsWithTracks>[0]>;
-
-const errorMessages: Record<string, string> = {
-  'invalid-added-after-error': 'The added-after date is invalid',
-  'invalid-added-before-error': 'The added-before date is invalid',
-  'invalid-filter-error': 'The filter is invalid',
-  'invalid-filter-length-error': 'The filter length is invalid',
-  'invalid-genre-error': 'The genre is invalid',
-  'invalid-genre-length-error': 'The genre length is invalid',
-  'invalid-limit-error': 'The limit is invalid',
-  'invalid-limit-range-error': 'The limit is out of range',
-  'invalid-offset-error': 'The offset is invalid',
-  'invalid-offset-range-error': 'The offset is out of range',
-  'invalid-sort-field-error': 'The sort field is invalid',
-  'invalid-sort-order-error': 'The sort order is invalid',
-  'invalid-year-error': 'The year is invalid',
-};
-
-export default function TrackArtistsList() {
+export default function ArtistsList() {
   const navigate = useNavigate();
-  const [query] = useState<QueryParameters>({
-    offset: 0,
-    limit: 100_000,
-  });
-  const { data, isPending, error } = useListTrackArtistsWithTracks(query);
   const isMobile = useIsMobile();
+  const { artists } = useLibrary();
   const [columnSize, setColumnSize] = useState(0);
+  const { preferences } = usePreferences();
+  const { pageSize } = preferences;
+  const [page, setPage] = useState(1);
   const listRef = useRef(null);
   const { artistId } = useParams<{ artistId: string }>();
   const expandedArtistId = artistId ? Number(artistId) : null;
   const expandedArtist =
-    expandedArtistId !== null ? (data?.artists.find((artist) => artist.id === expandedArtistId) ?? null) : null;
+    expandedArtistId !== null ? (artists.find((artist) => artist.id === expandedArtistId) ?? null) : null;
 
   useLayoutEffect(() => {
     const list = listRef.current as HTMLElement | null;
@@ -97,13 +80,13 @@ export default function TrackArtistsList() {
       };
     }
     return undefined;
-  }, [data?.artists.length]);
+  }, [artists.length]);
 
   function toggleArtist(id: number) {
     if (expandedArtistId === id) {
       navigate('/track-artists');
     } else {
-      const artist = data?.artists.find((item) => item.id === id);
+      const artist = artists.find((item) => item.id === id);
       if (!artist) {
         // eslint-disable-next-line no-console
         console.error(`Artist with id ${id} not found`);
@@ -113,39 +96,28 @@ export default function TrackArtistsList() {
     }
   }
 
-  function getErrorMessages() {
-    if (!error) {
-      return [];
+  const visibleData = useMemo(() => {
+    if (pageSize) {
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      return artists.slice(start, end) || [];
     }
-    const messages: string[] = [];
-    for (let i = 0; i < error.messages.length; i += 1) {
-      const message = error.messages[i];
-      messages.push(errorMessages[message] ?? message);
-    }
-    return messages;
-  }
+    return artists;
+  }, [artists, page, pageSize]);
 
-  const clickedArtistIndex = data?.artists.findIndex((item) => item.id === expandedArtistId) ?? -1;
+  const clickedArtistIndex = visibleData.findIndex((item) => item.id === expandedArtistId) ?? -1;
+  const insertingArtist = visibleData[clickedArtistIndex];
   let detailsInsertIndex =
     clickedArtistIndex >= 0 ? Math.ceil((clickedArtistIndex + 1) / columnSize) * columnSize - 1 : -1;
-  if (data?.artists.length) {
-    if (detailsInsertIndex > data.artists.length) {
-      detailsInsertIndex = data.artists.length - 1;
+  if (visibleData.length) {
+    if (detailsInsertIndex > visibleData.length) {
+      detailsInsertIndex = visibleData.length - 1;
     }
   }
-  const insertingArtist = data?.artists[clickedArtistIndex];
 
   return (
     <>
       <title>Track Artists // SHM</title>
-      {isPending && <p>Loading...</p>}
-      {error && (
-        <ul>
-          {getErrorMessages()?.map((message, index) => (
-            <li key={index}>{message}</li>
-          ))}
-        </ul>
-      )}
       {isMobile && (
         <ul className="flex flex-col grow">
           {insertingArtist && (
@@ -156,7 +128,7 @@ export default function TrackArtistsList() {
             </li>
           )}
           {!insertingArtist &&
-            data?.artists.map((item) => {
+            visibleData.map((item) => {
               return (
                 <li className="w-full p-2" key={`mobile-album ${item.id}`}>
                   <AlbumArtistListItem
@@ -179,12 +151,12 @@ export default function TrackArtistsList() {
             'gap-4 mx-4',
           ].join(' ')}
         >
-          {data?.artists.map((item, index) => {
+          {visibleData.map((item, index) => {
             const isExpanded = expandedArtistId === item.id;
             const shouldInsertDetails = detailsInsertIndex === index;
             return (
               <Fragment key={`track-artist ${item.id}`}>
-                <li className="w-full h-full inline-block">
+                <li className="w-full h-full inline-flex align-middle justify-center">
                   <ArtistCard artist={item} isExpanded={isExpanded} onToggle={() => toggleArtist(item.id)} />
                 </li>
                 {shouldInsertDetails && (
@@ -197,6 +169,7 @@ export default function TrackArtistsList() {
           })}
         </ul>
       )}
+      <PaginationControls page={page} setPage={setPage} items={artists?.length ?? 0} />
     </>
   );
 }
