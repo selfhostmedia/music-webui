@@ -71,7 +71,6 @@ body {
 }
 
 :root {
-  --background-image: url('/backgrounds/cheap_diagonal_fabric.png');
   --background: oklch(1 0 0);
   --background: var(--color-slate-100);
   --foreground: oklch(0.145 0 0);
@@ -108,7 +107,6 @@ body {
 }
 
 .dark {
-  --background-image: url('/backgrounds/ep_naturalblack.png');
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

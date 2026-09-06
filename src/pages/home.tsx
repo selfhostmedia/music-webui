@@ -1,10 +1,10 @@
-const Home = () => {
+import AlbumsList from '@/features/library/albums-list';
+
+export default function Home() {
   return (
     <>
       <title>Music Player // SHM</title>
-      <div>ok</div>
+      <AlbumsList />
     </>
   );
-};
-
-export default Home;
+}

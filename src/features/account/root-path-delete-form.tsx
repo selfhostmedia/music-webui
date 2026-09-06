@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { type DeleteErrorCodes, type RootPathDto, useRootPaths } from '@/hooks/user/use-root-paths';
 import {
   Dialog,
   DialogContent,
@@ -8,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { type RootPathDto, useRootPaths } from '@/hooks/user/use-root-paths';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
@@ -19,22 +19,24 @@ export function RootPathDeleteForm({ rootPath }: { rootPath: RootPathDto }) {
 
   const onSubmit = handleSubmit(async () => {
     await deleteRootPath(
-      { query: { id: rootPath.id } },
+      { id: rootPath.id },
       {
         onSuccess: () => {
           setOpen(false);
         },
         onError: (error) => {
-          const errorMessage = error.message as DeleteErrorCodes;
-          switch (errorMessage) {
-            case 'root-path-not-found-error':
-              toast.error('The specified root path ID is invalid.');
-              break;
-            default:
-              // eslint-disable-next-line no-console
-              console.error('Unexpected error occurred while deleting root path:', error);
-              toast.error('An internal server error occurred. Please try again later.');
-              break;
+          for (let i = 0; i < error.messages.length; i += 1) {
+            const message = error.messages[i];
+            switch (message) {
+              case 'root-path-not-found-error':
+                toast.error('The specified root path ID is invalid.');
+                break;
+              default:
+                // eslint-disable-next-line no-console
+                console.error('Unexpected error occurred while deleting root path:', error);
+                toast.error('An internal server error occurred. Please try again later.');
+                break;
+            }
           }
         },
       },

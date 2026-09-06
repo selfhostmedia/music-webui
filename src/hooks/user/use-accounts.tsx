@@ -1,16 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import api, { ApiError, type ErrorResponse, type GenericErrorCodes, getErrorMessage } from '@/lib/api';
+import api, { TypedApiError } from '@/lib/api';
 import type { paths } from '@/types/api-schema';
 
-type UpdateEndpoint = paths['/api/user/update-password']['post'];
-
-export type UpdatePasswordBodyDto = UpdateEndpoint['requestBody']['content']['application/json'];
-export type UpdatePasswordErrorCodes =
-  GenericErrorCodes | UpdateEndpoint['responses']['400']['content']['application/json']['message'][number];
-
-type UpdatePasswordVariables = {
-  body: UpdatePasswordBodyDto;
-};
+type UpdatePasswordEndpoint = paths['/api/user/update-password']['post'];
 
 async function regenerateSessionKeyRequest() {
   const { data, error } = await api.post('/api/user/regenerate-session-key', {
@@ -19,34 +11,31 @@ async function regenerateSessionKeyRequest() {
     },
   });
   if (error) {
-    throw new Error(getErrorMessage(error));
+    throw new Error(error);
   }
   if (!data?.success) {
-    const errorPayload = data as unknown as ErrorResponse<GenericErrorCodes>;
-    throw new ApiError<GenericErrorCodes>(errorPayload);
+    throw new Error('Failed to regenerate session key');
   }
-  return true;
+  return data;
 }
 
-async function updatePasswordRequest({ body }: UpdatePasswordVariables) {
-  const response = await api.post('/api/user/update-password', {
+async function updatePasswordRequest(body: UpdatePasswordEndpoint['requestBody']['content']['application/json']) {
+  const { data, error } = await api.post('/api/user/update-password', {
     params: {
       header: api.authHeader(),
     },
     body,
   });
-  const { data, error } = response;
   if (error) {
-    if (Array.isArray(error.message)) {
-      throw new Error(error.message.join(', '));
-    }
-    throw new Error(getErrorMessage(error));
+    throw new TypedApiError<UpdatePasswordEndpoint['responses']['400']['content']['application/json']['message']>(
+      error.message,
+      error.error,
+    );
   }
   if (!data?.success) {
-    const errorPayload = data as unknown as ErrorResponse<UpdatePasswordErrorCodes>;
-    throw new ApiError<UpdatePasswordErrorCodes>(errorPayload);
+    throw new Error('Failed to update password');
   }
-  return true;
+  return data;
 }
 
 export function useAccounts() {
@@ -54,7 +43,11 @@ export function useAccounts() {
     mutationFn: regenerateSessionKeyRequest,
   });
 
-  const updatePassword = useMutation({
+  const updatePassword = useMutation<
+    UpdatePasswordEndpoint['responses']['200']['content']['application/json'],
+    TypedApiError<UpdatePasswordEndpoint['responses']['400']['content']['application/json']['message'][number]>,
+    UpdatePasswordEndpoint['requestBody']['content']['application/json']
+  >({
     mutationFn: updatePasswordRequest,
   });
 

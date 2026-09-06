@@ -37,13 +37,12 @@ export type ErrorResponse<T> = {
   message: (T | GenericErrorCodes)[];
 };
 
-export class ApiError<T> extends Error {
-  declare errorCodes: (T | GenericErrorCodes)[];
+export class TypedApiError<T> extends Error {
+  messages: T | GenericErrorCodes[];
 
-  constructor(public readonly error: ErrorResponse<T | GenericErrorCodes>) {
-    super(error.message.join(', '));
-    this.name = 'ApiError';
-    this.errorCodes = error.message;
+  constructor(messages: T, type: string) {
+    super(type);
+    this.messages = messages;
   }
 }
 

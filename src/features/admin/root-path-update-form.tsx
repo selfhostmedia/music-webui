@@ -11,30 +11,28 @@ import { FormValidationError } from '@/components/form-validation-error';
 import { IndexerToggle } from './indexer-toggle';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  type RootPathDto,
-  type UpdateBodyDto,
-  type UpdateErrorCodes,
-  useRootPaths,
-} from '@/hooks/admin/use-root-paths';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
+import { useRootPaths } from '@/hooks/admin/use-root-paths';
 import { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { RootPathDto } from '@/hooks/user/use-root-paths';
+import type { paths } from '@/types/api-schema';
 
-type FormData = UpdateBodyDto;
+type UpdateEndpoint = paths['/api/admin/update-root-path']['patch'];
+type FormData = UpdateEndpoint['requestBody']['content']['application/json'];
 
 const schema = z.object({
   newPath: z
     .string()
-    .refine((val) => val.length > 0, {
+    .refine((value) => value.length > 0, {
       message: 'Root path is required',
     })
-    .refine((val) => val.length >= 1, {
+    .refine((value) => value.length >= 1, {
       message: 'Root path is too short',
     })
-    .refine((val) => val.length <= 1024, {
+    .refine((value) => value.length <= 1024, {
       message: 'Root path is too long',
     }),
 });
@@ -65,22 +63,24 @@ export function RootPathUpdateForm({ rootPath }: { rootPath: RootPathDto }) {
           toast.success('Root path updated successfully.  It will begin indexing shortly if the indexer is enabled.');
         },
         onError: (error) => {
-          const message = error.message as UpdateErrorCodes;
-          switch (message) {
-            case 'root-path-does-not-exist-error':
-              setError('newPath', { type: 'manual', message: 'The new root path does not exist.' });
-              break;
-            case 'duplicate-root-path-error':
-              setError('newPath', {
-                type: 'manual',
-                message: 'The new root path has already been added to this account.',
-              });
-              break;
-            default:
-              // eslint-disable-next-line no-console
-              console.error('Unexpected error occurred while updating root path:', error);
-              toast.error('An internal server error occurred. Please try again later.');
-              break;
+          for (let i = 0; i < error.messages.length; i += 1) {
+            const message = error.messages[i];
+            switch (message) {
+              case 'root-path-does-not-exist-error':
+                setError('newPath', { type: 'manual', message: 'The new root path does not exist.' });
+                break;
+              case 'duplicate-root-path-error':
+                setError('newPath', {
+                  type: 'manual',
+                  message: 'The new root path has already been added to this account.',
+                });
+                break;
+              default:
+                // eslint-disable-next-line no-console
+                console.error('Unexpected error occurred while updating root path:', error);
+                toast.error('An internal server error occurred. Please try again later.');
+                break;
+            }
           }
         },
       },

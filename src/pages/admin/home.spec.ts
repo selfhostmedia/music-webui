@@ -48,7 +48,7 @@ test.describe('admin home', () => {
       await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
       jwtToken = jwtToken || pom.jwtToken;
       await pom.navigateToAdmin();
-      await expect(page.getByRole('heading', { name: 'Administration' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'System' })).toBeVisible();
     });
   });
 

@@ -40,6 +40,96 @@ export type paths = {
     patch?: never;
     trace?: never;
   };
+  '/api/guest/album-cover': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Cover images for albums, this route is guest-accessible for better browser handling */
+    get: operations['GuestAlbumCoverController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/guest/artist-cover': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Cover images for artists.  This route is guest-accessible for better browser-handling. */
+    get: operations['GuestArtistCoverController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/guest/composer-cover': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Cover images for composers.  This route is guest-accessible for better browser-handling. */
+    get: operations['GuestComposerCoverController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/guest/genre-cover': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Cover images for genres */
+    get: operations['GuestGenreCoverController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/guest/stream-file': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Streams audio files.  This route is guest-accessible for better browser handling.
+     * @description Downloads audio files from the music library to the client.  This is used to stream audio files for playback or to download for offline usage.  The audio files are streamed in their original format, and the client is responsible for decoding and playing the audio.  Synology implements transcoding for certain formats, but this is not supported in this server.
+     *
+     *     The request must be authenticated using a valid Synology session ID and device ID cookie for the user, which can be obtained by signing in via the `entry.cgi` endpoint, a two-step process requesting the encryption public key from `/certs` and then  submitting credentials encrypted with it.
+     */
+    get: operations['GuestStreamFileController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/user/create-root-path': {
     parameters: {
       query?: never;
@@ -100,6 +190,106 @@ export type paths = {
     patch?: never;
     trace?: never;
   };
+  '/api/user/folder-structure': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve library folder structure
+     * @description Returns the folder and file structure of the library.
+     */
+    get: operations['UserFolderStructureController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-album-artists': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List album artists
+     * @description Retrieves a list of album artists for the user based on the provided query parameters.
+     */
+    get: operations['UserListAlbumArtistsController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-album-artists-with-tracks': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List album artists with tracks
+     * @description Retrieves a list of album artists for the user with their tracks for the user based on the provided query parameters.
+     */
+    get: operations['UserListAlbumArtistsWithTracksController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-albums': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List albums
+     * @description Retrieves a list of albums for the user based on the provided query parameters.
+     */
+    get: operations['UserListAlbumsController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-albums-with-tracks': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List albums with tracks
+     * @description Retrieves a list of albums with their tracks for the user based on the provided query parameters.
+     */
+    get: operations['UserListAlbumsWithTracksController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/user/list-indexer-logs': {
     parameters: {
       query?: never;
@@ -140,20 +330,141 @@ export type paths = {
     patch?: never;
     trace?: never;
   };
-  '/api/user/update-password': {
+  '/api/user/list-track-artists': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    get?: never;
-    put?: never;
     /**
-     * Reset password
-     * @description Resets the user's password to a new value.
+     * List artists
+     * @description Retrieves a list of artists for the user based on the provided query parameters.
      */
-    post: operations['UserUpdatePasswordController_post'];
+    get: operations['UserListTrackArtistsController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-track-artists-with-tracks': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List artists with tracks
+     * @description Retrieves a list of artists along with their tracks for the user based on the
+     *         provided query parameters.
+     */
+    get: operations['UserListTrackArtistsWithTracksController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-track-composers': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List composers
+     * @description Retrieves a list of composers for the user based on the provided query parameters.
+     */
+    get: operations['UserListTrackComposersController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-track-composers-with-tracks': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List composers
+     * @description Retrieves a list of composers for the user based on the provided query parameters.
+     */
+    get: operations['UserListTrackComposersWithTracksController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-track-genres': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List genres
+     * @description Retrieves a list of genres for the user based on the provided query parameters.
+     */
+    get: operations['UserListTrackGenresController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-track-genres-with-tracks': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List genres
+     * @description Retrieves a list of genres for the user based on the provided query parameters.
+     */
+    get: operations['UserListTrackGenresWithTracksController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/list-tracks': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List tracks
+     * @description Retrieves a list of tracks for the user based on the provided query parameters.
+     */
+    get: operations['UserListTracksController_get'];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -174,6 +485,46 @@ export type paths = {
      * @description Regenerates the session key for the user invalidating all existing sessions for their account.
      */
     post: operations['UserRegenerateSessionKeyController_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/retrieve-album': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve album
+     * @description Retrieves an album with all of its information necessary for viewing and playing-back the tracks.
+     */
+    get: operations['UserRetrieveAlbumController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/user/update-password': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Reset password
+     * @description Resets the user's password to a new value.
+     */
+    post: operations['UserUpdatePasswordController_post'];
     delete?: never;
     options?: never;
     head?: never;
@@ -545,8 +896,6 @@ export type paths = {
      * Retrieves the cover image for an album, artist, composer or song
      * @description Retrieves the cover image for an album, artist, composer or song.  The cover image can be retrieved by specifying the appropriate query parameters in the request.  If an image is not found a default blank cover image will be returned.
      *
-     *     The data is returned in a paginated format, with the ability to specify an offset and limit for the results, where the offset indicates the starting point in the list and the limit specifies the maximum number of items to return.
-     *
      *     The request must be authenticated using a valid Synology session ID and device ID cookie for the user, which can be obtained by signing in via the `entry.cgi` endpoint, a two-step process requesting the encryption public key from `/certs` and then  submitting credentials encrypted with it.
      */
     get: operations['SynologyCoverImageController_route'];
@@ -894,6 +1243,27 @@ export type components = {
        */
       message: components['schemas']['InternalServerErrorEnum'][];
     };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    GuestStreamFileNotFoundErrorMessage: GuestStreamFileNotFoundErrorMessage;
+    GuestStreamFileNotFoundResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default file-not-found-error
+       */
+      message: components['schemas']['GuestStreamFileNotFoundErrorMessage'][];
+    };
     UserCreateRootPathBodyDto: {
       /** @description The fully-qualified path to set for the root path */
       rootPath: string;
@@ -982,6 +1352,342 @@ export type components = {
        * @default bad-request-error
        */
       message: components['schemas']['BadRequestErrorEnum'][];
+    };
+    UserTreeItemDto: {
+      children?: components['schemas']['UserTreeItemDto'][];
+      folder?: string;
+      file?: string;
+      fullPath: string;
+      id: number;
+    };
+    UserFolderStructureResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      items: components['schemas']['UserTreeItemDto'][];
+    };
+    /** @enum {string} */
+    SortDirectionEnum: SortDirectionEnum;
+    /** @enum {string} */
+    ArtistSortFieldEnum: ArtistSortFieldEnum;
+    LibraryArtistDto: {
+      /**
+       * Format: date-time
+       * @description The date the artist was added to the library
+       */
+      createdAt: string;
+      /** @description The internally-generated unique ID of the artist */
+      id: number;
+      /** @description The name of the artist. */
+      name: string;
+    };
+    UserListAlbumArtistsResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of artists that match the query parameters, which may be limited by pagination. */
+      artists: components['schemas']['LibraryArtistDto'][];
+      /**
+       * @description The offset of the first artist in the artists array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of artists that match the query parameters, which may be greater
+       *     than the number of artists returned in the artists array if pagination is applied.
+       */
+      total: number;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    UserListTrackArtistsBadRequestErrorMessage: UserListTrackArtistsBadRequestErrorMessage;
+    UserListAlbumArtistsBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default invalid-added-after-error
+       */
+      message: components['schemas']['UserListTrackArtistsBadRequestErrorMessage'][];
+    };
+    LibraryComposerDto: {
+      /**
+       * Format: date-time
+       * @description The date the composer was added to the library
+       */
+      createdAt: string;
+      /** @description The internally-generated unique ID of the composer */
+      id: number;
+      /** @description The name of the composer. */
+      name: string;
+    };
+    LibraryGenreDto: {
+      /** @description The internally-generated unique ID of the genre */
+      id: number;
+      /** @description The name of the genre. */
+      name: string;
+    };
+    LibraryAlbumTrackDto: {
+      /** @description The list of artists for the track. */
+      artists: components['schemas']['LibraryArtistDto'][];
+      /** @description The list of composers for the track. */
+      composers: components['schemas']['LibraryComposerDto'][];
+      /** @description The list of genres for the track. */
+      genres: components['schemas']['LibraryGenreDto'][];
+      /** @description The comment or description associated with the track. */
+      comment: string;
+      /**
+       * @description The disc number of the track on the album or disc if there are multiple discs.  If this field is not
+       *     specified it is assumed to be a single-disc album.
+       */
+      discNumber: number;
+      /** @description The duration of the track in seconds. */
+      duration: number;
+      /** @description The bitrate of the audio file for the track, in Kb/s. */
+      fileBitRate: number;
+      /** @description The number of audio channels in the file for the track, such as 2 for stereo or 1 for mono. */
+      fileChannels: number;
+      /** @description The frequency or sample rate of the audio file for the track, in Hz. */
+      fileFrequency: number;
+      /** @description The file path of the file for the track. */
+      filePath: string;
+      /** @description The size of the file in bytes */
+      fileSize: number;
+      /**
+       * @description The type of the file for the track, such as MP3, FLAC, etc.
+       * @enum {string}
+       */
+      fileType: LibraryAlbumTrackDtoFileType;
+      /** @description The internally-generated unique ID of the track */
+      id: number;
+      /** @description The rating of the track which is a value between 0 and 5 inclusive applied to the track. */
+      rating: number;
+      /** @description The title of the track, which is usually the name of the song or piece of music. */
+      title: string;
+      /** @description The track number of the track on the album or disc if there are multiple discs. */
+      trackNumber: number;
+      /**
+       * @description The year of release of the track, often the same as the album except in "greatest hits"
+       *     and compilations.
+       */
+      year: number;
+    };
+    LibraryAlbumWithTracksDto: {
+      /** @description The artist for the album, which is all the album artists in a comma-delimited list */
+      artists: components['schemas']['LibraryArtistDto'][];
+      composers: components['schemas']['LibraryComposerDto'][];
+      genres: components['schemas']['LibraryGenreDto'][];
+      /** @description The list of tracks for the album */
+      tracks: components['schemas']['LibraryAlbumTrackDto'][];
+      /** @description A color detected in the cover art image */
+      coverImageLightVibrant?: string;
+      /** @description A color detected in the cover art image */
+      coverImageDarkVibrant?: string;
+      /** @description A color detected in the cover art image */
+      coverImageMuted?: string;
+      /** @description A color detected in the cover art image */
+      coverImageVibrant?: string;
+      /** @description A color detected in the cover art image */
+      coverImageDarkMuted?: string;
+      /** @description A color detected in the cover art image */
+      coverImageLightMuted?: string;
+      /**
+       * Format: date-time
+       * @description The date the album was added to the library
+       */
+      createdAt: string;
+      /** @description The internally-generated unique ID of the album */
+      id: number;
+      /** @description The aggregate rating for the album, which is a value between 0 and 5 inclusive applied to tracks. */
+      rating: number;
+      /**
+       * @description The name or title of the album, this would usually come from an official source such as MusicBrainz
+       *     or Discogs.
+       */
+      title: string;
+      /** @description The year the album was released. */
+      year: number;
+    };
+    LibraryArtistWithTracksDto: {
+      /**
+       * Format: date-time
+       * @description The date the artist was added to the library
+       */
+      createdAt: string;
+      /** @description The list of albums including tracks for the artist */
+      albums: components['schemas']['LibraryAlbumWithTracksDto'][];
+      /** @description The internally-generated unique ID of the artist */
+      id: number;
+      /** @description The name of the artist. */
+      name: string;
+    };
+    UserListAlbumArtistsWithTracksResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of artists that match the query parameters, which may be limited by pagination. */
+      artists: components['schemas']['LibraryArtistWithTracksDto'][];
+      /**
+       * @description The offset of the first artist in the artists array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of artists that match the query parameters, which may be greater
+       *     than the number of artists returned in the artists array if pagination is applied.
+       */
+      total: number;
+    };
+    UserListAlbumArtistsWithTracksBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default invalid-added-after-error
+       */
+      message: components['schemas']['UserListTrackArtistsBadRequestErrorMessage'][];
+    };
+    /** @enum {string} */
+    AlbumSortFieldEnum: AlbumSortFieldEnum;
+    LibraryAlbumDto: {
+      /** @description The artist for the album, which is all the album artists in a comma-delimited list */
+      artists: components['schemas']['LibraryArtistDto'][];
+      composers: components['schemas']['LibraryComposerDto'][];
+      genres: components['schemas']['LibraryGenreDto'][];
+      /** @description A color detected in the cover art image */
+      coverImageLightVibrant?: string;
+      /** @description A color detected in the cover art image */
+      coverImageDarkVibrant?: string;
+      /** @description A color detected in the cover art image */
+      coverImageMuted?: string;
+      /** @description A color detected in the cover art image */
+      coverImageVibrant?: string;
+      /** @description A color detected in the cover art image */
+      coverImageDarkMuted?: string;
+      /** @description A color detected in the cover art image */
+      coverImageLightMuted?: string;
+      /**
+       * Format: date-time
+       * @description The date the album was added to the library
+       */
+      createdAt: string;
+      /** @description The internally-generated unique ID of the album */
+      id: number;
+      /** @description The aggregate rating for the album, which is a value between 0 and 5 inclusive applied to tracks. */
+      rating: number;
+      /**
+       * @description The name or title of the album, this would usually come from an official source such as MusicBrainz
+       *     or Discogs.
+       */
+      title: string;
+      /** @description The year the album was released. */
+      year: number;
+    };
+    UserListAlbumsResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of albums that match the query parameters, which may be limited by pagination. */
+      albums: components['schemas']['LibraryAlbumDto'][];
+      /**
+       * @description The offset of the first album in the albums array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of albums that match the query parameters, which may be greater
+       *     than the number of albums returned in the albums array if pagination is applied.
+       */
+      total: number;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request.
+     * @enum {string}
+     */
+    UserListAlbumsBadRequestErrorMessages: UserListAlbumsBadRequestErrorMessages;
+    UserListAlbumsBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request.
+       * @default invalid-added-after-error
+       */
+      message: components['schemas']['UserListAlbumsBadRequestErrorMessages'][];
+    };
+    UserListAlbumsWithTracksResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of albums that match the query parameters, which may be limited by pagination. */
+      albums: components['schemas']['LibraryAlbumWithTracksDto'][];
+      /**
+       * @description The offset of the first album in the albums array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of albums that match the query parameters, which may be greater
+       *     than the number of albums returned in the albums array if pagination is applied.
+       */
+      total: number;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request.
+     * @enum {string}
+     */
+    UserListAlbumsWithTracksBadRequestErrorMessages: UserListAlbumsWithTracksBadRequestErrorMessages;
+    UserListAlbumsWithTracksBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request.
+       * @default invalid-added-after-error
+       */
+      message: components['schemas']['UserListAlbumsWithTracksBadRequestErrorMessages'][];
     };
     UserLogEntryDto: {
       /** Format: date-time */
@@ -1075,6 +1781,392 @@ export type components = {
       /** @description The list of root paths with associated account owner information */
       rootPaths: components['schemas']['UserRootPathDto'][];
     };
+    UserListTrackArtistsResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of artists that match the query parameters, which may be limited by pagination. */
+      artists: components['schemas']['LibraryArtistDto'][];
+      /**
+       * @description The offset of the first artist in the artists array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of artists that match the query parameters, which may be greater
+       *     than the number of artists returned in the artists array if pagination is applied.
+       */
+      total: number;
+    };
+    UserListTrackArtistsBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default invalid-added-after-error
+       */
+      message: components['schemas']['UserListTrackArtistsBadRequestErrorMessage'][];
+    };
+    UserListTrackArtistsWithTracksResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of artists that match the query parameters, which may be limited by pagination. */
+      artists: components['schemas']['LibraryArtistWithTracksDto'][];
+      /**
+       * @description The offset of the first artist in the artists array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of artists that match the query parameters, which may be greater
+       *     than the number of artists returned in the artists array if pagination is applied.
+       */
+      total: number;
+    };
+    UserListTrackArtistsWithTracksBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default invalid-added-after-error
+       */
+      message: components['schemas']['UserListTrackArtistsBadRequestErrorMessage'][];
+    };
+    /** @enum {string} */
+    ComposerSortFieldEnum: ComposerSortFieldEnum;
+    UserListTrackComposersResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of composers that match the query parameters, which may be limited by pagination. */
+      composers: components['schemas']['LibraryComposerDto'][];
+      /**
+       * @description The offset of the first composer in the composers array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of composers that match the query parameters, which may be greater
+       *     than the number of composers returned in the composers array if pagination is applied.
+       */
+      total: number;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    UserListTrackComposersBadRequestErrorMessages: UserListTrackComposersBadRequestErrorMessages;
+    UserListTrackComposersBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default invalid-added-after-error
+       */
+      message: components['schemas']['UserListTrackComposersBadRequestErrorMessages'][];
+    };
+    LibraryComposerWithTracksDto: {
+      /**
+       * Format: date-time
+       * @description The date the composer was added to the library
+       */
+      createdAt: string;
+      /** @description The list of albums including tracks for the composer */
+      albums: components['schemas']['LibraryAlbumWithTracksDto'][];
+      /** @description The internally-generated unique ID of the composer */
+      id: number;
+      /** @description The name of the composer. */
+      name: string;
+    };
+    UserListTrackComposersWithTracksResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of composers that match the query parameters, which may be limited by pagination. */
+      composers: components['schemas']['LibraryComposerWithTracksDto'][];
+      /**
+       * @description The offset of the first composer in the composers array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of composers that match the query parameters, which may be greater
+       *     than the number of composers returned in the composers array if pagination is applied.
+       */
+      total: number;
+    };
+    UserListTrackComposersWithTracksBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default invalid-added-after-error
+       */
+      message: components['schemas']['UserListTrackComposersBadRequestErrorMessages'][];
+    };
+    /** @enum {string} */
+    GenreSortFieldEnum: GenreSortFieldEnum;
+    UserListTrackGenresResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of genres that match the query parameters, which may be limited by pagination. */
+      genres: components['schemas']['LibraryGenreDto'][];
+      /**
+       * @description The offset of the first genre in the genres array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of genres that match the query parameters, which may be greater
+       *     than the number of genres returned in the genres array if pagination is applied.
+       */
+      total: number;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    UserListTrackGenresBadRequestErrorMessages: UserListTrackGenresBadRequestErrorMessages;
+    UserListTrackGenresBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default invalid-limit-error
+       */
+      message: components['schemas']['UserListTrackGenresBadRequestErrorMessages'][];
+    };
+    LibraryGenreWithTracksDto: {
+      /** @description The list of albums including tracks for the genre */
+      albums: components['schemas']['LibraryAlbumWithTracksDto'][];
+      /** @description The internally-generated unique ID of the genre */
+      id: number;
+      /** @description The name of the genre. */
+      name: string;
+    };
+    UserListTrackGenresWithTracksResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of genres that match the query parameters, which may be limited by pagination. */
+      genres: components['schemas']['LibraryGenreWithTracksDto'][];
+      /**
+       * @description The offset of the first genre in the genres array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of genres that match the query parameters, which may be greater
+       *     than the number of genres returned in the genres array if pagination is applied.
+       */
+      total: number;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    UserListTrackGenresWithTracksBadRequestErrorMessages: UserListTrackGenresWithTracksBadRequestErrorMessages;
+    UserListTrackGenresWithTracksBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default invalid-limit-error
+       */
+      message: components['schemas']['UserListTrackGenresWithTracksBadRequestErrorMessages'][];
+    };
+    /** @enum {string} */
+    TrackSortFieldEnum: TrackSortFieldEnum;
+    LibraryTrackDto: {
+      /** @description The list of artists for the track. */
+      albumArtists: components['schemas']['LibraryArtistDto'][];
+      /** @description The list of artists for the track. */
+      artists: components['schemas']['LibraryArtistDto'][];
+      /** @description The list of composers for the track. */
+      composers: components['schemas']['LibraryComposerDto'][];
+      /** @description The list of genres for the track. */
+      genres: components['schemas']['LibraryGenreDto'][];
+      /** @description The title of the album to which the track belongs. */
+      albumId: number;
+      /** @description The title of the album to which the track belongs. */
+      albumTitle: string;
+      /** @description The comment or description associated with the track. */
+      comment: string;
+      /**
+       * @description The disc number of the track on the album or disc if there are multiple discs.  If this field is not
+       *     specified it is assumed to be a single-disc album.
+       */
+      discNumber: number;
+      /** @description The duration of the track in seconds. */
+      duration: number;
+      /** @description The bitrate of the audio file for the track, in Kb/s. */
+      fileBitRate: number;
+      /** @description The number of audio channels in the file for the track, such as 2 for stereo or 1 for mono. */
+      fileChannels: number;
+      /** @description The frequency or sample rate of the audio file for the track, in Hz. */
+      fileFrequency: number;
+      /** @description The file path of the file for the track. */
+      filePath: string;
+      /** @description The size of the file in bytes */
+      fileSize: number;
+      /**
+       * @description The type of the file for the track, such as MP3, FLAC, etc.
+       * @enum {string}
+       */
+      fileType: LibraryTrackDtoFileType;
+      /** @description The internally-generated unique ID of the track */
+      id: number;
+      /** @description The rating of the track which is a value between 0 and 5 inclusive applied to the track. */
+      rating: number;
+      /** @description The title of the track, which is usually the name of the song or piece of music. */
+      title: string;
+      /** @description The track number of the track on the album or disc if there are multiple discs. */
+      trackNumber: number;
+      /**
+       * @description The year of release of the track, often the same as the album except in "greatest hits"
+       *     and compilations.
+       */
+      year: number;
+    };
+    UserListTracksResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of tracks that match the query parameters, which may be limited by pagination. */
+      tracks: components['schemas']['LibraryTrackDto'][];
+      /**
+       * @description The offset of the first track in the tracks array, which may be greater than 0 if
+       *     pagination is applied.
+       */
+      offset: number;
+      /**
+       * @description The total number of tracks that match the query parameters, which may be greater
+       *     than the number of tracks returned in the tracks array if pagination is applied.
+       */
+      total: number;
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    UserListTracksBadRequestErrorMessages: UserListTracksBadRequestErrorMessages;
+    UserListTracksBadRequestResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default invalid-added-after-error
+       */
+      message: components['schemas']['UserListTracksBadRequestErrorMessages'][];
+    };
+    UserRegenerateSessionKeyResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+    };
+    UserRetrieveAlbumResponseDto: {
+      /**
+       * Format: constant
+       * @description The success being "true" indicates that the request completed.
+       * @default true
+       */
+      success: boolean;
+      /** @description The list of albums that match the query parameters, which may be limited by pagination. */
+      album: components['schemas']['LibraryAlbumWithTracksDto'];
+    };
+    /**
+     * @description The error message(s) that occurred during the validation of the request data or additional requirements
+     *     applied during the execution of the request
+     * @enum {string}
+     */
+    UserRetrieveAlbumNotFoundErrorMessage: UserRetrieveAlbumNotFoundErrorMessage;
+    UserRetrieveAlbumNotFoundResponseDto: {
+      /** @description General description of the error class */
+      error: string;
+      /**
+       * @description The success being "false" indicates that the request failed to complete.
+       * @default false
+       */
+      success: boolean;
+      /**
+       * @description The error message(s) that occurred during the validation of the request data or additional requirements
+       *     applied during the execution of the request
+       * @default album-not-found-error
+       */
+      message: components['schemas']['UserRetrieveAlbumNotFoundErrorMessage'][];
+    };
     UserUpdatePasswordBodyDto: {
       newPassword: string;
     };
@@ -1106,14 +2198,6 @@ export type components = {
        * @default invalid-password-error
        */
       message: components['schemas']['UserUpdatePasswordBadRequestErrorMessageEnum'][];
-    };
-    UserRegenerateSessionKeyResponseDto: {
-      /**
-       * Format: constant
-       * @description The success being "true" indicates that the request completed.
-       * @default true
-       */
-      success: boolean;
     };
     /** @enum {string} */
     UserRoleEnum: UserRoleEnum;
@@ -2309,6 +3393,7 @@ export type components = {
        */
       success: boolean;
     };
+    Buffer: Record<string, never>;
     SynologyEntryCertificateBodyDto: {
       /**
        * @description Synology's API uses this value to route requests appropriately but this software has
@@ -4682,6 +5767,141 @@ export interface operations {
       };
     };
   };
+  GuestAlbumCoverController_get: {
+    parameters: {
+      query: {
+        /** @description The ID of the album */
+        id: number;
+        /** @description The width/height size of the image in pixels */
+        size: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'image/jpeg': string;
+          'image/png': string;
+          'image/webp': string;
+        };
+      };
+    };
+  };
+  GuestArtistCoverController_get: {
+    parameters: {
+      query: {
+        /** @description The ID of the artist */
+        id: number;
+        /** @description The width/height size of the image in pixels */
+        size: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'image/jpeg': string;
+          'image/png': string;
+          'image/webp': string;
+        };
+      };
+    };
+  };
+  GuestComposerCoverController_get: {
+    parameters: {
+      query: {
+        /** @description The ID of the composer */
+        id: number;
+        /** @description The width/height size of the image in pixels */
+        size: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'image/jpeg': string;
+          'image/png': string;
+          'image/webp': string;
+        };
+      };
+    };
+  };
+  GuestGenreCoverController_get: {
+    parameters: {
+      query: {
+        /** @description The ID of the genre */
+        id: number;
+        /** @description The width/height size of the image in pixels */
+        size: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'image/jpeg': string;
+          'image/png': string;
+          'image/webp': string;
+        };
+      };
+    };
+  };
+  GuestStreamFileController_get: {
+    parameters: {
+      query: {
+        /** @description The ID of the file */
+        id: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': string;
+        };
+      };
+      /** @description The requested file was not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GuestStreamFileNotFoundResponseDto'];
+        };
+      };
+    };
+  };
   UserCreateRootPathController_post: {
     parameters: {
       query?: never;
@@ -4799,6 +6019,335 @@ export interface operations {
       };
     };
   };
+  UserFolderStructureController_get: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the tree of folders and file contents. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserFolderStructureResponseDto'];
+        };
+      };
+    };
+  };
+  UserListAlbumArtistsController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedAfter?: string;
+        /**
+         * @description Optional filter for the date the artist was added to the library, which will do an exact match against
+         *     the date the artist was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedBefore?: string;
+        /**
+         * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+         *     genres associated with an artist.
+         */
+        genre?: string[];
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['ArtistSortFieldEnum'];
+        /**
+         * @description Optional search filter that will do a case-insensitive partial-match against the artist
+         *     name, album name, composer name, or genre.
+         */
+        filter?: string;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of album artists for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListAlbumArtistsResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListAlbumArtistsBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserListAlbumArtistsWithTracksController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedAfter?: string;
+        /**
+         * @description Optional filter for the date the artist was added to the library, which will do an exact match against
+         *     the date the artist was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedBefore?: string;
+        /**
+         * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+         *     genres associated with an artist.
+         */
+        genre?: string[];
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['ArtistSortFieldEnum'];
+        /**
+         * @description Optional search filter that will do a case-insensitive partial-match against the artist
+         *     name, album name, composer name, or genre.
+         */
+        filter?: string;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of album artists with tracks for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListAlbumArtistsWithTracksResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListAlbumArtistsWithTracksBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserListAlbumsController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedAfter?: string;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedBefore?: string;
+        /**
+         * @description Optional filter for the artist name, which will do a case-insensitive partial-match against the
+         *     artists associated with an album.
+         */
+        artist?: string[];
+        /**
+         * @description Optional filter for the composer name, which will do a case-insensitive partial-match against the
+         *     composers associated with an album.
+         */
+        composer?: string[];
+        /**
+         * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+         *     genres associated with an album.
+         */
+        genre?: string[];
+        /**
+         * @description Optional filter for the date the album was released, which will do an exact match against
+         *     the date of release.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        releasedAfter?: string;
+        /**
+         * @description Optional filter for the date the album was released, which will do an exact match against
+         *     the date of release.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        releasedBefore?: string;
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['AlbumSortFieldEnum'];
+        /**
+         * @description Optional filter for the year of the album, which will do an exact match against the year associated
+         *     with an album's release date.
+         */
+        year?: number;
+        /**
+         * @description Optional search filter that will do a case-insensitive partial-match against the album
+         *     name, artist name, composer name, or genre.
+         */
+        filter?: string;
+        /**
+         * @description Maximum rating value, which will do an exact match against the rating associated with an album.  The
+         *     rating is a value between 0 and 5, inclusive.
+         */
+        maxRating?: number;
+        /**
+         * @description Minimum rating value, which will do an exact match against the rating associated with an album.  The
+         *     rating is a value between 0 and 5, inclusive.
+         */
+        minRating?: number;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of albums for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListAlbumsResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListAlbumsBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserListAlbumsWithTracksController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedAfter?: string;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedBefore?: string;
+        /**
+         * @description Optional filter for the artist name, which will do a case-insensitive partial-match against the
+         *     artists associated with an album.
+         */
+        artist?: string[];
+        /**
+         * @description Optional filter for the composer name, which will do a case-insensitive partial-match against the
+         *     composers associated with an album.
+         */
+        composer?: string[];
+        /**
+         * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+         *     genres associated with an album.
+         */
+        genre?: string[];
+        /**
+         * @description Optional filter for the date the album was released, which will do an exact match against
+         *     the date of release.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        releasedAfter?: string;
+        /**
+         * @description Optional filter for the date the album was released, which will do an exact match against
+         *     the date of release.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        releasedBefore?: string;
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['AlbumSortFieldEnum'];
+        /**
+         * @description Optional filter for the year of the album, which will do an exact match against the year associated
+         *     with an album's release date.
+         */
+        year?: number;
+        /**
+         * @description Optional search filter that will do a case-insensitive partial-match against the album
+         *     name, artist name, composer name, or genre.
+         */
+        filter?: string;
+        /**
+         * @description Maximum rating value, which will do an exact match against the rating associated with an album.  The
+         *     rating is a value between 0 and 5, inclusive.
+         */
+        maxRating?: number;
+        /**
+         * @description Minimum rating value, which will do an exact match against the rating associated with an album.  The
+         *     rating is a value between 0 and 5, inclusive.
+         */
+        minRating?: number;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of albums with their tracks for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListAlbumsWithTracksResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListAlbumsWithTracksBadRequestResponseDto'];
+        };
+      };
+    };
+  };
   UserListIndexerLogsController_get: {
     parameters: {
       query?: {
@@ -4862,6 +6411,472 @@ export interface operations {
       };
     };
   };
+  UserListTrackArtistsController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedAfter?: string;
+        /**
+         * @description Optional filter for the date the artist was added to the library, which will do an exact match against
+         *     the date the artist was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedBefore?: string;
+        /**
+         * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+         *     genres associated with an artist.
+         */
+        genre?: string[];
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['ArtistSortFieldEnum'];
+        /**
+         * @description Optional search filter that will do a case-insensitive partial-match against the artist
+         *     name, album name, composer name, or genre.
+         */
+        filter?: string;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of artists for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackArtistsResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackArtistsBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserListTrackArtistsWithTracksController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedAfter?: string;
+        /**
+         * @description Optional filter for the date the artist was added to the library, which will do an exact match against
+         *     the date the artist was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedBefore?: string;
+        /**
+         * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+         *     genres associated with an artist.
+         */
+        genre?: string[];
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['ArtistSortFieldEnum'];
+        /**
+         * @description Optional search filter that will do a case-insensitive partial-match against the artist
+         *     name, album name, composer name, or genre.
+         */
+        filter?: string;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of artists along with their tracks for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackArtistsWithTracksResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackArtistsWithTracksBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserListTrackComposersController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedAfter?: string;
+        /**
+         * @description Optional filter for the date the composer was added to the library, which will do an exact match against
+         *     the date the composer was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedBefore?: string;
+        /**
+         * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+         *     genres associated with a composer.
+         */
+        genre?: string[];
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['ComposerSortFieldEnum'];
+        /**
+         * @description Optional search filter that will do a case-insensitive partial-match against the composer
+         *     name, artist name, album name, or genre.
+         */
+        filter?: string;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of composers for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackComposersResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackComposersBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserListTrackComposersWithTracksController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedAfter?: string;
+        /**
+         * @description Optional filter for the date the composer was added to the library, which will do an exact match against
+         *     the date the composer was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedBefore?: string;
+        /**
+         * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+         *     genres associated with a composer.
+         */
+        genre?: string[];
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['ComposerSortFieldEnum'];
+        /**
+         * @description Optional search filter that will do a case-insensitive partial-match against the composer
+         *     name, artist name, album name, or genre.
+         */
+        filter?: string;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of composers for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackComposersWithTracksResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackComposersWithTracksBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserListTrackGenresController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['GenreSortFieldEnum'];
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of genres for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackGenresResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackGenresBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserListTrackGenresWithTracksController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['GenreSortFieldEnum'];
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of genres for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackGenresWithTracksResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTrackGenresWithTracksBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserListTracksController_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedAfter?: string;
+        /**
+         * @description Optional filter for the date the album was added to the library, which will do an exact match against
+         *     the date the album was added to the library.  The date must be in ISO 8601 format (YYYY-MM-DD).
+         */
+        addedBefore?: string;
+        /**
+         * @description Optional filter for the album artist name, which will do a case-insensitive partial-match against the
+         *     artists associated with an album.
+         */
+        albumArtists?: string[];
+        /**
+         * @description Optional filter for the artist name, which will do a case-insensitive partial-match against the
+         *     artists associated with tracks.
+         */
+        artist?: string[];
+        /**
+         * @description Optional filter for the composer name, which will do a case-insensitive partial-match against the
+         *     composers associated with an album.
+         */
+        composer?: string[];
+        /**
+         * @description Optional filter for the genre name, which will do a case-insensitive partial-match against the
+         *     genres associated with an album.
+         */
+        genre?: string[];
+        /** @description Optional filter for the direction to sort the results by. */
+        sortDirection?: components['schemas']['SortDirectionEnum'];
+        /** @description Optional filter for the field to sort results by. */
+        sortField?: components['schemas']['TrackSortFieldEnum'];
+        /**
+         * @description Optional filter for the year of the album, which will do an exact match against the year associated
+         *     with an album's release date.
+         */
+        year?: number;
+        /**
+         * @description Optional filter for the album name, which will do a case-insensitive partial-match against the
+         *     name of the album.
+         */
+        album?: string;
+        /**
+         * @description Optional search filter that will do a case-insensitive partial-match against the album
+         *     name, artist name, composer name, or genre.
+         */
+        filter?: string;
+        /**
+         * @description Maximum rating value, which will do an exact match against the rating associated with an album.  The
+         *     rating is a value between 0 and 5, inclusive.
+         */
+        maxRating?: number;
+        /**
+         * @description Minimum rating value, which will do an exact match against the rating associated with an album.  The
+         *     rating is a value between 0 and 5, inclusive.
+         */
+        minRating?: number;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the list of tracks for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTracksResponseDto'];
+        };
+      };
+      /** @description The request was invalid or missing required parameters. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserListTracksBadRequestResponseDto'];
+        };
+      };
+    };
+  };
+  UserRegenerateSessionKeyController_post: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Session key regenerated successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserRegenerateSessionKeyResponseDto'];
+        };
+      };
+    };
+  };
+  UserRetrieveAlbumController_get: {
+    parameters: {
+      query: {
+        /** @description The ID of the album */
+        id: number;
+      };
+      header: {
+        /** @description Bearer token for authentication */
+        Authorization: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved the album data for the user. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserRetrieveAlbumResponseDto'];
+        };
+      };
+      /** @description Album not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserRetrieveAlbumNotFoundResponseDto'];
+        };
+      };
+    };
+  };
   UserUpdatePasswordController_post: {
     parameters: {
       query?: never;
@@ -4902,37 +6917,6 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['UserUpdatePasswordBadRequestResponseDto'];
-        };
-      };
-    };
-  };
-  UserRegenerateSessionKeyController_post: {
-    parameters: {
-      query?: never;
-      header: {
-        /** @description Bearer token for authentication */
-        Authorization: string;
-      };
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Session key regenerated successfully */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UserRegenerateSessionKeyResponseDto'];
-        };
-      };
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UserRegenerateSessionKeyResponseDto'];
         };
       };
     };
@@ -5553,12 +7537,13 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
+      /** @description The image blob */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          'application/json': Record<string, never>;
+          'application/octet-stream': components['schemas']['Buffer'];
         };
       };
     };
@@ -5972,7 +7957,9 @@ export interface operations {
         headers: {
           [name: string]: unknown;
         };
-        content?: never;
+        content: {
+          'application/json': string;
+        };
       };
     };
   };
@@ -5986,6 +7973,9 @@ export enum GuestCreateSessionBadRequestErrorMessageEnum {
 export enum InternalServerErrorEnum {
   internal_server_error = 'internal-server-error',
 }
+export enum GuestStreamFileNotFoundErrorMessage {
+  file_not_found_error = 'file-not-found-error',
+}
 export enum UserCreateRootPathBadRequestErrorMessageEnum {
   root_path_does_not_exist_error = 'root-path-does-not-exist-error',
   duplicate_root_path_error = 'duplicate-root-path-error',
@@ -5996,6 +7986,91 @@ export enum UserDeleteRootPathNotFoundErrorMessageEnum {
 export enum BadRequestErrorEnum {
   bad_request_error = 'bad-request-error',
 }
+export enum SortDirectionEnum {
+  asc = 'asc',
+  desc = 'desc',
+}
+export enum ArtistSortFieldEnum {
+  artist = 'artist',
+  date_added = 'date_added',
+}
+export enum UserListTrackArtistsBadRequestErrorMessage {
+  invalid_added_after_error = 'invalid-added-after-error',
+  invalid_added_before_error = 'invalid-added-before-error',
+  invalid_filter_error = 'invalid-filter-error',
+  invalid_filter_length_error = 'invalid-filter-length-error',
+  invalid_genre_error = 'invalid-genre-error',
+  invalid_genre_length_error = 'invalid-genre-length-error',
+  invalid_limit_error = 'invalid-limit-error',
+  invalid_limit_range_error = 'invalid-limit-range-error',
+  invalid_offset_error = 'invalid-offset-error',
+  invalid_offset_range_error = 'invalid-offset-range-error',
+  invalid_sort_field_error = 'invalid-sort-field-error',
+  invalid_sort_order_error = 'invalid-sort-order-error',
+}
+export enum LibraryAlbumTrackDtoFileType {
+  flac = 'flac',
+  m4a = 'm4a',
+  mp3 = 'mp3',
+  ogg = 'ogg',
+}
+export enum AlbumSortFieldEnum {
+  album = 'album',
+  album_artist = 'album_artist',
+  artist = 'artist',
+  composer = 'composer',
+  date_added = 'date_added',
+  date_released = 'date_released',
+  genre = 'genre',
+  rating = 'rating',
+  year = 'year',
+}
+export enum UserListAlbumsBadRequestErrorMessages {
+  invalid_added_after_error = 'invalid-added-after-error',
+  invalid_added_before_error = 'invalid-added-before-error',
+  invalid_artist_error = 'invalid-artist-error',
+  invalid_artist_length_error = 'invalid-artist-length-error',
+  invalid_composer_error = 'invalid-composer-error',
+  invalid_composer_length_error = 'invalid-composer-length-error',
+  invalid_filter_error = 'invalid-filter-error',
+  invalid_filter_length_error = 'invalid-filter-length-error',
+  invalid_genre_error = 'invalid-genre-error',
+  invalid_genre_length_error = 'invalid-genre-length-error',
+  invalid_limit_error = 'invalid-limit-error',
+  invalid_limit_range_error = 'invalid-limit-range-error',
+  invalid_max_rating_error = 'invalid-max-rating-error',
+  invalid_min_rating_error = 'invalid-min-rating-error',
+  invalid_offset_error = 'invalid-offset-error',
+  invalid_offset_range_error = 'invalid-offset-range-error',
+  invalid_released_after_error = 'invalid-released-after-error',
+  invalid_released_before_error = 'invalid-released-before-error',
+  invalid_sort_field_error = 'invalid-sort-field-error',
+  invalid_sort_order_error = 'invalid-sort-order-error',
+  invalid_year_error = 'invalid-year-error',
+}
+export enum UserListAlbumsWithTracksBadRequestErrorMessages {
+  invalid_added_after_error = 'invalid-added-after-error',
+  invalid_added_before_error = 'invalid-added-before-error',
+  invalid_artist_error = 'invalid-artist-error',
+  invalid_artist_length_error = 'invalid-artist-length-error',
+  invalid_composer_error = 'invalid-composer-error',
+  invalid_composer_length_error = 'invalid-composer-length-error',
+  invalid_filter_error = 'invalid-filter-error',
+  invalid_filter_length_error = 'invalid-filter-length-error',
+  invalid_genre_error = 'invalid-genre-error',
+  invalid_genre_length_error = 'invalid-genre-length-error',
+  invalid_limit_error = 'invalid-limit-error',
+  invalid_limit_range_error = 'invalid-limit-range-error',
+  invalid_max_rating_error = 'invalid-max-rating-error',
+  invalid_min_rating_error = 'invalid-min-rating-error',
+  invalid_offset_error = 'invalid-offset-error',
+  invalid_offset_range_error = 'invalid-offset-range-error',
+  invalid_released_after_error = 'invalid-released-after-error',
+  invalid_released_before_error = 'invalid-released-before-error',
+  invalid_sort_field_error = 'invalid-sort-field-error',
+  invalid_sort_order_error = 'invalid-sort-order-error',
+  invalid_year_error = 'invalid-year-error',
+}
 export enum UserListIndexerLogsBadRequestErrorMessageEnum {
   invalid_account_id_error = 'invalid-account-id-error',
   invalid_root_path_id_error = 'invalid-root-path-id-error',
@@ -6004,6 +8079,85 @@ export enum UserListIndexerLogsBadRequestErrorMessageEnum {
 export enum UserListIndexerLogsNotFoundErrorMessageEnum {
   invalid_account_id_error = 'invalid-account-id-error',
   invalid_root_path_id_error = 'invalid-root-path-id-error',
+}
+export enum ComposerSortFieldEnum {
+  composer = 'composer',
+  date_added = 'date_added',
+}
+export enum UserListTrackComposersBadRequestErrorMessages {
+  invalid_added_after_error = 'invalid-added-after-error',
+  invalid_added_before_error = 'invalid-added-before-error',
+  invalid_filter_error = 'invalid-filter-error',
+  invalid_filter_length_error = 'invalid-filter-length-error',
+  invalid_genre_error = 'invalid-genre-error',
+  invalid_genre_length_error = 'invalid-genre-length-error',
+  invalid_limit_error = 'invalid-limit-error',
+  invalid_limit_range_error = 'invalid-limit-range-error',
+  invalid_offset_error = 'invalid-offset-error',
+  invalid_offset_range_error = 'invalid-offset-range-error',
+  invalid_sort_field_error = 'invalid-sort-field-error',
+  invalid_sort_order_error = 'invalid-sort-order-error',
+}
+export enum GenreSortFieldEnum {
+  genre = 'genre',
+}
+export enum UserListTrackGenresBadRequestErrorMessages {
+  invalid_limit_error = 'invalid-limit-error',
+  invalid_limit_range_error = 'invalid-limit-range-error',
+  invalid_offset_error = 'invalid-offset-error',
+  invalid_offset_range_error = 'invalid-offset-range-error',
+  invalid_sort_field_error = 'invalid-sort-field-error',
+  invalid_sort_order_error = 'invalid-sort-order-error',
+}
+export enum UserListTrackGenresWithTracksBadRequestErrorMessages {
+  invalid_limit_error = 'invalid-limit-error',
+  invalid_limit_range_error = 'invalid-limit-range-error',
+  invalid_offset_error = 'invalid-offset-error',
+  invalid_offset_range_error = 'invalid-offset-range-error',
+  invalid_sort_field_error = 'invalid-sort-field-error',
+  invalid_sort_order_error = 'invalid-sort-order-error',
+}
+export enum TrackSortFieldEnum {
+  date_added = 'date_added',
+  artist = 'artist',
+  album = 'album',
+  album_artist = 'album_artist',
+  composer = 'composer',
+  genre = 'genre',
+  title = 'title',
+  year = 'year',
+}
+export enum LibraryTrackDtoFileType {
+  flac = 'flac',
+  m4a = 'm4a',
+  mp3 = 'mp3',
+  ogg = 'ogg',
+}
+export enum UserListTracksBadRequestErrorMessages {
+  invalid_added_after_error = 'invalid-added-after-error',
+  invalid_added_before_error = 'invalid-added-before-error',
+  invalid_album_error = 'invalid-album-error',
+  invalid_album_length_error = 'invalid-album-length-error',
+  invalid_artist_error = 'invalid-artist-error',
+  invalid_artist_length_error = 'invalid-artist-length-error',
+  invalid_composer_error = 'invalid-composer-error',
+  invalid_composer_length_error = 'invalid-composer-length-error',
+  invalid_filter_error = 'invalid-filter-error',
+  invalid_filter_length_error = 'invalid-filter-length-error',
+  invalid_genre_error = 'invalid-genre-error',
+  invalid_genre_length_error = 'invalid-genre-length-error',
+  invalid_limit_error = 'invalid-limit-error',
+  invalid_limit_range_error = 'invalid-limit-range-error',
+  invalid_max_rating_error = 'invalid-max-rating-error',
+  invalid_min_rating_error = 'invalid-min-rating-error',
+  invalid_offset_error = 'invalid-offset-error',
+  invalid_offset_range_error = 'invalid-offset-range-error',
+  invalid_sort_field_error = 'invalid-sort-field-error',
+  invalid_sort_order_error = 'invalid-sort-order-error',
+  invalid_year_error = 'invalid-year-error',
+}
+export enum UserRetrieveAlbumNotFoundErrorMessage {
+  album_not_found_error = 'album-not-found-error',
 }
 export enum UserUpdatePasswordBadRequestErrorMessageEnum {
   invalid_password_error = 'invalid-password-error',
@@ -6113,6 +8267,7 @@ export enum SynologyMethodEnum {
   removemissing = 'removemissing',
   rename = 'rename',
   stream = 'stream',
+  transcode = 'transcode',
   unpin = 'unpin',
   updateradios = 'updateradios',
   updatesmart = 'updatesmart',

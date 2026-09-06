@@ -16,7 +16,7 @@ export class Pom {
   async findNavigationLink(name: string): Promise<Locator> {
     const responsiveMode = await this.isResponsive();
     if (responsiveMode) {
-      await this.page.getByRole('button', { name: 'Open account menu' }).click();
+      await this.page.getByRole('button', { name: 'Toggle Sidebar' }).click();
       await this.page.waitForTimeout(500);
       await this.page.locator(`a[aria-label="${name}"]`).last().waitFor({ state: 'visible' });
       return this.page.getByRole('link', { name });
@@ -27,7 +27,7 @@ export class Pom {
   async toggleDarkMode(): Promise<void> {
     const responsiveMode = await this.isResponsive();
     if (responsiveMode) {
-      await this.page.getByRole('button', { name: 'Open account menu' }).click();
+      await this.page.getByRole('button', { name: 'Toggle Sidebar' }).click();
       await this.page.locator('button[aria-label="Toggle dark mode"]').last().waitFor({ state: 'visible' });
       await this.page.getByRole('button', { name: 'Toggle dark mode' }).last().click();
     } else {
@@ -38,7 +38,7 @@ export class Pom {
 
   async isResponsive(): Promise<boolean> {
     const isResponsive = await this.page.evaluate(() => {
-       return !window.matchMedia('(min-width: 640px)').matches;
+      return !window.matchMedia('(min-width: 640px)').matches;
     });
     return isResponsive;
   }

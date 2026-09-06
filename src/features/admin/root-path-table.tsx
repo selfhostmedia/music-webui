@@ -11,11 +11,12 @@ import { RootPathDeleteForm } from './root-path-delete-form';
 import { RootPathUpdateForm } from './root-path-update-form';
 import { Separator } from '@/components/ui/separator';
 import { formatNumber, formatSize } from '@/utils/format';
+import { memo } from 'react';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useRootPaths } from '@/hooks/admin/use-root-paths';
 
-export function RootPathTable() {
-  const { rootPaths, isLoading } = useRootPaths();
+export const RootPathTable = memo(() => {
+  const { rootPaths: data, isLoading } = useRootPaths();
   const isMobile = useIsMobile();
 
   const cellFiller = (opacity: number) => <span className={`bg-foreground/${opacity} h-8 w-full block`} />;
@@ -54,7 +55,7 @@ export function RootPathTable() {
       {/* Mobile card view */}
       {isMobile && (
         <div role="list" aria-label="Root paths">
-          {(isLoading ? dummyRows : rootPaths).map((rootPath) => {
+          {(isLoading ? dummyRows : data?.rootPaths || []).map((rootPath) => {
             const ariaLabel = `Root path for ${
               rootPath.username ? `${rootPath.username} ${rootPath.rootPath}` : 'loading'
             }`;
@@ -98,7 +99,7 @@ export function RootPathTable() {
             <DataTableHeaderCell>Actions</DataTableHeaderCell>
           </DataTableHeader>
           <DataTableBody>
-            {(isLoading ? dummyRows : rootPaths).map((rootPath, index) => {
+            {(isLoading ? dummyRows : data?.rootPaths || []).map((rootPath, index) => {
               const opacity = index % 2 === 0 ? 20 : 10;
               const ariaLabel = `Root path for ${
                 rootPath.username ? `${rootPath.username} ${rootPath.rootPath}` : 'loading'
@@ -131,4 +132,4 @@ export function RootPathTable() {
       )}
     </>
   );
-}
+});

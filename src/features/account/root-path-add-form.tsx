@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { type CreateBodyDto, type CreateErrorCodes, useRootPaths } from '@/hooks/user/use-root-paths';
 import {
   Dialog,
   DialogContent,
@@ -14,20 +13,24 @@ import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
+import { useRootPaths } from '@/hooks/user/use-root-paths';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod/v3';
+import type { paths } from '@/types/api-schema';
+
+type CreateBodyDto = paths['/api/user/create-root-path']['post']['requestBody']['content']['application/json'];
 
 const schema = z.object({
   rootPath: z
     .string()
-    .refine((val) => val.length > 0, {
+    .refine((value) => value.length > 0, {
       message: 'Root path is required',
     })
-    .refine((val) => val.length >= 1, {
+    .refine((value) => value.length >= 1, {
       message: 'Root path is too short',
     })
-    .refine((val) => val.length <= 1024, {
+    .refine((value) => value.length <= 1024, {
       message: 'Root path is too long',
     }),
 });
@@ -47,9 +50,7 @@ export function RootPathAddForm() {
   const onSubmit = handleSubmit(async (formData: CreateBodyDto) => {
     await createRootPath(
       {
-        body: {
-          rootPath: formData.rootPath,
-        },
+        rootPath: formData.rootPath,
       },
       {
         onSuccess: () => {
@@ -57,22 +58,24 @@ export function RootPathAddForm() {
           toast.success('Root path added successfully.  It will begin indexing shortly if the indexer is enabled.');
         },
         onError: (error) => {
-          const message = error.message as CreateErrorCodes;
-          switch (message) {
-            case 'root-path-does-not-exist-error':
-              setError('rootPath', { type: 'manual', message: 'The specified root path does not exist.' });
-              break;
-            case 'duplicate-root-path-error':
-              setError('rootPath', {
-                type: 'manual',
-                message: 'The specified root path has already been added to this account.',
-              });
-              break;
-            default:
-              // eslint-disable-next-line no-console
-              console.error('Unexpected error occurred while adding root path:', error);
-              toast.error('An internal server error occurred. Please try again later.');
-              break;
+          for (let i = 0; i < error.messages.length; i += 1) {
+            const message = error.messages[i];
+            switch (message) {
+              case 'root-path-does-not-exist-error':
+                setError('rootPath', { type: 'manual', message: 'The specified root path does not exist.' });
+                break;
+              case 'duplicate-root-path-error':
+                setError('rootPath', {
+                  type: 'manual',
+                  message: 'The specified root path has already been added to this account.',
+                });
+                break;
+              default:
+                // eslint-disable-next-line no-console
+                console.error('Unexpected error occurred while adding root path:', error);
+                toast.error('An internal server error occurred. Please try again later.');
+                break;
+            }
           }
         },
       },

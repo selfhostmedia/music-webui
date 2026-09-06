@@ -1,25 +1,19 @@
 import { type ReactNode, createContext, useContext, useEffect, useState } from 'react';
-import api, { ApiError, type ErrorResponse, type GenericErrorCodes, getErrorMessage } from '@/lib/api';
+import api, { TypedApiError } from '@/lib/api';
 import type { paths } from '@/types/api-schema';
 
 type ListEndpoint = paths['/api/admin/list-indexer-logs']['get'];
 type SetStatusEndpoint = paths['/api/admin/set-indexer-status']['patch'];
 
 export type LogEntryDto = ListEndpoint['responses']['200']['content']['application/json']['logs'][number];
-export type ListQueryDto = ListEndpoint['parameters']['query'];
-export type ListErrorCodes =
-  | ListEndpoint['responses']['400']['content']['application/json']['message'][number]
-  | ListEndpoint['responses']['404']['content']['application/json']['message'][number];
-export type SetStatusBodyDto = SetStatusEndpoint['requestBody']['content']['application/json'];
-
 interface IndexerContextType {
   indexerLogs: LogEntryDto[];
   isEnabled: boolean;
   isLoadingLogs: boolean;
   isLoadingStatus: boolean;
   isUpdatingStatus: boolean;
-  listIndexerLogs: (vars?: { query?: ListQueryDto }) => Promise<void>;
-  toggleStatus: (vars: { body: SetStatusBodyDto }) => Promise<void>;
+  listIndexerLogs: (query?: ListEndpoint['parameters']['query']) => Promise<void>;
+  toggleStatus: (body: SetStatusEndpoint['requestBody']['content']['application/json']) => Promise<void>;
 }
 
 const IndexerContext = createContext<IndexerContextType>({
@@ -48,17 +42,10 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
           },
         });
         if (error) {
-          throw new Error(getErrorMessage(error));
+          throw new Error(error);
         }
-        if (!data) {
+        if (!data?.success) {
           throw new Error('Failed to fetch indexer configuration');
-        }
-        if (!data.success) {
-          const errorPayload = data as unknown as ErrorResponse<GenericErrorCodes>;
-          throw new ApiError<GenericErrorCodes>(errorPayload);
-        }
-        if (!data.configuration) {
-          throw new Error(getErrorMessage(data, 'No accounts data received'));
         }
         setEnabled(data.configuration.isEnabled);
         setLoadingStatus(false);
@@ -72,7 +59,7 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
     fetchIndexerStatus();
   }, []);
 
-  const toggleStatus = async ({ body }: { body: SetStatusBodyDto }) => {
+  const toggleStatus = async (body: SetStatusEndpoint['requestBody']['content']['application/json']) => {
     try {
       const newStatus = body.enabled;
       setEnabled(newStatus);
@@ -84,14 +71,10 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
         body,
       });
       if (error) {
-        throw new Error(getErrorMessage(error));
+        throw new Error(error);
       }
-      if (!data) {
+      if (!data?.success) {
         throw new Error('Failed to set indexer status');
-      }
-      if (!data.success) {
-        const errorPayload = data as unknown as ErrorResponse<GenericErrorCodes>;
-        throw new ApiError<GenericErrorCodes>(errorPayload);
       }
       setEnabled(newStatus);
     } catch (error) {
@@ -102,7 +85,7 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const listIndexerLogs = async ({ query }: { query?: ListQueryDto } = {}) => {
+  const listIndexerLogs = async (query?: ListEndpoint['parameters']['query']) => {
     try {
       setLoadingLogs(true);
       const { data, error } = await api.get('/api/admin/list-indexer-logs', {
@@ -112,17 +95,13 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
         },
       });
       if (error) {
-        throw new Error(getErrorMessage(error));
+        throw new TypedApiError<
+          | ListEndpoint['responses']['400']['content']['application/json']['message']
+          | ListEndpoint['responses']['404']['content']['application/json']['message']
+        >(error.message, error.error);
       }
-      if (!data) {
+      if (!data?.success) {
         throw new Error('No log data received');
-      }
-      if (!data.success) {
-        const errorPayload = data as unknown as ErrorResponse<ListErrorCodes>;
-        throw new ApiError<ListErrorCodes>(errorPayload);
-      }
-      if (!data.logs) {
-        throw new Error(getErrorMessage(data, 'No logs data received'));
       }
       setIndexerLogs(data.logs);
     } catch (error) {

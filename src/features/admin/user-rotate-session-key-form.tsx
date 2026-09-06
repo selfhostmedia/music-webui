@@ -1,4 +1,4 @@
-import { type AccountDto, type RegenerateSessionKeyErrorCodes, useAccounts } from '@/hooks/admin/use-accounts';
+import { type AccountDto, useAccounts } from '@/hooks/admin/use-accounts';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -19,22 +19,24 @@ export function UserRotateSessionKeyForm({ user, className }: { user: AccountDto
 
   const onSubmit = handleSubmit(async () => {
     await regenerateSessionKey(
-      { query: { id: user.id } },
+      { id: user.id },
       {
         onSuccess: () => {
           setOpen(false);
           toast.success('All sessions terminated. The user will need to log in from any devices.');
         },
         onError: (error) => {
-          const message = error.message as RegenerateSessionKeyErrorCodes;
-          switch (message) {
-            case 'account-not-found-error':
-              toast.error('The specified account does not exist.');
-              break;
-            default:
-              // eslint-disable-next-line no-console
-              console.error('Unexpected error occurred while terminating sessions:', error);
-              toast.error('An internal server error occurred. Please try again later.');
+          for (let i = 0; i < error.messages.length; i += 1) {
+            const message = error.messages[i];
+            switch (message) {
+              case 'account-not-found-error':
+                toast.error('The specified account does not exist.');
+                break;
+              default:
+                // eslint-disable-next-line no-console
+                console.error('Unexpected error occurred while terminating sessions:', error);
+                toast.error('An internal server error occurred. Please try again later.');
+            }
           }
         },
       },
