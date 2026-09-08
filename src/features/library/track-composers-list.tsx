@@ -117,7 +117,7 @@ export default function TrackComposersList() {
 
   return (
     <>
-      <title>Composers // SHM</title>
+      <title>Composers</title>
       {isMobile && (
         <ul className="flex flex-col grow">
           {insertingComposer && (

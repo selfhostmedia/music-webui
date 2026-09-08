@@ -7,7 +7,7 @@ import UiPreferences from '@/features/account/ui-preferences';
 const AccountPreferencesPage = () => {
   return (
     <>
-      <title>Account preferences // SHM</title>
+      <title>Account preferences</title>
       <div className="p-4">
         {/* General preferences */}
         <section className="mb-8">

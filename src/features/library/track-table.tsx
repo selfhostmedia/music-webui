@@ -240,7 +240,7 @@ export default function TracksTable() {
 
   return (
     <>
-      <title>Tracks // SHM</title>
+      <title>Tracks</title>
       {isMobile && (
         <ul className="flex grow flex-col">
           {visibleData?.map((item) => (

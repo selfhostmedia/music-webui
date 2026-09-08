@@ -3,7 +3,7 @@ import AlbumsList from '@/features/library/albums-list';
 export default function AlbumsPage() {
   return (
     <>
-      <title>Albums // SHM</title>
+      <title>Albums</title>
       <AlbumsList />
     </>
   );

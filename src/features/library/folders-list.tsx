@@ -62,7 +62,7 @@ export default function FoldersList() {
 
   return (
     <>
-      <title>Folders // SHM</title>
+      <title>Folders</title>
       <Breadcrumb className="p-4">
         <BreadcrumbList className="gap-0 sm:gap-0">
           {breadcrumb.map((crumb, index) => {

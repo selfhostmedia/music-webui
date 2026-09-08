@@ -117,7 +117,7 @@ export default function AlbumsList() {
 
   return (
     <>
-      <title>Albums // SHM</title>
+      <title>Albums</title>
       {isMobile && (
         <ul className="flex flex-col grow">
           {insertingAlbum && (

@@ -24,7 +24,7 @@ export default function QueueTable() {
 
   return (
     <>
-      <title>Play Queue // SHM</title>
+      <title>Play Queue</title>
       <div
         className="flex flex-row p-4 h-full"
         style={{

@@ -8,7 +8,7 @@ import { UserTable } from '@/features/admin/user-table';
 const AdminHomePage = () => {
   return (
     <>
-      <title>Server Administration // SHM</title>
+      <title>Server Administration</title>
       <div className="p-4">
         {/* System management */}
         <section className="mb-8">

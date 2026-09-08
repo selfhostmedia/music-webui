@@ -117,7 +117,7 @@ export default function TrackGenresList() {
 
   return (
     <>
-      <title>Track Genres // SHM</title>
+      <title>Track Genres</title>
       {isMobile && (
         <ul className="flex flex-col grow">
           {insertingGenre && (
