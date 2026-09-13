@@ -38,9 +38,9 @@ export type ErrorResponse<T> = {
 };
 
 export class TypedApiError<T> extends Error {
-  messages: T | GenericErrorCodes[];
+  messages: (T | GenericErrorCodes)[];
 
-  constructor(messages: T, type: string) {
+  constructor(messages: (T | GenericErrorCodes)[], type: string) {
     super(type);
     this.messages = messages;
   }

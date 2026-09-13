@@ -96,8 +96,8 @@ export function IndexerProvider({ children }: { children: ReactNode }) {
       });
       if (error) {
         throw new TypedApiError<
-          | ListEndpoint['responses']['400']['content']['application/json']['message']
-          | ListEndpoint['responses']['404']['content']['application/json']['message']
+          | ListEndpoint['responses']['400']['content']['application/json']['message'][number]
+          | ListEndpoint['responses']['404']['content']['application/json']['message'][number]
         >(error.message, error.error);
       }
       if (!data?.success) {

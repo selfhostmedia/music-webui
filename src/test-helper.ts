@@ -77,10 +77,13 @@ export class AdminApi {
   }
 
   async deleteUser(accountId: number): Promise<void> {
-    const { error } = await api.DELETE('/api/admin/delete-account', {
+    const { error } = await api.PATCH('/api/admin/delete-account', {
       params: {
         header: this.authHeader,
         query: { id: accountId },
+      },
+      body: {
+        adminPassword: ADMIN_PASSWORD,
       },
     });
     if (error) {

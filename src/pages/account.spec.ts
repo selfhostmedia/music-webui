@@ -87,6 +87,7 @@ test.describe('account preferences', () => {
           await adminPom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           const adminToken = adminPom.jwtToken || '';
           const user = await new AdminApi(adminToken).createUser({
+            adminPassword: ADMIN_USERNAME,
             username: testUserName,
             password: 'testpassword',
             roles: [UserRoleEnum.user],
@@ -115,6 +116,7 @@ test.describe('account preferences', () => {
           await adminPom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           const adminToken = adminPom.jwtToken || '';
           const user = await new AdminApi(adminToken).createUser({
+            adminPassword: ADMIN_USERNAME,
             username: testUserName,
             password: 'testpassword',
             roles: [UserRoleEnum.user],
@@ -141,6 +143,7 @@ test.describe('account preferences', () => {
           await adminPom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           const adminToken = adminPom.jwtToken || '';
           const user = await new AdminApi(adminToken).createUser({
+            adminPassword: ADMIN_USERNAME,
             username: testUserName,
             password: 'testpassword',
             roles: [UserRoleEnum.user],
@@ -171,6 +174,7 @@ test.describe('account preferences', () => {
           await adminPom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           const adminToken = adminPom.jwtToken || '';
           const user = await new AdminApi(adminToken).createUser({
+            adminPassword: ADMIN_USERNAME,
             username: testUserName,
             password: 'testpassword',
             roles: [UserRoleEnum.user],
@@ -197,6 +201,7 @@ test.describe('account preferences', () => {
           await adminPom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
           const adminToken = adminPom.jwtToken || '';
           const user = await new AdminApi(adminToken).createUser({
+            adminPassword: ADMIN_USERNAME,
             username: testUserName,
             password: 'testpassword',
             roles: [UserRoleEnum.user],

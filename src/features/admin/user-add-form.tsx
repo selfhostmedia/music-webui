@@ -55,6 +55,17 @@ const schema = z
       .refine((value) => value.length <= 255, {
         message: 'Confirm password is too long',
       }),
+    adminPassword: z
+      .string()
+      .refine((value) => value.length > 0, {
+        message: 'Administrator password is required',
+      })
+      .refine((value) => value.length >= 1, {
+        message: 'Administrator password is too short',
+      })
+      .refine((value) => value.length <= 255, {
+        message: 'Administrator password is too long',
+      }),
     roles: z.array(z.nativeEnum(UserRoleEnum)).min(1, { message: 'At least one role must be selected.' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -80,6 +91,7 @@ export function UserAddForm({ className }: { className?: string }) {
   const onSubmit = handleSubmit(async (formData: FormData) => {
     await createAccount(
       {
+        adminPassword: formData.adminPassword,
         username: formData.username,
         password: formData.password,
         roles: formData.roles,
@@ -102,11 +114,17 @@ export function UserAddForm({ className }: { className?: string }) {
               case 'invalid-user-role-error':
                 setError('roles', { type: 'manual', message: 'At least one role must be selected.' });
                 break;
+              case 'invalid-new-password-error':
+                setError('password', { type: 'manual', message: 'Invalid user password specified.' });
+                break;
+              case 'invalid-new-password-length-error':
+                setError('password', { type: 'manual', message: 'User password length is invalid.' });
+                break;
               case 'invalid-password-error':
-                setError('password', { type: 'manual', message: 'Invalid password specified.' });
+                setError('adminPassword', { type: 'manual', message: 'Invalid admin password.' });
                 break;
               case 'invalid-password-length-error':
-                setError('password', { type: 'manual', message: 'Password length is invalid.' });
+                setError('adminPassword', { type: 'manual', message: 'Admin password length is invalid.' });
                 break;
               default:
                 // eslint-disable-next-line no-console
@@ -165,7 +183,6 @@ export function UserAddForm({ className }: { className?: string }) {
                 </>
               )}
             />
-
             <div className="space-y-2">
               <Label htmlFor="password">Username</Label>
               <Input
@@ -195,6 +212,16 @@ export function UserAddForm({ className }: { className?: string }) {
                 placeholder="Enter new password"
               />
               <FormValidationError text={errors.confirmPassword?.message} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="adminPassword">Administrator password</Label>
+              <Input
+                id="adminPassword"
+                type="password"
+                {...register('adminPassword', { required: true })}
+                placeholder="Enter admin password"
+              />
+              <FormValidationError text={errors.adminPassword?.message} />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>

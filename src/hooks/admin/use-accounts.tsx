@@ -4,10 +4,15 @@ import type { paths } from '@/types/api-schema';
 
 type ListEndpoint = paths['/api/admin/list-accounts']['get'];
 type CreateEndpoint = paths['/api/admin/create-account']['post'];
-type DeleteEndpoint = paths['/api/admin/delete-account']['delete'];
+type DeleteEndpoint = paths['/api/admin/delete-account']['patch'];
 type RegenerateSessionKeyEndpoint = paths['/api/admin/regenerate-user-session-key']['post'];
 type ResetPasswordEndpoint = paths['/api/admin/reset-user-password']['post'];
 type UpdateRolesEndpoint = paths['/api/admin/update-user-roles']['patch'];
+
+type DeleteEndpointVariables = {
+  query: DeleteEndpoint['parameters']['query'];
+  body: DeleteEndpoint['requestBody']['content']['application/json'];
+};
 
 export type AccountDto = ListEndpoint['responses']['200']['content']['application/json']['accounts'][number];
 
@@ -34,7 +39,7 @@ async function createAccountRequest(body: CreateEndpoint['requestBody']['content
     body,
   });
   if (error) {
-    throw new TypedApiError<CreateEndpoint['responses']['400']['content']['application/json']['message']>(
+    throw new TypedApiError<CreateEndpoint['responses']['400']['content']['application/json']['message'][number]>(
       error.message,
       error.error,
     );
@@ -53,10 +58,9 @@ async function regenerateUserSessionKey(query: RegenerateSessionKeyEndpoint['par
     },
   });
   if (error) {
-    throw new TypedApiError<RegenerateSessionKeyEndpoint['responses']['404']['content']['application/json']['message']>(
-      error.message,
-      error.error,
-    );
+    throw new TypedApiError<
+      RegenerateSessionKeyEndpoint['responses']['404']['content']['application/json']['message'][number]
+    >(error.message, error.error);
   }
   if (!data?.success) {
     throw new Error('Failed to regenerate session key for user');
@@ -64,17 +68,18 @@ async function regenerateUserSessionKey(query: RegenerateSessionKeyEndpoint['par
   return data;
 }
 
-async function deleteAccountRequest(query: DeleteEndpoint['parameters']['query']) {
-  const { data, error } = await api.delete('/api/admin/delete-account', {
+async function deleteAccountRequest({ query, body }: DeleteEndpointVariables) {
+  const { data, error } = await api.patch('/api/admin/delete-account', {
     params: {
       header: api.authHeader(),
       query,
     },
+    body,
   });
   if (error) {
     throw new TypedApiError<
-      | DeleteEndpoint['responses']['400']['content']['application/json']['message']
-      | DeleteEndpoint['responses']['404']['content']['application/json']['message']
+      | DeleteEndpoint['responses']['400']['content']['application/json']['message'][number]
+      | DeleteEndpoint['responses']['404']['content']['application/json']['message'][number]
     >(error.message, error.error);
   }
   if (!data?.success) {
@@ -98,8 +103,8 @@ async function updateRolesRequest({ query, body }: UpdateRolesVariables) {
   });
   if (error) {
     throw new TypedApiError<
-      | UpdateRolesEndpoint['responses']['400']['content']['application/json']['message']
-      | UpdateRolesEndpoint['responses']['404']['content']['application/json']['message']
+      | UpdateRolesEndpoint['responses']['400']['content']['application/json']['message'][number]
+      | UpdateRolesEndpoint['responses']['404']['content']['application/json']['message'][number]
     >(error.message, error.error);
   }
   if (!data?.success) {
@@ -123,8 +128,8 @@ async function resetPasswordRequest({ query, body }: ResetPasswordVariables) {
   });
   if (error) {
     throw new TypedApiError<
-      | ResetPasswordEndpoint['responses']['400']['content']['application/json']['message']
-      | ResetPasswordEndpoint['responses']['404']['content']['application/json']['message']
+      | ResetPasswordEndpoint['responses']['400']['content']['application/json']['message'][number]
+      | ResetPasswordEndpoint['responses']['404']['content']['application/json']['message'][number]
     >(error.message, error.error);
   }
   if (!data?.success) {
@@ -160,7 +165,7 @@ export function useAccounts() {
       | DeleteEndpoint['responses']['400']['content']['application/json']['message'][number]
       | DeleteEndpoint['responses']['404']['content']['application/json']['message'][number]
     >,
-    DeleteEndpoint['parameters']['query']
+    DeleteEndpointVariables
   >({
     mutationFn: deleteAccountRequest,
     onSuccess: invalidateAccounts,

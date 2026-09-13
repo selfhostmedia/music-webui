@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { FormValidationError } from '@/components/form-validation-error';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { UserRoleEnum, type paths } from '@/types/api-schema';
@@ -19,6 +20,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod/v3';
 
 const schema = z.object({
+  adminPassword: z
+    .string()
+    .refine((value) => value.length > 0, {
+      message: 'Administrator password is required',
+    })
+    .refine((value) => value.length >= 1, {
+      message: 'Administrator password is too short',
+    })
+    .refine((value) => value.length <= 255, {
+      message: 'Administrator password is too long',
+    }),
   roles: z.array(z.nativeEnum(UserRoleEnum)).min(1, { message: 'At least one role must be selected.' }),
 });
 
@@ -32,6 +44,7 @@ export function UserUpdateRolesForm({ user, className }: { user: AccountDto; cla
     control,
     formState: { errors },
     handleSubmit,
+    register,
     setError,
   } = useForm<UpdateRolesBodyDto>({
     defaultValues: {
@@ -47,6 +60,7 @@ export function UserUpdateRolesForm({ user, className }: { user: AccountDto; cla
           id: user.id,
         },
         body: {
+          adminPassword: formData.adminPassword,
           roles: formData.roles,
         },
       },
@@ -76,6 +90,12 @@ export function UserUpdateRolesForm({ user, className }: { user: AccountDto; cla
                   type: 'manual',
                   message: 'An invalid role was specified.',
                 });
+                break;
+              case 'invalid-password-error':
+                setError('adminPassword', { type: 'manual', message: 'Invalid admin password.' });
+                break;
+              case 'invalid-password-length-error':
+                setError('adminPassword', { type: 'manual', message: 'The admin password length is invalid.' });
                 break;
               default:
                 // eslint-disable-next-line no-console
@@ -129,6 +149,16 @@ export function UserUpdateRolesForm({ user, className }: { user: AccountDto; cla
                       onCheckedChange={() => field.onChange(toggleRole(field.value, UserRoleEnum.user))}
                     />
                     <Label htmlFor="user-role">User</Label>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="adminPassword">Administrator password</Label>
+                    <Input
+                      id="adminPassword"
+                      type="password"
+                      {...register('adminPassword', { required: true })}
+                      placeholder="Enter admin password"
+                    />
+                    <FormValidationError text={errors.adminPassword?.message} />
                   </div>
                   <FormValidationError text={errors.roles?.message} />
                 </>

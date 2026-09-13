@@ -42,8 +42,8 @@ async function createRootPathRequest({ query, body }: CreateRootPathVariables) {
   });
   if (error) {
     throw new TypedApiError<
-      | CreateEndpoint['responses']['400']['content']['application/json']['message']
-      | CreateEndpoint['responses']['404']['content']['application/json']['message']
+      | CreateEndpoint['responses']['400']['content']['application/json']['message'][number]
+      | CreateEndpoint['responses']['404']['content']['application/json']['message'][number]
     >(error.message, error.error);
   }
   if (!data?.success) {
@@ -60,7 +60,7 @@ async function deleteRootPathRequest(query: DeleteEndpoint['parameters']['query'
     },
   });
   if (error) {
-    throw new TypedApiError<DeleteEndpoint['responses']['404']['content']['application/json']['message']>(
+    throw new TypedApiError<DeleteEndpoint['responses']['404']['content']['application/json']['message'][number]>(
       error.message,
       error.error,
     );
@@ -81,8 +81,8 @@ async function updateRootPathRequest({ query, body }: UpdateRootPathVariables) {
   });
   if (error) {
     throw new TypedApiError<
-      | UpdateEndpoint['responses']['400']['content']['application/json']['message']
-      | UpdateEndpoint['responses']['404']['content']['application/json']['message']
+      | UpdateEndpoint['responses']['400']['content']['application/json']['message'][number]
+      | UpdateEndpoint['responses']['404']['content']['application/json']['message'][number]
     >(error.message, error.error);
   }
   if (!data?.success) {
@@ -102,8 +102,8 @@ export function useRootPaths() {
   const createRootPathMutation = useMutation<
     CreateEndpoint['responses']['201']['content']['application/json'],
     TypedApiError<
-      | CreateEndpoint['responses']['400']['content']['application/json']['message']
-      | CreateEndpoint['responses']['404']['content']['application/json']['message']
+      | CreateEndpoint['responses']['400']['content']['application/json']['message'][number]
+      | CreateEndpoint['responses']['404']['content']['application/json']['message'][number]
     >,
     CreateRootPathVariables
   >({
@@ -115,7 +115,7 @@ export function useRootPaths() {
 
   const deleteRootPathMutation = useMutation<
     DeleteEndpoint['responses']['200']['content']['application/json'],
-    TypedApiError<DeleteEndpoint['responses']['404']['content']['application/json']['message']>,
+    TypedApiError<DeleteEndpoint['responses']['404']['content']['application/json']['message'][number]>,
     DeleteEndpoint['parameters']['query']
   >({
     mutationFn: deleteRootPathRequest,
@@ -127,8 +127,8 @@ export function useRootPaths() {
   const updateRootPathMutation = useMutation<
     UpdateEndpoint['responses']['200']['content']['application/json'],
     TypedApiError<
-      | UpdateEndpoint['responses']['400']['content']['application/json']['message']
-      | UpdateEndpoint['responses']['404']['content']['application/json']['message']
+      | UpdateEndpoint['responses']['400']['content']['application/json']['message'][number]
+      | UpdateEndpoint['responses']['404']['content']['application/json']['message'][number]
     >,
     UpdateRootPathVariables
   >({
