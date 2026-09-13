@@ -27,10 +27,9 @@ async function updatePasswordRequest(body: UpdatePasswordEndpoint['requestBody']
     body,
   });
   if (error) {
-    throw new TypedApiError<UpdatePasswordEndpoint['responses']['400']['content']['application/json']['message']>(
-      error.message,
-      error.error,
-    );
+    throw new TypedApiError<
+      UpdatePasswordEndpoint['responses']['400']['content']['application/json']['message'][number]
+    >(error.message, error.error);
   }
   if (!data?.success) {
     throw new Error('Failed to update password');

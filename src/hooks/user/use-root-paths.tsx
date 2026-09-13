@@ -31,7 +31,7 @@ async function createRootPath(body: CreateEndpoint['requestBody']['content']['ap
     body,
   });
   if (error) {
-    throw new TypedApiError<CreateEndpoint['responses']['400']['content']['application/json']['message']>(
+    throw new TypedApiError<CreateEndpoint['responses']['400']['content']['application/json']['message'][number]>(
       error.message,
       error.error,
     );
@@ -53,7 +53,7 @@ async function deleteRootPath(query: DeleteEndpoint['parameters']['query']) {
     },
   });
   if (error) {
-    throw new TypedApiError<DeleteEndpoint['responses']['404']['content']['application/json']['message']>(
+    throw new TypedApiError<DeleteEndpoint['responses']['404']['content']['application/json']['message'][number]>(
       error.message,
       error.error,
     );
@@ -77,7 +77,7 @@ export function useRootPaths() {
 
   const createRootPathMutation = useMutation<
     CreateEndpoint['responses']['201']['content']['application/json'],
-    TypedApiError<CreateEndpoint['responses']['400']['content']['application/json']['message']>,
+    TypedApiError<CreateEndpoint['responses']['400']['content']['application/json']['message'][number]>,
     CreateEndpoint['requestBody']['content']['application/json']
   >({
     mutationFn: createRootPath,
@@ -88,7 +88,7 @@ export function useRootPaths() {
 
   const deleteRootPathMutation = useMutation<
     DeleteEndpoint['responses']['200']['content']['application/json'],
-    TypedApiError<DeleteEndpoint['responses']['404']['content']['application/json']['message']>,
+    TypedApiError<DeleteEndpoint['responses']['404']['content']['application/json']['message'][number]>,
     DeleteEndpoint['parameters']['query']
   >({
     mutationFn: deleteRootPath,

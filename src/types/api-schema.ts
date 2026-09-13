@@ -748,6 +748,9 @@ export type paths = {
     get?: never;
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
     /**
      * Delete an account
      * @description Deletes the specified account.  If it is the only admin account a new one account must be created first.
@@ -756,10 +759,7 @@ export type paths = {
      *
      *     Only administrator users can access this route.  An administrator can assign this role to an account in the system settings.
      */
-    delete: operations['AdminDeleteAccountController_delete'];
-    options?: never;
-    head?: never;
-    patch?: never;
+    patch: operations['AdminDeleteAccountController_delete'];
     trace?: never;
   };
   '/api/admin/delete-root-path': {
@@ -2689,6 +2689,8 @@ export type components = {
     UserRoleEnum: UserRoleEnum;
     AdminCreateAccountBodyDto: {
       roles: components['schemas']['UserRoleEnum'][];
+      /** @description The administrator's password to authorize the change */
+      adminPassword: string;
       /** @description The username for signing in */
       username: string;
       /** @description The plain-text password the user will enter to sign in.  It will be hashed and securely-stored in the database. */
@@ -2776,6 +2778,10 @@ export type components = {
        * @default account-not-found-error
        */
       message: components['schemas']['AdminCreateRootPathNotFoundErrorMessageEnum'][];
+    };
+    AdminDeleteAccountBodyDto: {
+      /** @description The administrator's password to authorize the change */
+      adminPassword: string;
     };
     AdminDeleteAccountResponseDto: {
       /**
@@ -3053,6 +3059,8 @@ export type components = {
     };
     AdminUpdateUserRolesBodyDto: {
       roles: components['schemas']['UserRoleEnum'][];
+      /** @description The administrator's password to authorize the change */
+      adminPassword: string;
     };
     AdminUpdateUserRolesResponseDto: {
       /**
@@ -3105,6 +3113,8 @@ export type components = {
       message: components['schemas']['AdminUpdateUserRolesNotFoundErrorMessageEnum'][];
     };
     AdminResetUserPasswordBodyDto: {
+      /** @description The administrator's password to authorize the change */
+      adminPassword: string;
       newPassword: string;
     };
     AdminResetUserPasswordResponseDto: {
@@ -8189,14 +8199,6 @@ export interface operations {
           'application/json': components['schemas']['UserUpdatePasswordResponseDto'];
         };
       };
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UserUpdatePasswordResponseDto'];
-        };
-      };
       /** @description Invalid request data or additional requirements not met */
       400: {
         headers: {
@@ -8303,7 +8305,11 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody?: never;
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AdminDeleteAccountBodyDto'];
+      };
+    };
     responses: {
       /** @description Account deleted successfully */
       200: {
@@ -8627,14 +8633,6 @@ export interface operations {
           'application/json': components['schemas']['AdminResetUserPasswordResponseDto'];
         };
       };
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminResetUserPasswordResponseDto'];
-        };
-      };
       /** @description Invalid request data or additional requirements not met */
       400: {
         headers: {
@@ -8679,14 +8677,6 @@ export interface operations {
           'application/json': components['schemas']['AdminRegenerateUserSessionKeyResponseDto'];
         };
       };
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['AdminRegenerateUserSessionKeyResponseDto'];
-        };
-      };
       /** @description Account not found */
       404: {
         headers: {
@@ -8711,7 +8701,7 @@ export interface operations {
     requestBody?: never;
     responses: {
       /** @description Master session key regenerated successfully */
-      201: {
+      200: {
         headers: {
           [name: string]: unknown;
         };
@@ -9712,6 +9702,8 @@ export enum AdminCreateAccountBadRequestErrorMessageEnum {
   invalid_username_not_unique_error = 'invalid-username-not-unique-error',
   invalid_password_error = 'invalid-password-error',
   invalid_password_length_error = 'invalid-password-length-error',
+  invalid_new_password_error = 'invalid-new-password-error',
+  invalid_new_password_length_error = 'invalid-new-password-length-error',
 }
 export enum AdminCreateRootPathBadRequestErrorMessageEnum {
   root_path_does_not_exist_error = 'root-path-does-not-exist-error',
@@ -9724,6 +9716,8 @@ export enum AdminDeleteAccountBadRequestErrorMessageEnum {
   invalid_account_id_error = 'invalid-account-id-error',
   invalid_account_error = 'invalid-account-error',
   account_only_admin_error = 'account-only-admin-error',
+  invalid_password_error = 'invalid-password-error',
+  invalid_password_length_error = 'invalid-password-length-error',
 }
 export enum AdminDeleteAccountNotFoundErrorMessageEnum {
   invalid_account_id_error = 'invalid-account-id-error',
@@ -9751,6 +9745,8 @@ export enum AdminUpdateRootPathNotFoundErrorMessageEnum {
 export enum AdminUpdateUserRolesBadRequestErrorMessageEnum {
   invalid_user_role_error = 'invalid-user-role-error',
   account_only_admin_error = 'account-only-admin-error',
+  invalid_password_error = 'invalid-password-error',
+  invalid_password_length_error = 'invalid-password-length-error',
 }
 export enum AdminUpdateUserRolesNotFoundErrorMessageEnum {
   account_not_found_error = 'account-not-found-error',
@@ -9758,6 +9754,8 @@ export enum AdminUpdateUserRolesNotFoundErrorMessageEnum {
 export enum AdminResetUserPasswordBadRequestErrorMessageEnum {
   invalid_password_error = 'invalid-password-error',
   invalid_password_length_error = 'invalid-password-length-error',
+  invalid_new_password_error = 'invalid-new-password-error',
+  invalid_new_password_length_error = 'invalid-new-password-length-error',
 }
 export enum AdminResetUserPasswordNotFoundErrorMessageEnum {
   account_not_found_error = 'account-not-found-error',

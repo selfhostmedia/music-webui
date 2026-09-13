@@ -8,18 +8,47 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { FormValidationError } from '@/components/form-validation-error';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod/v3';
+import type { paths } from '@/types/api-schema';
+
+type DeleteEndpoint = paths['/api/admin/delete-account']['patch'];
+type DeleteAccountBodyDto = DeleteEndpoint['requestBody']['content']['application/json'];
+
+const schema = z.object({
+  adminPassword: z
+    .string()
+    .refine((value) => value.length > 0, {
+      message: 'Administrator password is required',
+    })
+    .refine((value) => value.length >= 1, {
+      message: 'Administrator password is too short',
+    })
+    .refine((value) => value.length <= 255, {
+      message: 'Administrator password is too long',
+    }),
+});
 
 export function UserDeleteForm({ user, className }: { user: AccountDto; className?: string }) {
   const [open, setOpen] = useState(false);
   const { deleteAccount } = useAccounts();
-  const { handleSubmit } = useForm();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<DeleteAccountBodyDto>({
+    resolver: zodResolver(schema),
+  });
 
-  const onSubmit = handleSubmit(async () => {
+  const onSubmit = handleSubmit(async (data) => {
     await deleteAccount(
-      { id: user.id },
+      { query: { id: user.id }, body: { adminPassword: data.adminPassword } },
       {
         onSuccess: () => {
           setOpen(false);
@@ -69,6 +98,16 @@ export function UserDeleteForm({ user, className }: { user: AccountDto; classNam
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="adminPassword">Administrator password</Label>
+              <Input
+                id="adminPassword"
+                type="password"
+                {...register('adminPassword', { required: true })}
+                placeholder="Enter admin password"
+              />
+              <FormValidationError text={errors.adminPassword?.message} />
+            </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel

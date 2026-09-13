@@ -107,6 +107,19 @@ test.describe('admin home', () => {
           await expect(page.getByRole('main').filter({ hasText: 'Passwords do not match' })).toBeTruthy();
         });
 
+        test('should show error if administrator password is blank', async ({ page }) => {
+          const pom = new Pom(page, jwtToken);
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
+          jwtToken = jwtToken || pom.jwtToken;
+          await pom.navigateToAdmin();
+          await page.locator('button', { hasText: 'Add account' }).click();
+          await page.locator('input[name="password"]').fill('testpassword');
+          await page.locator('input[name="confirmPassword"]').fill('differentpassword');
+          await page.locator('input[name="adminPassword"]').fill('');
+          await page.locator('button', { hasText: 'Create new  account' }).click();
+          await expect(page.getByRole('main').filter({ hasText: 'Administrator password is required' })).toBeTruthy();
+        });
+
         test('should show error if user already exists', async ({ page }) => {
           const testUsername = `test-add-account-${Date.now()}`;
           const pom = new Pom(page, jwtToken);
@@ -114,6 +127,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.admin],
@@ -124,8 +138,32 @@ test.describe('admin home', () => {
           await page.locator('input[name="username"]').fill(testUsername);
           await page.locator('input[name="password"]').fill('testpassword');
           await page.locator('input[name="confirmPassword"]').fill('testpassword');
+          await page.locator('input[name="adminPassword"]').fill(ADMIN_PASSWORD);
           await page.locator('button', { hasText: 'Create new  account' }).click();
           await expect(page.getByRole('main').filter({ hasText: 'User already exists' })).toBeTruthy();
+        });
+
+        test('should show error if admin password is incorrect', async ({ page }) => {
+          const testUsername = `test-add-account-${Date.now()}`;
+          const pom = new Pom(page, jwtToken);
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
+          jwtToken = jwtToken || pom.jwtToken || '';
+          const api = new AdminApi(jwtToken);
+          const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.admin],
+          });
+          deleteUsers.push(testUser.id);
+          await pom.navigateToAdmin();
+          await page.locator('button', { hasText: 'Add account' }).click();
+          await page.locator('input[name="username"]').fill(testUsername);
+          await page.locator('input[name="password"]').fill('testpassword');
+          await page.locator('input[name="confirmPassword"]').fill('testpassword');
+          await page.locator('input[name="adminPassword"]').fill('wrong password');
+          await page.locator('button', { hasText: 'Create new  account' }).click();
+          await expect(page.getByRole('main').filter({ hasText: 'Invalid admin password.' })).toBeTruthy();
         });
       });
 
@@ -160,6 +198,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.admin],
@@ -180,6 +219,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.admin],
@@ -201,6 +241,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.admin],
@@ -211,8 +252,55 @@ test.describe('admin home', () => {
           await userRow.locator('button', { hasText: 'Reset password' }).click();
           await page.locator('input[name="newPassword"]').fill('testpassword');
           await page.locator('input[name="confirmPassword"]').fill('differentpassword');
+          await page.locator('input[name="adminPassword"]').fill(ADMIN_PASSWORD);
           await page.locator('button', { hasText: 'Set new password' }).click();
           await expect(page.getByRole('main').filter({ hasText: 'Passwords do not match' })).toBeTruthy();
+        });
+
+        test('should show error if administrator password is blank', async ({ page }) => {
+          const testUsername = `test-reset-password-${Date.now()}`;
+          const pom = new Pom(page, jwtToken);
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
+          jwtToken = jwtToken || pom.jwtToken || '';
+          const api = new AdminApi(jwtToken);
+          const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.admin],
+          });
+          deleteUsers.push(testUser.id);
+          await pom.navigateToAdmin();
+          const userRow = await page.getByRole('row', { name: `User account ${testUsername}` });
+          await userRow.locator('button', { hasText: 'Reset password' }).click();
+          await page.locator('input[name="newPassword"]').fill('testpassword');
+          await page.locator('input[name="confirmPassword"]').fill('testpassword');
+          await page.locator('input[name="adminPassword"]').fill('');
+          await page.locator('button', { hasText: 'Set new password' }).click();
+          await expect(page.getByRole('main').filter({ hasText: 'Administrator password is required' })).toBeTruthy();
+        });
+
+        test('should show error if administrator password is incorrect', async ({ page }) => {
+          const testUsername = `test-reset-password-${Date.now()}`;
+          const pom = new Pom(page, jwtToken);
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
+          jwtToken = jwtToken || pom.jwtToken || '';
+          const api = new AdminApi(jwtToken);
+          const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
+            username: testUsername,
+            password: 'testpassword',
+            roles: [UserRoleEnum.admin],
+          });
+          deleteUsers.push(testUser.id);
+          await pom.navigateToAdmin();
+          const userRow = await page.getByRole('row', { name: `User account ${testUsername}` });
+          await userRow.locator('button', { hasText: 'Reset password' }).click();
+          await page.locator('input[name="newPassword"]').fill('testpassword');
+          await page.locator('input[name="confirmPassword"]').fill('testpassword');
+          await page.locator('input[name="adminPassword"]').fill('wrongpassword');
+          await page.locator('button', { hasText: 'Set new password' }).click();
+          await expect(page.getByRole('main').filter({ hasText: 'Invalid admin password.' })).toBeTruthy();
         });
       });
 
@@ -224,6 +312,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.admin],
@@ -234,6 +323,7 @@ test.describe('admin home', () => {
           await userRow.locator('button', { hasText: 'Reset password' }).click();
           await page.locator('input[name="newPassword"]').fill('newpassword');
           await page.locator('input[name="confirmPassword"]').fill('newpassword');
+          await page.locator('input[name="adminPassword"]').fill(ADMIN_PASSWORD);
           await page.locator('button', { hasText: 'Set new password' }).last().click();
           await expect(page.getByRole('main').filter({ hasText: 'Password reset successfully' })).toBeTruthy();
         });
@@ -253,12 +343,45 @@ test.describe('admin home', () => {
           await userRow.locator('button', { hasText: 'Update roles' }).click();
           await page.locator('label[for="admin-role"]').click();
           await page.locator('label[for="user-role"]').click();
+          await page.locator('input[name="adminPassword"]').fill(ADMIN_PASSWORD);
           await page.locator('button', { hasText: 'Save new roles' }).click();
           await expect(
             page
               .getByRole('main')
               .filter({ hasText: 'You must create another administrator before removing this permission.' }),
           ).toBeTruthy();
+        });
+
+        test('should show error if administrator password is blank', async ({ page }) => {
+          const pom = new Pom(page, jwtToken);
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
+          jwtToken = jwtToken || pom.jwtToken;
+          await pom.navigateToAdmin();
+          const userRow = await page.getByRole('row', { name: `User account admin` });
+          const rowText = await userRow.textContent();
+          expect(rowText).toContain('admin');
+          await userRow.locator('button', { hasText: 'Update roles' }).click();
+          await page.locator('label[for="admin-role"]').click();
+          await page.locator('label[for="user-role"]').click();
+          await page.locator('input[name="adminPassword"]').fill('');
+          await page.locator('button', { hasText: 'Save new roles' }).click();
+          await expect(page.getByRole('main').filter({ hasText: 'Administrator password is required' })).toBeTruthy();
+        });
+
+        test('should show error if administrator password is incorrect', async ({ page }) => {
+          const pom = new Pom(page, jwtToken);
+          await pom.signIn({ username: ADMIN_USERNAME, password: ADMIN_PASSWORD });
+          jwtToken = jwtToken || pom.jwtToken;
+          await pom.navigateToAdmin();
+          const userRow = await page.getByRole('row', { name: `User account admin` });
+          const rowText = await userRow.textContent();
+          expect(rowText).toContain('admin');
+          await userRow.locator('button', { hasText: 'Update roles' }).click();
+          await page.locator('label[for="admin-role"]').click();
+          await page.locator('label[for="user-role"]').click();
+          await page.locator('input[name="adminPassword"]').fill('incorrectpassword');
+          await page.locator('button', { hasText: 'Save new roles' }).click();
+          await expect(page.getByRole('main').filter({ hasText: 'Invalid admin password.' })).toBeTruthy();
         });
       });
 
@@ -270,6 +393,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.admin],
@@ -283,6 +407,7 @@ test.describe('admin home', () => {
           await userRow.locator('button', { hasText: 'Update roles' }).click();
           await page.locator('label[for="admin-role"]').click();
           await page.locator('label[for="user-role"]').click();
+          await page.locator('input[name="adminPassword"]').fill(ADMIN_PASSWORD);
           await page.locator('button', { hasText: 'Save new roles' }).click();
           const userRowNow = await page.getByRole('row', { name: `User account ${testUsername}` });
           const rowTextNow = await userRowNow.textContent();
@@ -303,6 +428,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.user],
@@ -327,6 +453,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.user],
@@ -356,6 +483,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.user],
@@ -383,6 +511,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.user],
@@ -410,6 +539,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.user],
@@ -442,6 +572,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.user],
@@ -467,6 +598,7 @@ test.describe('admin home', () => {
           jwtToken = jwtToken || pom.jwtToken || '';
           const api = new AdminApi(jwtToken);
           const testUser = await api.createUser({
+            adminPassword: ADMIN_PASSWORD,
             username: testUsername,
             password: 'testpassword',
             roles: [UserRoleEnum.admin],

@@ -244,7 +244,7 @@ async function fetchAlbums(query?: AlbumsRequest['parameters']['query']): Promis
     },
   });
   if (error) {
-    throw new TypedApiError<AlbumsResponse['400']['content']['application/json']['message']>(
+    throw new TypedApiError<AlbumsResponse['400']['content']['application/json']['message'][number]>(
       error.message,
       error.error,
     );

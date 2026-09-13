@@ -49,6 +49,17 @@ const schema = z
       .refine((value) => value.length <= 255, {
         message: 'Confirm password is too long',
       }),
+    adminPassword: z
+      .string()
+      .refine((value) => value.length > 0, {
+        message: 'Administrator password is required',
+      })
+      .refine((value) => value.length >= 1, {
+        message: 'Administrator password is too short',
+      })
+      .refine((value) => value.length <= 255, {
+        message: 'Administrator password is too long',
+      }),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: 'Passwords do not match',
@@ -73,6 +84,7 @@ export function UserResetPasswordForm({ user, className }: { user: AccountDto; c
           id: user.id,
         },
         body: {
+          adminPassword: formData.adminPassword,
           newPassword: formData.newPassword,
         },
       },
@@ -88,11 +100,17 @@ export function UserResetPasswordForm({ user, className }: { user: AccountDto; c
               case 'account-not-found-error':
                 toast.error('The specified account does not exist.');
                 break;
+              case 'invalid-new-password-error':
+                setError('newPassword', { type: 'manual', message: 'The new account password is invalid.' });
+                break;
+              case 'invalid-new-password-length-error':
+                setError('newPassword', { type: 'manual', message: 'The new account password length is invalid.' });
+                break;
               case 'invalid-password-error':
-                setError('newPassword', { type: 'manual', message: 'The specified password is invalid.' });
+                setError('adminPassword', { type: 'manual', message: 'Invalid admin password.' });
                 break;
               case 'invalid-password-length-error':
-                setError('newPassword', { type: 'manual', message: 'The new password length is invalid.' });
+                setError('adminPassword', { type: 'manual', message: 'The admin password length is invalid.' });
                 break;
               default:
                 // eslint-disable-next-line no-console
@@ -145,6 +163,16 @@ export function UserResetPasswordForm({ user, className }: { user: AccountDto; c
                 placeholder="Enter new password"
               />
               <FormValidationError text={errors.confirmPassword?.message} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="adminPassword">Administrator password</Label>
+              <Input
+                id="adminPassword"
+                type="password"
+                {...register('adminPassword', { required: true })}
+                placeholder="Enter admin password"
+              />
+              <FormValidationError text={errors.adminPassword?.message} />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
